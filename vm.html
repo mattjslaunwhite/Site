@@ -95,13 +95,13 @@
 
     /* Main Layout */
     .workspace {
-      max-width: 1240px;
+      max-width: 1260px;
       width: 100%;
       margin: 20px auto;
       padding: 0 16px;
       flex: 1;
       display: grid;
-      grid-template-columns: 310px 1fr;
+      grid-template-columns: 320px 1fr;
       gap: 18px;
     }
 
@@ -152,6 +152,16 @@
 
     select:focus {
       border-color: var(--cyan);
+    }
+
+    .distro-notes {
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      padding: 9px 10px;
+      font-size: 0.76rem;
+      color: var(--cyan);
+      line-height: 1.45;
+      margin-bottom: 12px;
     }
 
     .btn-grid {
@@ -210,7 +220,7 @@
       border: 1px solid var(--border);
       background: var(--panel-alt);
       padding: 10px;
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       color: var(--muted);
       line-height: 1.55;
     }
@@ -231,13 +241,14 @@
     .screen-wrap {
       background: #000000;
       border: 1px solid var(--border-bright);
-      min-height: 480px;
+      min-height: 460px;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
       overflow: hidden;
       box-shadow: inset 0 0 30px rgba(0, 243, 255, 0.08);
+      margin-bottom: 12px;
     }
 
     #screen_container {
@@ -275,8 +286,22 @@
       font-size: 1.05rem;
     }
 
+    /* Serial UART0 Log Drawer */
+    .serial-uart-box {
+      background: #010304;
+      border: 1px solid var(--border);
+      color: var(--green);
+      height: 110px;
+      overflow-y: auto;
+      padding: 8px 10px;
+      font-size: 0.76rem;
+      line-height: 1.35;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
     footer {
-      max-width: 1240px;
+      max-width: 1260px;
       width: 100%;
       margin: 0 auto 16px;
       padding: 12px 16px 0;
@@ -294,7 +319,7 @@
         grid-template-columns: 1fr;
       }
       .screen-wrap {
-        min-height: 340px;
+        min-height: 320px;
       }
     }
   </style>
@@ -304,7 +329,7 @@
   <header class="topbar">
     <div class="topbar-left">
       <a class="back-btn" href="/">&larr; Portal</a>
-      <div class="brand">VFD X86 HYPERVISOR // WASM VM</div>
+      <div class="brand">VFD X86 HYPERVISOR // LINUX &amp; WASM VM</div>
     </div>
     <div class="vm-badge" id="vm-status">● HYPERVISOR STANDBY</div>
   </header>
@@ -313,17 +338,24 @@
     <!-- Left VM Hardware Configuration -->
     <aside class="panel">
       <div class="panel-title">
-        <span>Machine Config</span>
+        <span>Linux &amp; OS Profiles</span>
       </div>
 
       <div class="field">
-        <label for="preset-os">Quick-Boot Live OS Profile</label>
-        <select id="preset-os">
-          <option value="linux4">Buildroot Linux 4.16 (Shell + Network)</option>
-          <option value="freedos">FreeDOS 1.2 (16-bit Real Mode)</option>
+        <label for="preset-os">Select Distro / OS</label>
+        <select id="preset-os" onchange="onProfileChange()">
+          <option value="linux4">Buildroot Linux 4.16 (Fast Shell + Net)</option>
+          <option value="alpine">Alpine Linux 3.19 (OpenRC + apk)</option>
+          <option value="dsl">Damn Small Linux (X11 GUI Desktop)</option>
+          <option value="archlinux">Arch Linux 32-bit (Terminal Live)</option>
           <option value="kolibri">KolibriOS (32-bit GUI Assembly OS)</option>
-          <option value="custom">Custom Local Image (Use File Inputs Below)</option>
+          <option value="freedos">FreeDOS 1.2 (16-bit Real Mode)</option>
+          <option value="custom">Custom Local .ISO / .IMG File</option>
         </select>
+      </div>
+
+      <div class="distro-notes" id="distro-notes">
+        Kernel 4.16.13 with BusyBox, GCC, Python, and NE2000 networking. Boots in ~5 seconds.
       </div>
 
       <div class="field">
@@ -351,29 +383,28 @@
       </div>
 
       <div class="panel-title">
-        <span>Local Media Mounts</span>
+        <span>Local ISO / Disk Mounts</span>
       </div>
 
       <div class="field">
-        <label for="cdrom-file">Bootable CD-ROM (.ISO)</label>
+        <label for="cdrom-file">Linux / OS Live CD (.ISO)</label>
         <input type="file" id="cdrom-file" accept=".iso,.img" />
       </div>
 
       <div class="field">
-        <label for="fda-file">Floppy Drive A: (.IMG / .IMA)</label>
-        <input type="file" id="fda-file" accept=".img,.ima,.bin,.flp" />
-      </div>
-
-      <div class="field">
-        <label for="hda-file">Hard Disk C: (.IMG)</label>
+        <label for="hda-file">Hard Disk Image (.IMG)</label>
         <input type="file" id="hda-file" accept=".img,.bin" />
       </div>
 
+      <div class="field">
+        <label for="fda-file">Floppy Disk (.IMG / .IMA)</label>
+        <input type="file" id="fda-file" accept=".img,.ima,.bin,.flp" />
+      </div>
+
       <div class="telemetry-box">
-        CPU: <span>x86 32-bit (WASM JIT)</span><br />
-        BIOS: <span>SeaBIOS + VGABIOS</span><br />
-        Audio: <span>Sound Blaster 16</span><br />
-        Tip: <span>Click inside VM display to capture mouse; press ESC to release.</span>
+        Arch: <span>i686 / x86 32-bit (WASM JIT)</span><br />
+        NIC: <span>NE2000 PCI (User-mode NAT)</span><br />
+        Local ISOs: <span>TinyCore, Alpine x86, Debian i386, Puppy Linux</span>
       </div>
     </aside>
 
@@ -388,24 +419,30 @@
         <button type="button" onclick="sendCtrlAltDel()">Ctrl+Alt+Del</button>
         <button type="button" class="amber" onclick="lockMouse()">Capture Mouse</button>
         <button type="button" onclick="goFullscreen()">Fullscreen</button>
-        <button type="button" onclick="saveSnapshot()">Save State (.BIN)</button>
+        <button type="button" onclick="saveSnapshot()">Save VM State (.BIN)</button>
       </div>
 
       <div class="screen-wrap">
         <div id="placeholder" class="placeholder-msg">
-          <strong>[ x86 VIRTUAL MACHINE READY ]</strong>
-          Select a Quick-Boot OS profile (Linux, FreeDOS, KolibriOS) or mount your own local .ISO / .IMG file on the left, then click <b>POWER ON</b>.
+          <strong>[ LINUX / X86 VIRTUAL MACHINE READY ]</strong>
+          Choose a Linux distro (<b>Buildroot</b>, <b>Alpine</b>, <b>Damn Small Linux GUI</b>, or <b>Arch Linux</b>) or attach any local 32-bit <b>.ISO</b> on the left, then click <b>POWER ON</b>.
         </div>
         <div id="screen_container" style="display:none;">
           <div id="text_screen"></div>
           <canvas id="vga_canvas"></canvas>
         </div>
       </div>
+
+      <div class="panel-title" style="margin-bottom:6px;">
+        <span>COM1 / ttyS0 Kernel Serial Output</span>
+        <button type="button" style="padding:2px 8px; font-size:0.7rem;" onclick="document.getElementById('uart-log').textContent=''">Clear</button>
+      </div>
+      <div id="uart-log" class="serial-uart-box">[ttyS0 serial console idle — kernel messages appear here on boot]</div>
     </section>
   </main>
 
   <footer>
-    <div>MAGIC GOAT STUDIO // CANADA // CLIENT-SIDE V86 WEBASSEMBLY VM</div>
+    <div>MAGIC GOAT STUDIO // CANADA // CLIENT-SIDE V86 LINUX HYPERVISOR</div>
     <div>Runs 100% in browser memory — zero server upload</div>
   </footer>
 
@@ -416,20 +453,61 @@
     const PROFILES = {
       linux4: {
         name: "Buildroot Linux 4.16",
+        ram: "128",
+        vram: "8",
+        note: "Kernel 4.16.13 with BusyBox, GCC, Python, and NE2000 networking. Auto-logs in as root in ~5s.",
         cdrom: { url: "https://copy.sh/v86/images/linux4.iso" }
       },
-      freedos: {
-        name: "FreeDOS 1.2",
-        fda: { url: "https://copy.sh/v86/images/freedos722.img" }
+      alpine: {
+        name: "Alpine Linux 3.19",
+        ram: "256",
+        vram: "8",
+        note: "Lightweight musl/BusyBox distro. Login with username 'root' (no password). Supports 'setup-alpine' & apk.",
+        cdrom: { url: "https://copy.sh/v86/images/alpine-virt-3.19.1-x86.iso" }
+      },
+      dsl: {
+        name: "Damn Small Linux (X11 GUI)",
+        ram: "256",
+        vram: "16",
+        note: "Full X11 Fluxbox graphical Linux desktop with terminal, browser, and tools. Click display to capture mouse.",
+        cdrom: { url: "https://copy.sh/v86/images/dsl-4.11.rc2.iso" }
+      },
+      archlinux: {
+        name: "Arch Linux (x86 Live)",
+        ram: "512",
+        vram: "16",
+        note: "Arch Linux 32-bit live environment with systemd, zsh, and pacman. Takes ~20–30s to decompress initramfs.",
+        hda: { url: "https://copy.sh/v86/images/arch.img", async: true }
       },
       kolibri: {
         name: "KolibriOS GUI",
+        ram: "128",
+        vram: "16",
+        note: "Ultra-fast 32-bit x86 graphical OS written in FASM assembly. Boots to desktop in ~3 seconds.",
         fda: { url: "https://copy.sh/v86/images/kolibri.img" }
       },
+      freedos: {
+        name: "FreeDOS 1.2",
+        ram: "64",
+        vram: "8",
+        note: "16-bit DOS environment with EDIT, Watcom C, and classic real-mode utilities.",
+        fda: { url: "https://copy.sh/v86/images/freedos722.img" }
+      },
       custom: {
-        name: "Custom Local Media"
+        name: "Custom Local Media",
+        ram: "256",
+        vram: "16",
+        note: "Mount any 32-bit x86 Linux .ISO (TinyCore, Puppy Linux, Debian i386, Void x86) or .IMG disk below."
       }
     };
+
+    function onProfileChange() {
+      const key = document.getElementById("preset-os").value;
+      const p = PROFILES[key] || PROFILES.custom;
+      document.getElementById("distro-notes").textContent = p.note;
+      if (p.ram) document.getElementById("ram-size").value = p.ram;
+      if (p.vram) document.getElementById("vram-size").value = p.vram;
+    }
 
     function setStatus(text, color = "var(--green)") {
       const badge = document.getElementById("vm-status");
@@ -473,6 +551,9 @@
       const fdaInput = document.getElementById("fda-file").files[0];
       const hdaInput = document.getElementById("hda-file").files[0];
 
+      const uartEl = document.getElementById("uart-log");
+      uartEl.textContent = `[BOOTING ${profile.name.toUpperCase()} — ${ramMB}MB RAM / ${vramMB}MB VRAM]\n`;
+
       const config = {
         wasm_path: "https://copy.sh/v86/build/v86.wasm",
         memory_size: ramMB * 1024 * 1024,
@@ -480,12 +561,14 @@
         screen_container: document.getElementById("screen_container"),
         bios: { url: "https://copy.sh/v86/bios/seabios.bin" },
         vga_bios: { url: "https://copy.sh/v86/bios/vgabios.bin" },
+        network_relay_url: "wss://relay.widgetry.org/",
         autostart: true
       };
 
-      // Attach preset media if no local override is selected
+      // Attach preset media if no local file override is selected
       if (profile.cdrom && !cdromInput) config.cdrom = profile.cdrom;
       if (profile.fda && !fdaInput) config.fda = profile.fda;
+      if (profile.hda && !hdaInput) config.hda = profile.hda;
 
       // Local file overrides (runs straight from browser memory, zero upload)
       if (cdromInput) config.cdrom = { buffer: cdromInput };
@@ -495,10 +578,21 @@
       document.getElementById("placeholder").style.display = "none";
       document.getElementById("screen_container").style.display = "flex";
       document.getElementById("active-profile").textContent = `RUNNING: ${profile.name.toUpperCase()} (${ramMB}MB RAM)`;
-      setStatus("● VM RUNNING", "var(--green)");
+      setStatus("● LINUX / VM RUNNING", "var(--green)");
 
       const Constructor = typeof V86 !== "undefined" ? V86 : V86Starter;
       emulator = new Constructor(config);
+
+      // Stream COM1 / ttyS0 serial output to the VFD log box
+      emulator.add_listener("serial0-output-byte", function (byte) {
+        const ch = String.fromCharCode(byte);
+        if (ch === "\r") return;
+        uartEl.textContent += ch;
+        if (uartEl.textContent.length > 12000) {
+          uartEl.textContent = uartEl.textContent.slice(-8000);
+        }
+        uartEl.scrollTop = uartEl.scrollHeight;
+      });
 
       let lastInstr = 0;
       statsTimer = setInterval(() => {
@@ -514,7 +608,6 @@
 
     function sendCtrlAltDel() {
       if (!emulator) return;
-      // Scan codes: Ctrl (0x1D), Alt (0x38), Del (0x53)
       emulator.keyboard_send_scancodes([0x1D, 0x38, 0x53, 0xD3, 0xB8, 0x9D]);
     }
 
@@ -542,7 +635,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `magicgoat-vm-state-${Date.now()}.bin`;
+      a.download = `magicgoat-linux-vm-${Date.now()}.bin`;
       a.click();
       URL.revokeObjectURL(url);
     }

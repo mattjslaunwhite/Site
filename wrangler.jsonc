@@ -9,10 +9,7 @@
   "kv_namespaces": [
     {
       "binding": "ORDERS_KV",
-      "id": ""kv_namespaces": [{
-                    "binding": "KV_BINDING",
-                    "id": "fd65f0864ac942cdad1a05aed794859c"
-                 }]"
+      "id": "fd65f0864ac942cdad1a05aed794859c"
     }
   ]
 }

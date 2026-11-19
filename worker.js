@@ -1,31 +1,121 @@
 const CATALOG = {
   frame: {
-    "sleek-bat": { label: "Sleek Bat Sub-250g Delta (ASA + Carbon Spars)", price: 115, weight: 135 },
-    "quad-425": { label: "425mm Carbon Quad + Printed Sensor Mounts", price: 185, weight: 390 },
-    "f450-dev": { label: "F450 Modular Dev Frame + 920KV Motors", price: 165, weight: 440 },
-    "custom-cad": { label: "Custom OpenSCAD / Fusion 360 Print Run", price: 140, weight: 250 }
+    "sleek-bat": {
+      label: "Sleek Bat Sub-250g Delta (ASA + Carbon Spars)",
+      bom: 34,
+      price: 115,
+      weight: 135
+    },
+    "quad-425": {
+      label: "425mm Carbon Quad + Printed Sensor Mounts",
+      bom: 68,
+      price: 185,
+      weight: 390
+    },
+    "f450-dev": {
+      label: "F450 Modular Dev Frame + 920KV Motors",
+      bom: 62,
+      price: 165,
+      weight: 440
+    },
+    "custom-cad": {
+      label: "Custom OpenSCAD / Fusion 360 Print Run",
+      bom: 28,
+      price: 140,
+      weight: 250
+    }
   },
   fc: {
-    "none": { label: "None (Airframe & Hardware Only)", price: 0, weight: 0 },
-    "wing-fc": { label: "F405 Wing FC + 40A Brushless ESC", price: 85, weight: 28 },
-    "h743-stack": { label: "H743 FC + 60A 4-in-1 ESC (Pre-Flashed)", price: 175, weight: 42 },
-    "h743-nav": { label: "H743 Stack + BE-880 GPS + MTF-01 Optical Flow", price: 235, weight: 64 }
+    "none": {
+      label: "None (Airframe & Hardware Only)",
+      bom: 0,
+      price: 0,
+      weight: 0
+    },
+    "wing-fc": {
+      label: "F405 Wing FC + 40A Brushless ESC",
+      bom: 48,
+      price: 85,
+      weight: 28
+    },
+    "h743-stack": {
+      label: "H743 FC + 60A 4-in-1 ESC (Pre-Flashed)",
+      bom: 108,
+      price: 175,
+      weight: 42
+    },
+    "h743-nav": {
+      label: "H743 Stack + BE-880 GPS + MTF-01 Optical Flow",
+      bom: 148,
+      price: 235,
+      weight: 64
+    }
   },
   rx: {
-    "none": { label: "None (Supply Your Own RX)", price: 0, weight: 0 },
-    "elrs": { label: "ExpressLRS 2.4GHz Diversity Receiver (CRSF)", price: 32, weight: 5 },
-    "ibus": { label: "FlySky i-BUS Telemetry Receiver", price: 24, weight: 8 },
-    "espnow": { label: "Paired ESP32-32E ESP-NOW Telemetry Modules", price: 38, weight: 14 }
+    "none": {
+      label: "None (Supply Your Own RX)",
+      bom: 0,
+      price: 0,
+      weight: 0
+    },
+    "elrs": {
+      label: "ExpressLRS 2.4GHz Diversity Receiver (CRSF)",
+      bom: 16,
+      price: 32,
+      weight: 5
+    },
+    "ibus": {
+      label: "FlySky i-BUS Telemetry Receiver",
+      bom: 11,
+      price: 24,
+      weight: 8
+    },
+    "espnow": {
+      label: "Paired ESP32-32E ESP-NOW Telemetry Modules",
+      bom: 14,
+      price: 38,
+      weight: 14
+    }
   },
   vtx: {
-    "none": { label: "None (Line-of-Sight / Autonomous)", price: 0, weight: 0 },
-    "vtx-200": { label: "200mW 5.8GHz Micro VTX + 700TVL Camera", price: 45, weight: 12 },
-    "vtx-800": { label: "800mW SmartAudio VTX + Low-Light CMOS Cam", price: 78, weight: 22 }
+    "none": {
+      label: "None (Line-of-Sight / Autonomous)",
+      bom: 0,
+      price: 0,
+      weight: 0
+    },
+    "vtx-200": {
+      label: "200mW 5.8GHz Micro VTX + 700TVL Camera",
+      bom: 22,
+      price: 45,
+      weight: 12
+    },
+    "vtx-800": {
+      label: "800mW SmartAudio VTX + Low-Light CMOS Cam",
+      bom: 42,
+      price: 78,
+      weight: 22
+    }
   },
   mat: {
-    "petg": { label: "Carbon-Black PETG + High-Vis Orange TPU", price: 0, weight: 0 },
-    "asa": { label: "UV-Resistant ASA + Black TPU", price: 15, weight: 0 },
-    "cf-petg": { label: "Carbon-Fiber Reinforced PETG", price: 25, weight: 0 }
+    "petg": {
+      label: "Carbon-Black PETG + High-Vis Orange TPU",
+      bom: 0,
+      price: 0,
+      weight: 0
+    },
+    "asa": {
+      label: "UV-Resistant ASA + Black TPU",
+      bom: 5,
+      price: 15,
+      weight: 0
+    },
+    "cf-petg": {
+      label: "Carbon-Fiber Reinforced PETG",
+      bom: 10,
+      price: 25,
+      weight: 0
+    }
   }
 };
 
@@ -40,7 +130,6 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // Handle live drone kit orders
     if (url.pathname === "/api/order" && request.method === "POST") {
       try {
         const body = await request.json();
@@ -63,8 +152,12 @@ export default {
           return jsonResponse({ ok: false, error: "Invalid hardware configuration selected." }, 400);
         }
 
-        const totalCad = frame.price + fc.price + rx.price + vtx.price + mat.price;
+        const totalBom = frame.bom + fc.bom + rx.bom + vtx.bom + mat.bom;
+        const totalRetail = frame.price + fc.price + rx.price + vtx.price + mat.price;
+        const grossMargin = totalRetail - totalBom;
+        const marginPct = totalRetail > 0 ? ((grossMargin / totalRetail) * 100).toFixed(1) : "0.0";
         const totalWeight = frame.weight + fc.weight + rx.weight + vtx.weight + mat.weight;
+
         const randCode = Math.floor(1000 + Math.random() * 9000);
         const orderId = `MGS-${new Date().getFullYear()}-${randCode}`;
         const timestamp = new Date().toISOString();
@@ -75,43 +168,78 @@ export default {
           status: "PENDING_CONFIRMATION",
           customer: { name, email, shipping, notes },
           build: {
-            frame: frame.label,
-            fc: fc.label,
-            rx: rx.label,
-            vtx: vtx.label,
-            mat: mat.label
+            frame: { label: frame.label, bom: frame.bom, retail: frame.price },
+            fc: { label: fc.label, bom: fc.bom, retail: fc.price },
+            rx: { label: rx.label, bom: rx.bom, retail: rx.price },
+            vtx: { label: vtx.label, bom: vtx.bom, retail: vtx.price },
+            mat: { label: mat.label, bom: mat.bom, retail: mat.price }
           },
           totalWeight,
-          totalCad
+          totalBomCad: totalBom,
+          totalRetailCad: totalRetail,
+          grossMarginCad: grossMargin
         };
 
-        // 1. Save order to Cloudflare KV if bound
         if (env.ORDERS_KV) {
           await env.ORDERS_KV.put(`order:${orderId}`, JSON.stringify(orderRecord));
         }
 
-        const summaryText = [
-          `ORDER ID: ${orderId}`,
+        // Internal Studio Email (includes BOM vs Retail breakdown)
+        const internalEmailText = [
+          `NEW DRONE KIT ORDER — ${orderId}`,
+          `==================================================`,
           `DATE:     ${timestamp}`,
           `CUSTOMER: ${name} <${email}>`,
           `DELIVERY: ${shipping}`,
           ``,
-          `CONFIGURATION:`,
-          `- Airframe:  ${frame.label} ($${frame.price})`,
-          `- FC/ESC:    ${fc.label} ($${fc.price})`,
-          `- Radio RX:  ${rx.label} ($${rx.price})`,
-          `- Video/VTX: ${vtx.label} ($${vtx.price})`,
-          `- Material:  ${mat.label} ($${mat.price})`,
+          `BOM VS. RETAIL BREAKDOWN (CAD):`,
+          `- Airframe:  ${frame.label}`,
+          `             BOM: $${frame.bom.toFixed(2)}  |  Retail: $${frame.price.toFixed(2)}`,
+          `- FC/ESC:    ${fc.label}`,
+          `             BOM: $${fc.bom.toFixed(2)}  |  Retail: $${fc.price.toFixed(2)}`,
+          `- Radio RX:  ${rx.label}`,
+          `             BOM: $${rx.bom.toFixed(2)}  |  Retail: $${rx.price.toFixed(2)}`,
+          `- Video/VTX: ${vtx.label}`,
+          `             BOM: $${vtx.bom.toFixed(2)}  |  Retail: $${vtx.price.toFixed(2)}`,
+          `- Material:  ${mat.label}`,
+          `             BOM: $${mat.bom.toFixed(2)}  |  Retail: $${mat.price.toFixed(2)}`,
           ``,
-          `EST. DRY WEIGHT: ${totalWeight} g`,
-          `ESTIMATED TOTAL: $${totalCad.toFixed(2)} CAD (plus shipping if applicable)`,
+          `--------------------------------------------------`,
+          `TOTAL BOM COST:    $${totalBom.toFixed(2)} CAD`,
+          `TOTAL RETAIL:      $${totalRetail.toFixed(2)} CAD`,
+          `EST. GROSS MARGIN: $${grossMargin.toFixed(2)} CAD (${marginPct}%)`,
+          `EST. DRY WEIGHT:   ${totalWeight} g`,
+          `--------------------------------------------------`,
           ``,
-          `NOTES: ${notes}`
+          `BUILDER NOTES: ${notes}`
         ].join("\n");
 
-        // 2. Dispatch notification email to matt@magicgoat.studio & confirmation to customer via Resend
+        // Customer Receipt Email (Retail pricing only)
+        const customerEmailText = [
+          `Hi ${name},`,
+          ``,
+          `Thanks for submitting a custom drone kit order request with Magic Goat Studio!`,
+          `We will verify component stock, confirm Canada Post shipping (if selected), and reply within 24 hours with your Interac e-Transfer or invoice payment details.`,
+          ``,
+          `ORDER SUMMARY (${orderId})`,
+          `==================================================`,
+          `Delivery: ${shipping}`,
+          `- Airframe:  ${frame.label} ($${frame.price.toFixed(2)})`,
+          `- FC/ESC:    ${fc.label} ($${fc.price.toFixed(2)})`,
+          `- Radio RX:  ${rx.label} ($${rx.price.toFixed(2)})`,
+          `- Video/VTX: ${vtx.label} ($${vtx.price.toFixed(2)})`,
+          `- Material:  ${mat.label} ($${mat.price.toFixed(2)})`,
+          ``,
+          `Est. Dry Weight: ${totalWeight} g`,
+          `Estimated Total: $${totalRetail.toFixed(2)} CAD (plus shipping if applicable)`,
+          `Notes: ${notes}`,
+          ``,
+          `Questions? Reply directly to orders@magicgoat.studio.`,
+          `— Magic Goat Studio (Woodstock, NB)`
+        ].join("\n");
+
         if (env.RESEND_API_KEY) {
-          // Email to Studio Admin
+          // Send to orders@magicgoat.studio
           await fetch("https://api.resend.com/emails", {
             method: "POST",
             headers: {
@@ -119,15 +247,15 @@ export default {
               "Content-Type": "application/json"
             },
             body: JSON.stringify({
-              from: "Magic Goat Studio <orders@magicgoat.studio>",
-              to: ["matt@magicgoat.studio"],
+              from: "Magic Goat Orders <orders@magicgoat.studio>",
+              to: ["orders@magicgoat.studio"],
               reply_to: email,
-              subject: `[New Drone Kit Order] ${orderId} — ${name} ($${totalCad.toFixed(2)} CAD)`,
-              text: summaryText
+              subject: `[Order ${orderId}] ${name} — Retail $${totalRetail.toFixed(2)} / BOM $${totalBom.toFixed(2)} CAD`,
+              text: internalEmailText
             })
           });
 
-          // Receipt to Buyer
+          // Send confirmation to buyer
           await fetch("https://api.resend.com/emails", {
             method: "POST",
             headers: {
@@ -137,18 +265,9 @@ export default {
             body: JSON.stringify({
               from: "Magic Goat Studio <orders@magicgoat.studio>",
               to: [email],
-              reply_to: "matt@magicgoat.studio",
+              reply_to: "orders@magicgoat.studio",
               subject: `Order Request Received (${orderId}) — Magic Goat Studio`,
-              text: [
-                `Hi ${name},`,
-                ``,
-                `Thanks for submitting a custom drone kit order request with Magic Goat Studio!`,
-                `We will verify component stock, confirm Canada Post shipping (if selected), and reply within 24 hours with your Interac e-Transfer or invoice payment details.`,
-                ``,
-                summaryText,
-                ``,
-                `— Matt-Réal @ Magic Goat Studio (Woodstock, NB)`
-              ].join("\n")
+              text: customerEmailText
             })
           });
         }
@@ -156,7 +275,8 @@ export default {
         return jsonResponse({
           ok: true,
           orderId,
-          totalCad,
+          totalCad: totalRetail,
+          totalBomCad: totalBom,
           totalWeight
         });
       } catch (err) {
@@ -164,7 +284,6 @@ export default {
       }
     }
 
-    // Serve all static HTML pages (index.html, kits.html, drones.html, win95.html, win311.html)
     return env.ASSETS.fetch(request);
   }
 };

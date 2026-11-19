@@ -617,7 +617,7 @@
     </div>
 
     <div class="topbar-right">
-      <span class="build-pill" id="top-build">BUILD 20261119.1841</span>
+      <span class="build-pill" id="top-build">BUILD 20261119.1905</span>
       <span class="sys-pill" id="clock">2026-11-19 00:00:00</span>
     </div>
   </header>
@@ -656,8 +656,14 @@
         </div>
 
         <div class="side-group">
-          <div class="side-label">Hardware &amp; Labs</div>
+          <div class="side-label">Hardware &amp; Comms</div>
           <ul class="side-list">
+            <li>
+              <a class="side-link" href="/comms.html">
+                <span>Encrypted Comms</span>
+                <span class="side-badge">LIVE</span>
+              </a>
+            </li>
             <li>
               <a class="side-link" href="/drones.html">
                 <span>Drone &amp; UAV Lab</span>
@@ -690,8 +696,8 @@
         <strong>Node Telemetry</strong>
         Host: <span>magicgoat.studio</span><br />
         Region: <span>Canada</span><br />
-        Build ID: <span class="amber" id="side-build">20261119.1841</span><br />
-        Stamp: <span id="side-stamp">2026-11-19 18:41</span>
+        Build ID: <span class="amber" id="side-build">20261119.1905</span><br />
+        Stamp: <span id="side-stamp">2026-11-19 19:05</span>
       </div>
     </aside>
 
@@ -703,16 +709,17 @@
         <section class="welcome-panel" id="welcome">
           <div class="welcome-top-row">
             <div class="welcome-kicker">// WELCOME TO THE WORKBENCH</div>
-            <div class="welcome-build-tag" id="hero-build">REV: BUILD 20261119.1841 // CANADA</div>
+            <div class="welcome-build-tag" id="hero-build">REV: BUILD 20261119.1905 // CANADA</div>
           </div>
           <h1>MAGIC GOAT STUDIO PORTAL</h1>
           <p class="welcome-text">
-            Welcome to the digital workshop of <em>Matt-R&eacute;al Slaunwhite</em> in Canada. This portal brings together interactive retro operating system recreations, custom 3D-printed UAV airframes, off-grid 24V solar telemetry, and browser-native hardware tools—all running straight from the edge with zero bloat.
+            Welcome to the digital workshop of <em>Matt-R&eacute;al Slaunwhite</em> in Canada. This portal brings together interactive retro operating system recreations, AES-256 encrypted live comms, custom 3D-printed UAV airframes, off-grid 24V solar telemetry, and browser-native hardware tools—all running straight from the edge with zero bloat.
           </p>
           <div class="welcome-actions">
+            <a class="btn-hero green" href="/comms.html">Encrypted Comms &rarr;</a>
             <a class="btn-hero" href="/win95.html">Boot Windows 95 &rarr;</a>
             <a class="btn-hero" href="/win311.html">Launch Win 3.11 &rarr;</a>
-            <a class="btn-hero green" href="/drones.html">Open Drone Lab &rarr;</a>
+            <a class="btn-hero" href="/drones.html">Drone Lab &rarr;</a>
           </div>
         </section>
 
@@ -720,7 +727,25 @@
         <div class="section-title" id="nodes">Active Nodes &amp; Experimental Builds</div>
 
         <main class="grid">
-          <!-- Node 01: Windows 95 Simulator -->
+          <!-- Node 01: Encrypted Comms Relay -->
+          <a class="card" href="/comms.html">
+            <div>
+              <div class="card-top">
+                <span class="tag live">● E2EE Live</span>
+                <span>/comms.html</span>
+              </div>
+              <h2>Encrypted Comms Relay</h2>
+              <p>
+                Real-time multi-user chat with on-the-fly callsigns, live online node roster, and browser-side AES-256-GCM encryption.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>JOIN CHANNEL</span>
+              <span>[ &rarr; ]</span>
+            </div>
+          </a>
+
+          <!-- Node 02: Windows 95 Simulator -->
           <a class="card" href="/win95.html">
             <div>
               <div class="card-top">
@@ -738,7 +763,7 @@
             </div>
           </a>
 
-          <!-- Node 02: Windows 3.11 Simulator -->
+          <!-- Node 03: Windows 3.11 Simulator -->
           <a class="card" href="/win311.html">
             <div>
               <div class="card-top">
@@ -756,7 +781,7 @@
             </div>
           </a>
 
-          <!-- Node 03: Custom Drone & UAV Lab -->
+          <!-- Node 04: Custom Drone & UAV Lab -->
           <a class="card" href="/drones.html">
             <div>
               <div class="card-top">
@@ -774,7 +799,7 @@
             </div>
           </a>
 
-          <!-- Node 04: Custom Drone Kits -->
+          <!-- Node 05: Custom Drone Kits -->
           <a class="card" href="/kits.html">
             <div>
               <div class="card-top">
@@ -792,7 +817,7 @@
             </div>
           </a>
 
-          <!-- Node 05: OMNIos / VFD Utilities -->
+          <!-- Node 06: OMNIos / VFD Utilities -->
           <a class="card" href="#omnios" onclick="alert('OMNIos web build staged — drop omnios.html into the repo to activate.'); return false;">
             <div>
               <div class="card-top">
@@ -805,12 +830,12 @@
               </p>
             </div>
             <div class="card-footer">
-              <span>MODULE SLOT 05</span>
+              <span>MODULE SLOT 06</span>
               <span>[ STANDBY ]</span>
             </div>
           </a>
 
-          <!-- Node 06: Embedded, RF & Solar Lab -->
+          <!-- Node 07: Embedded, RF & Solar Lab -->
           <a class="card" href="#lab" onclick="alert('RF, Telemetry & Solar Lab slot staged — add lab.html to activate.'); return false;">
             <div>
               <div class="card-top">
@@ -823,7 +848,7 @@
               </p>
             </div>
             <div class="card-footer">
-              <span>MODULE SLOT 06</span>
+              <span>MODULE SLOT 07</span>
               <span>[ STANDBY ]</span>
             </div>
           </a>
@@ -879,7 +904,7 @@
       </div>
 
       <footer>
-        <div id="footer-build">&copy; 2026 MAGIC GOAT STUDIO // CANADA // BUILD 20261119.1841</div>
+        <div id="footer-build">&copy; 2026 MAGIC GOAT STUDIO // CANADA // BUILD 20261119.1905</div>
         <div>
           <a href="mailto:matt@magicgoat.studio">matt@magicgoat.studio</a> &middot;
           <a href="https://github.com/mattjslaunwhite/Site" target="_blank" rel="noopener">GitHub Repo</a>

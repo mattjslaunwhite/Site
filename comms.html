@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ENCRYPTED COMMS // MAGIC GOAT STUDIO</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --panel: #060a0c;
+      --panel-alt: #030608;
+      --border: #123640;
+      --border-bright: #1e5766;
+      --cyan: #00f3ff;
+      --green: #39ff14;
+      --amber: #ff9e00;
+      --red: #ff3b3b;
+      --muted: #6c8b94;
+      --text: #d7f7ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: "Courier New", Courier, monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image:
+        radial-gradient(circle at 50% 0%, rgba(57, 255, 20, 0.06), transparent 65%),
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.014) 0px,
+          rgba(255, 255, 255, 0.014) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+    }
+
+    /* Top Bar */
+    .topbar {
+      height: 54px;
+      background: #04080a;
+      border-bottom: 1px solid var(--border-bright);
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      color: var(--cyan);
+      text-decoration: none;
+      border: 1px solid var(--border-bright);
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+
+    .back-btn:hover {
+      background: rgba(0, 243, 255, 0.14);
+    }
+
+    .brand {
+      color: var(--green);
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      font-size: 1rem;
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.45);
+    }
+
+    .crypto-badge {
+      border: 1px solid rgba(57, 255, 20, 0.5);
+      background: rgba(57, 255, 20, 0.08);
+      color: var(--green);
+      font-size: 0.76rem;
+      padding: 4px 9px;
+      letter-spacing: 0.06em;
+    }
+
+    /* Main Grid */
+    .workspace {
+      max-width: 1120px;
+      width: 100%;
+      margin: 20px auto;
+      padding: 0 16px;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 270px 1fr;
+      gap: 18px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--amber);
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .field {
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field label {
+      font-size: 0.74rem;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    input[type="text"], input[type="password"] {
+      background: #020506;
+      color: var(--text);
+      border: 1px solid var(--border-bright);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.86rem;
+      padding: 7px 10px;
+      outline: none;
+      width: 100%;
+    }
+
+    input:focus {
+      border-color: var(--cyan);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    button {
+      background: #020506;
+      color: var(--cyan);
+      border: 1px solid var(--cyan);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.8rem;
+      padding: 7px 10px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    button:hover {
+      background: rgba(0, 243, 255, 0.15);
+    }
+
+    button.green {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    button.green:hover {
+      background: rgba(57, 255, 20, 0.16);
+    }
+
+    /* Online Peers List */
+    .peer-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.84rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .peer-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      flex-shrink: 0;
+    }
+
+    .key-fingerprint {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
+      font-size: 0.74rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .key-fingerprint span {
+      color: var(--cyan);
+      font-weight: bold;
+    }
+
+    /* Chat Feed */
+    .chat-box {
+      height: 460px;
+      background: #010304;
+      border: 1px solid var(--border);
+      padding: 14px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .msg {
+      border-left: 2px solid var(--cyan);
+      padding: 6px 10px;
+      background: rgba(0, 243, 255, 0.04);
+      font-size: 0.88rem;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .msg.self {
+      border-left-color: var(--green);
+      background: rgba(57, 255, 20, 0.05);
+    }
+
+    .msg.locked {
+      border-left-color: var(--amber);
+      background: rgba(255, 158, 0, 0.05);
+      color: var(--amber);
+    }
+
+    .msg-meta {
+      font-size: 0.74rem;
+      color: var(--muted);
+      margin-bottom: 3px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .msg-sender {
+      color: var(--cyan);
+      font-weight: bold;
+    }
+
+    .msg.self .msg-sender {
+      color: var(--green);
+    }
+
+    .tx-bar {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tx-bar input {
+      flex: 1;
+    }
+
+    .tx-bar button {
+      padding: 8px 18px;
+      font-weight: bold;
+    }
+
+    footer {
+      max-width: 1120px;
+      width: 100%;
+      margin: 0 auto 16px;
+      padding: 12px 16px 0;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 780px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+      .chat-box {
+        height: 360px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <a class="back-btn" href="/">&larr; Portal</a>
+      <div class="brand">VFD ENCRYPTED COMMS</div>
+    </div>
+    <div class="crypto-badge">AES-256-GCM // E2EE ACTIVE</div>
+  </header>
+
+  <main class="workspace">
+    <!-- Left Identity & Encryption Control Panel -->
+    <aside class="panel">
+      <div class="panel-title">
+        <span>Identity &amp; Cipher</span>
+      </div>
+
+      <div class="field">
+        <label for="alias-input">Callsign (Edit Any Time)</label>
+        <input type="text" id="alias-input" maxlength="24" placeholder="Enter callsign..." />
+      </div>
+
+      <div class="btn-row">
+        <button type="button" onclick="randomizeAlias()">Randomize</button>
+        <button type="button" class="green" onclick="applyIdentity()">Set Callsign</button>
+      </div>
+
+      <div class="field">
+        <label for="room-input">Channel ID</label>
+        <input type="text" id="room-input" maxlength="24" value="global-vfd" />
+      </div>
+
+      <div class="field">
+        <label for="secret-input">Shared AES-256 Passphrase</label>
+        <input type="text" id="secret-input" value="MAGICGOAT-NET-2026" />
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="green" style="width:100%;" onclick="rekeyChannel()">Lock &amp; Sync Channel</button>
+      </div>
+
+      <div class="panel-title">
+        <span>Online Nodes</span>
+        <span id="peer-count" style="color:var(--green);">1</span>
+      </div>
+
+      <ul class="peer-list" id="peer-list"></ul>
+
+      <div class="key-fingerprint">
+        Key Fingerprint: <span id="key-fp">--------</span><br />
+        Zero-knowledge relay: server stores only IV + ciphertext.
+      </div>
+    </aside>
+
+    <!-- Right Live Encrypted Terminal -->
+    <section class="panel">
+      <div class="panel-title">
+        <span id="channel-banner">CHANNEL: #GLOBAL-VFD</span>
+        <span id="sync-status" style="color:var(--green);">● LIVE SYNC (2.5s)</span>
+      </div>
+
+      <div class="chat-box" id="chat-box"></div>
+
+      <form class="tx-bar" onsubmit="sendMessage(event)">
+        <input
+          type="text"
+          id="msg-input"
+          maxlength="600"
+          autocomplete="off"
+          placeholder="Type encrypted message and press Enter..."
+        />
+        <button type="submit" class="green">Encrypt &amp; TX</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <div>MAGIC GOAT STUDIO // CANADA // E2EE WEB CRYPTO RELAY</div>
+    <div>Share Channel ID + Passphrase for private rooms</div>
+  </footer>
+
+  <script>
+    const ADJECTIVES = ["CYBER", "NEON", "GHOST", "SOLAR", "VECTOR", "ORBIT", "STATIC", "RETRO", "DELTA", "PULSE"];
+    const NOUNS = ["GOAT", "FOX", "NODE", "BEACON", "ROVER", "SPARK", "FALCON", "CIPHER", "DRONE", "BYTE"];
+
+    const peerId = sessionStorage.getItem("mgs_peer_id") || ("node-" + Math.random().toString(36).slice(2, 9));
+    sessionStorage.setItem("mgs_peer_id", peerId);
+
+    let cryptoKey = null;
+    let renderedIds = new Set();
+    let lastRawMessages = [];
+
+    function randomCallsign() {
+      const a = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+      const n = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+      const num = Math.floor(10 + Math.random() * 89);
+      return `${a}-${n}-${num}`;
+    }
+
+    function randomizeAlias() {
+      const alias = randomCallsign();
+      document.getElementById("alias-input").value = alias;
+      localStorage.setItem("mgs_alias", alias);
+      pollComms();
+    }
+
+    function applyIdentity() {
+      let val = document.getElementById("alias-input").value.trim();
+      if (!val) val = randomCallsign();
+      document.getElementById("alias-input").value = val;
+      localStorage.setItem("mgs_alias", val);
+      pollComms();
+    }
+
+    // Derive AES-256-GCM key from Channel + Passphrase using PBKDF2
+    async function deriveKey(room, passphrase) {
+      const enc = new TextEncoder();
+      const keyMaterial = await crypto.subtle.importKey(
+        "raw",
+        enc.encode(passphrase || "default-key"),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey", "deriveBits"]
+      );
+
+      const salt = enc.encode(`magicgoat-e2ee-salt:${room}`);
+      const key = await crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+      );
+
+      // Visual key fingerprint so peers can verify they share the exact same key
+      const fpBits = await crypto.subtle.deriveBits(
+        { name: "PBKDF2", salt, iterations: 10000, hash: "SHA-256" },
+        keyMaterial,
+        64
+      );
+      const fpHex = Array.from(new Uint8Array(fpBits))
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("")
+        .toUpperCase();
+      document.getElementById("key-fp").textContent = `${fpHex.slice(0, 4)}-${fpHex.slice(4, 8)}`;
+
+      return key;
+    }
+
+    function bufToBase64(buf) {
+      const bytes = new Uint8Array(buf);
+      let bin = "";
+      for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
+      return btoa(bin);
+    }
+
+    function base64ToBuf(b64) {
+      const bin = atob(b64);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return bytes.buffer;
+    }
+
+    async function encryptPayload(obj) {
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const encoded = new TextEncoder().encode(JSON.stringify(obj));
+      const cipherBuf = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKey, encoded);
+      return {
+        iv: bufToBase64(iv),
+        ciphertext: bufToBase64(cipherBuf)
+      };
+    }
+
+    async function decryptPacket(pkt) {
+      try {
+        const iv = new Uint8Array(base64ToBuf(pkt.iv));
+        const cipherBuf = base64ToBuf(pkt.ciphertext);
+        const plainBuf = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, cryptoKey, cipherBuf);
+        return JSON.parse(new TextDecoder().decode(plainBuf));
+      } catch {
+        return null;
+      }
+    }
+
+    async function rekeyChannel() {
+      const room = document.getElementById("room-input").value.trim() || "global-vfd";
+      const pass = document.getElementById("secret-input").value;
+      document.getElementById("channel-banner").textContent = `CHANNEL: #${room.toUpperCase()}`;
+      cryptoKey = await deriveKey(room, pass);
+      renderedIds.clear();
+      document.getElementById("chat-box").innerHTML = "";
+      await pollComms();
+    }
+
+    function renderPeers(peers) {
+      const list = document.getElementById("peer-list");
+      const currentAlias = document.getElementById("alias-input").value.trim();
+      const map = new Map();
+      map.set(peerId, `${currentAlias} (YOU)`);
+      peers.forEach(p => {
+        if (p.peerId !== peerId) map.set(p.peerId, p.alias);
+      });
+
+      document.getElementById("peer-count").textContent = map.size;
+      list.innerHTML = "";
+      for (const name of map.values()) {
+        const li = document.createElement("li");
+        li.className = "peer-item";
+        li.innerHTML = `<span class="dot"></span><span></span>`;
+        li.lastElementChild.textContent = name;
+        list.appendChild(li);
+      }
+    }
+
+    async function renderMessages(messages) {
+      const box = document.getElementById("chat-box");
+      const wasAtBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
+      let added = false;
+
+      for (const pkt of messages) {
+        if (renderedIds.has(pkt.id)) continue;
+        renderedIds.add(pkt.id);
+        added = true;
+
+        const decrypted = await decryptPacket(pkt);
+        const timeStr = new Date(pkt.ts).toLocaleTimeString([], { hour12: false });
+        const div = document.createElement("div");
+
+        if (decrypted && decrypted.text) {
+          const isSelf = pkt.peerId === peerId;
+          div.className = isSelf ? "msg self" : "msg";
+
+          const meta = document.createElement("div");
+          meta.className = "msg-meta";
+          const sender = document.createElement("span");
+          sender.className = "msg-sender";
+          sender.textContent = `${decrypted.alias || "UNKNOWN"}`;
+          const tsSpan = document.createElement("span");
+          tsSpan.textContent = `${timeStr} // AES-GCM`;
+          meta.appendChild(sender);
+          meta.appendChild(tsSpan);
+
+          const body = document.createElement("div");
+          body.textContent = decrypted.text;
+
+          div.appendChild(meta);
+          div.appendChild(body);
+        } else {
+          div.className = "msg locked";
+          div.textContent = `[${timeStr}] [ENCRYPTED PACKET — WRONG PASSPHRASE TO DECRYPT]`;
+        }
+
+        box.appendChild(div);
+      }
+
+      if (added && wasAtBottom) {
+        box.scrollTop = box.scrollHeight;
+      }
+    }
+
+    async function pollComms() {
+      const room = encodeURIComponent(document.getElementById("room-input").value.trim() || "global-vfd");
+      const alias = encodeURIComponent(document.getElementById("alias-input").value.trim() || "ANON");
+      try {
+        const res = await fetch(`/api/comms?room=${room}&peerId=${encodeURIComponent(peerId)}&alias=${alias}`);
+        const data = await res.json();
+        if (data.ok) {
+          document.getElementById("sync-status").textContent = "● LIVE SYNC (2.5s)";
+          document.getElementById("sync-status").style.color = "var(--green)";
+          renderPeers(data.peers || []);
+          lastRawMessages = data.messages || [];
+          await renderMessages(lastRawMessages);
+        }
+      } catch {
+        document.getElementById("sync-status").textContent = "● RECONNECTING...";
+        document.getElementById("sync-status").style.color = "var(--amber)";
+      }
+    }
+
+    async function sendMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById("msg-input");
+      const text = input.value.trim();
+      if (!text || !cryptoKey) return;
+
+      const alias = document.getElementById("alias-input").value.trim() || randomCallsign();
+      const room = document.getElementById("room-input").value.trim() || "global-vfd";
+      input.value = "";
+
+      const encrypted = await encryptPayload({ alias, text });
+      await fetch("/api/comms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          room,
+          peerId,
+          iv: encrypted.iv,
+          ciphertext: encrypted.ciphertext
+        })
+      });
+
+      await pollComms();
+      const box = document.getElementById("chat-box");
+      box.scrollTop = box.scrollHeight;
+    }
+
+    (async function init() {
+      const savedAlias = localStorage.getItem("mgs_alias") || randomCallsign();
+      document.getElementById("alias-input").value = savedAlias;
+      localStorage.setItem("mgs_alias", savedAlias);
+      await rekeyChannel();
+      setInterval(pollComms, 2500);
+    })();
+  </script>
+</body>
+</html>

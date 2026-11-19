@@ -129,7 +129,7 @@
     /* Project Grid */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
       gap: 18px;
       margin-bottom: 32px;
     }
@@ -177,6 +177,11 @@
       border-color: var(--amber);
       color: var(--amber);
       box-shadow: 0 0 8px rgba(255, 158, 0, 0.2);
+    }
+
+    .tag.soon {
+      border-color: var(--muted);
+      color: var(--muted);
     }
 
     .card h2 {
@@ -342,7 +347,7 @@
   <div class="container">
     <header class="vfd-header">
       <div class="status-bar">
-        <div><span class="pulse"></span>SYS.ONLINE // MAGICGOAT.STUDIO</div>
+        <div><span class="pulse"></span>SYS.ONLINE // MAGICGOAT.STUDIO [6 NODES]</div>
         <div id="clock">LOCAL 00:00:00</div>
       </div>
       <h1>MAGIC GOAT STUDIO</h1>
@@ -352,15 +357,15 @@
       </p>
     </header>
 
-    <div class="section-title">Active Deployments &amp; Storefront</div>
+    <div class="section-title">Active Nodes, Storefront &amp; Staged Modules</div>
 
     <main class="grid">
-      <!-- Order Custom Drone Kits -->
+      <!-- Node 01: Order Custom Drone Kits -->
       <a class="card" href="/kits.html">
         <div>
           <div class="card-top">
             <span class="tag store">● Order Kits</span>
-            <span>/kits.html</span>
+            <span>NODE 01 // /kits.html</span>
           </div>
           <h2>Custom Drone Kits</h2>
           <p>
@@ -373,9 +378,316 @@
         </div>
       </a>
 
-      <!-- Custom Drone & UAV Lab -->
+      <!-- Node 02: Custom Drone & UAV Lab -->
       <a class="card" href="/drones.html">
         <div>
           <div class="card-top">
             <span class="tag live">● Active Lab</span>
-            <span>/drones.html</span>
+            <span>NODE 02 // /drones.html</span>
+          </div>
+          <h2>Drone &amp; UAV Bench</h2>
+          <p>
+            Airframe specs, interactive AUW/thrust/flight-time estimator, H743 UART wiring pinouts, and pre-flight verification checklist.
+          </p>
+        </div>
+        <div class="card-footer">
+          <span>OPEN HANGAR</span>
+          <span>[ &rarr; ]</span>
+        </div>
+      </a>
+
+      <!-- Node 03: Windows 95 Simulator -->
+      <a class="card" href="/win95.html">
+        <div>
+          <div class="card-top">
+            <span class="tag live">● Interactive</span>
+            <span>NODE 03 // /win95.html</span>
+          </div>
+          <h2>Windows 95 Desktop</h2>
+          <p>
+            Classic 1995 desktop simulator with Start Menu, Taskbar, My Computer, Paint, Minesweeper, Calculator, Notepad, and MS-DOS Prompt.
+          </p>
+        </div>
+        <div class="card-footer">
+          <span>BOOT WIN95</span>
+          <span>[ &rarr; ]</span>
+        </div>
+      </a>
+
+      <!-- Node 04: Windows 3.11 Simulator -->
+      <a class="card" href="/win311.html">
+        <div>
+          <div class="card-top">
+            <span class="tag live">● Interactive</span>
+            <span>NODE 04 // /win311.html</span>
+          </div>
+          <h2>Windows for Workgroups 3.11</h2>
+          <p>
+            Interactive browser-based Windows 3.11 desktop environment with Program Manager, Notepad, Calculator, Minesweeper, and MS-DOS Prompt.
+          </p>
+        </div>
+        <div class="card-footer">
+          <span>LAUNCH DESKTOP</span>
+          <span>[ &rarr; ]</span>
+        </div>
+      </a>
+
+      <!-- Node 05: OMNIos / VFD Utilities -->
+      <a class="card" href="#omnios" onclick="alert('OMNIos web build staged — drop omnios.html into the repo to activate.'); return false;">
+        <div>
+          <div class="card-top">
+            <span class="tag soon">Staged</span>
+            <span>NODE 05 // /omnios.html</span>
+          </div>
+          <h2>OMNIos VFD Console</h2>
+          <p>
+            Vacuum Fluorescent Display utility suite featuring RF/unit converters, offline field notes, and telemetry packet decoders.
+          </p>
+        </div>
+        <div class="card-footer">
+          <span>MODULE SLOT 05</span>
+          <span>[ STANDBY ]</span>
+        </div>
+      </a>
+
+      <!-- Node 06: Embedded, RF & Solar Lab -->
+      <a class="card" href="#lab" onclick="alert('RF, Telemetry & Solar Lab slot staged — add lab.html to activate.'); return false;">
+        <div>
+          <div class="card-top">
+            <span class="tag soon">Staged</span>
+            <span>NODE 06 // /lab.html</span>
+          </div>
+          <h2>RF, Telemetry &amp; Solar Lab</h2>
+          <p>
+            Build logs, OpenSCAD/Fusion 360 STL releases, ESP32/CC1101 firmware notes, and 24V LiFePO4 off-grid schematics.
+          </p>
+        </div>
+        <div class="card-footer">
+          <span>MODULE SLOT 06</span>
+          <span>[ STANDBY ]</span>
+        </div>
+      </a>
+    </main>
+
+    <!-- Built-in Web Serial Console -->
+    <div class="section-title">Hardware Bench // USB Web Serial Terminal</div>
+
+    <section class="serial-panel">
+      <div class="serial-controls">
+        <button id="btn-connect" class="btn-connect" onclick="toggleSerial()">Connect Port</button>
+        <select id="baud-rate" title="Baud Rate">
+          <option value="9600">9600 baud</option>
+          <option value="19200">19200 baud</option>
+          <option value="38400">38400 baud</option>
+          <option value="57600">57600 baud</option>
+          <option value="115200" selected>115200 baud</option>
+          <option value="230400">230400 baud</option>
+          <option value="460800">460800 baud</option>
+          <option value="921600">921600 baud</option>
+        </select>
+        <select id="line-ending" title="Line Ending">
+          <option value="\r\n" selected>CRLF (\r\n)</option>
+          <option value="\n">LF (\n)</option>
+          <option value="\r">CR (\r)</option>
+          <option value="">None</option>
+        </select>
+        <button class="btn-action" onclick="clearSerial()">Clear</button>
+        <button class="btn-action" onclick="downloadLog()">Save Log</button>
+        <label class="checkbox-label">
+          <input type="checkbox" id="chk-timestamp" /> Timestamps
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="chk-autoscroll" checked /> Auto-scroll
+        </label>
+        <div id="serial-status" class="serial-status">● Disconnected</div>
+      </div>
+
+      <div id="serial-log" class="serial-terminal">[VFD SERIAL MONITOR READY — Click "Connect Port" to attach an ESP32, Arduino, GPS, or UART adapter]
+</div>
+
+      <div class="serial-tx-row">
+        <input
+          type="text"
+          id="serial-input"
+          placeholder="Type AT command or serial payload and press Enter..."
+          onkeydown="if (event.key === 'Enter') sendSerial();"
+        />
+        <button class="btn-action" onclick="sendSerial()">Send TX</button>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div>&copy; 2026 MAGIC GOAT STUDIO // WOODSTOCK, NB</div>
+    <div>
+      <a href="mailto:matt@magicgoat.studio">matt@magicgoat.studio</a> &middot;
+      <a href="https://github.com/mattjslaunwhite/Site" target="_blank" rel="noopener">GitHub Repo</a>
+    </div>
+  </footer>
+
+  <script>
+    // Live Local Clock
+    function updateClock() {
+      const now = new Date();
+      document.getElementById("clock").textContent =
+        "LOCAL " + now.toLocaleTimeString([], { hour12: false });
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // Web Serial API Implementation
+    let port = null;
+    let reader = null;
+    let keepReading = false;
+    let lineBuffer = "";
+
+    const logEl = document.getElementById("serial-log");
+    const statusEl = document.getElementById("serial-status");
+    const connectBtn = document.getElementById("btn-connect");
+
+    function appendLog(text, isSystem = false) {
+      if (document.getElementById("chk-timestamp").checked && !isSystem) {
+        const ts = new Date().toLocaleTimeString([], { hour12: false });
+        text = `[${ts}] ${text}`;
+      }
+      logEl.textContent += text;
+      if (document.getElementById("chk-autoscroll").checked) {
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+    }
+
+    async function toggleSerial() {
+      if (!("serial" in navigator)) {
+        appendLog("\n[ERROR] Web Serial API is not supported in this browser. Use Brave, Chrome, or Edge over HTTPS.\n", true);
+        return;
+      }
+
+      if (port) {
+        await disconnectSerial();
+      } else {
+        await connectSerial();
+      }
+    }
+
+    async function connectSerial() {
+      try {
+        const baudRate = parseInt(document.getElementById("baud-rate").value, 10);
+        port = await navigator.serial.requestPort();
+        await port.open({ baudRate });
+
+        keepReading = true;
+        statusEl.textContent = `● Connected (${baudRate} baud)`;
+        statusEl.classList.add("connected");
+        connectBtn.textContent = "Disconnect";
+        connectBtn.className = "btn-disconnect";
+        appendLog(`\n[PORT OPENED @ ${baudRate} BAUD]\n`, true);
+
+        readLoop();
+      } catch (err) {
+        port = null;
+        appendLog(`\n[CONNECTION FAILED] ${err.message}\n`, true);
+      }
+    }
+
+    async function readLoop() {
+      const decoder = new TextDecoder();
+      while (port && port.readable && keepReading) {
+        reader = port.readable.getReader();
+        try {
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            if (value) {
+              const chunk = decoder.decode(value, { stream: true });
+              if (document.getElementById("chk-timestamp").checked) {
+                lineBuffer += chunk;
+                const lines = lineBuffer.split("\n");
+                lineBuffer = lines.pop();
+                for (const line of lines) {
+                  appendLog(line + "\n", false);
+                }
+              } else {
+                appendLog(chunk, true);
+              }
+            }
+          }
+        } catch (err) {
+          if (keepReading) {
+            appendLog(`\n[READ ERROR] ${err.message}\n`, true);
+          }
+        } finally {
+          reader.releaseLock();
+          reader = null;
+        }
+      }
+    }
+
+    async function disconnectSerial() {
+      keepReading = false;
+      try {
+        if (reader) {
+          await reader.cancel();
+        }
+        if (port) {
+          await port.close();
+        }
+      } catch (err) {
+        appendLog(`\n[CLOSE WARNING] ${err.message}\n`, true);
+      } finally {
+        port = null;
+        lineBuffer = "";
+        statusEl.textContent = "● Disconnected";
+        statusEl.classList.remove("connected");
+        connectBtn.textContent = "Connect Port";
+        connectBtn.className = "btn-connect";
+        appendLog("\n[PORT CLOSED]\n", true);
+      }
+    }
+
+    async function sendSerial() {
+      const inputEl = document.getElementById("serial-input");
+      const rawText = inputEl.value;
+      if (!port || !port.writable) {
+        appendLog("\n[TX BLOCKED — Connect a serial port first]\n", true);
+        return;
+      }
+
+      const endingMap = { "\\r\\n": "\r\n", "\\n": "\n", "\\r": "\r", "": "" };
+      const ending = endingMap[document.getElementById("line-ending").value] ?? "\r\n";
+      const encoder = new TextEncoder();
+
+      try {
+        const writer = port.writable.getWriter();
+        await writer.write(encoder.encode(rawText + ending));
+        writer.releaseLock();
+        appendLog(`> ${rawText}\n`, false);
+        inputEl.value = "";
+      } catch (err) {
+        appendLog(`\n[TX ERROR] ${err.message}\n`, true);
+      }
+    }
+
+    function clearSerial() {
+      logEl.textContent = "";
+      lineBuffer = "";
+    }
+
+    function downloadLog() {
+      const blob = new Blob([logEl.textContent], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `magicgoat-serial-${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.log`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Handle physical USB unplug
+    if ("serial" in navigator) {
+      navigator.serial.addEventListener("disconnect", () => {
+        if (port) disconnectSerial();
+      });
+    }
+  </script>
+</body>
+</html>

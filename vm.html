@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BROWSER X86 VM // MAGIC GOAT STUDIO</title>
+  <!-- v86 WebAssembly x86 Emulator -->
+  <script src="https://copy.sh/v86/build/libv86.js"></script>
+  <style>
+    :root {
+      --bg: #000000;
+      --panel: #060a0c;
+      --panel-alt: #030608;
+      --border: #123640;
+      --border-bright: #1e5766;
+      --cyan: #00f3ff;
+      --green: #39ff14;
+      --amber: #ff9e00;
+      --red: #ff3b3b;
+      --muted: #6c8b94;
+      --text: #d7f7ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: "Courier New", Courier, monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image:
+        radial-gradient(circle at 50% 0%, rgba(0, 243, 255, 0.07), transparent 65%),
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.014) 0px,
+          rgba(255, 255, 255, 0.014) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+    }
+
+    /* Top Bar */
+    .topbar {
+      height: 54px;
+      background: #04080a;
+      border-bottom: 1px solid var(--border-bright);
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      color: var(--cyan);
+      text-decoration: none;
+      border: 1px solid var(--border-bright);
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+
+    .back-btn:hover {
+      background: rgba(0, 243, 255, 0.14);
+    }
+
+    .brand {
+      color: var(--cyan);
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      font-size: 1rem;
+      text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+    }
+
+    .vm-badge {
+      border: 1px solid rgba(57, 255, 20, 0.5);
+      background: rgba(57, 255, 20, 0.08);
+      color: var(--green);
+      font-size: 0.76rem;
+      padding: 4px 9px;
+      letter-spacing: 0.06em;
+    }
+
+    /* Main Layout */
+    .workspace {
+      max-width: 1240px;
+      width: 100%;
+      margin: 20px auto;
+      padding: 0 16px;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      gap: 18px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--amber);
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .field {
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field label {
+      font-size: 0.74rem;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    select, input[type="file"] {
+      background: #020506;
+      color: var(--text);
+      border: 1px solid var(--border-bright);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.82rem;
+      padding: 7px 9px;
+      outline: none;
+      width: 100%;
+    }
+
+    select:focus {
+      border-color: var(--cyan);
+    }
+
+    .btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    button {
+      background: #020506;
+      color: var(--cyan);
+      border: 1px solid var(--cyan);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.78rem;
+      padding: 8px 10px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    button:hover {
+      background: rgba(0, 243, 255, 0.15);
+    }
+
+    button.green {
+      border-color: var(--green);
+      color: var(--green);
+      font-weight: bold;
+    }
+
+    button.green:hover {
+      background: rgba(57, 255, 20, 0.16);
+    }
+
+    button.red {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    button.red:hover {
+      background: rgba(255, 59, 59, 0.16);
+    }
+
+    button.amber {
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+
+    button.amber:hover {
+      background: rgba(255, 158, 0, 0.16);
+    }
+
+    .telemetry-box {
+      margin-top: auto;
+      border: 1px solid var(--border);
+      background: var(--panel-alt);
+      padding: 10px;
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .telemetry-box span {
+      color: var(--green);
+    }
+
+    /* VM Screen Container */
+    .screen-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+
+    .screen-wrap {
+      background: #000000;
+      border: 1px solid var(--border-bright);
+      min-height: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 30px rgba(0, 243, 255, 0.08);
+    }
+
+    #screen_container {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    #screen_container div {
+      white-space: pre;
+      font: 14px monospace;
+      line-height: 14px;
+    }
+
+    #screen_container canvas {
+      max-width: 100%;
+      height: auto !important;
+      image-rendering: pixelated;
+    }
+
+    .placeholder-msg {
+      color: var(--muted);
+      text-align: center;
+      padding: 24px;
+      line-height: 1.6;
+      font-size: 0.9rem;
+    }
+
+    .placeholder-msg strong {
+      color: var(--cyan);
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1.05rem;
+    }
+
+    footer {
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto 16px;
+      padding: 12px 16px 0;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 880px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+      .screen-wrap {
+        min-height: 340px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <a class="back-btn" href="/">&larr; Portal</a>
+      <div class="brand">VFD X86 HYPERVISOR // WASM VM</div>
+    </div>
+    <div class="vm-badge" id="vm-status">● HYPERVISOR STANDBY</div>
+  </header>
+
+  <main class="workspace">
+    <!-- Left VM Hardware Configuration -->
+    <aside class="panel">
+      <div class="panel-title">
+        <span>Machine Config</span>
+      </div>
+
+      <div class="field">
+        <label for="preset-os">Quick-Boot Live OS Profile</label>
+        <select id="preset-os">
+          <option value="linux4">Buildroot Linux 4.16 (Shell + Network)</option>
+          <option value="freedos">FreeDOS 1.2 (16-bit Real Mode)</option>
+          <option value="kolibri">KolibriOS (32-bit GUI Assembly OS)</option>
+          <option value="custom">Custom Local Image (Use File Inputs Below)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="ram-size">System RAM</label>
+        <select id="ram-size">
+          <option value="64">64 MB</option>
+          <option value="128" selected>128 MB</option>
+          <option value="256">256 MB</option>
+          <option value="512">512 MB</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="vram-size">VGA Video Memory</label>
+        <select id="vram-size">
+          <option value="8" selected>8 MB SVGA</option>
+          <option value="16">16 MB SVGA</option>
+          <option value="32">32 MB SVGA</option>
+        </select>
+      </div>
+
+      <div class="btn-grid">
+        <button type="button" class="green" onclick="bootVm()">Power On</button>
+        <button type="button" class="red" onclick="stopVm()">Power Off</button>
+      </div>
+
+      <div class="panel-title">
+        <span>Local Media Mounts</span>
+      </div>
+
+      <div class="field">
+        <label for="cdrom-file">Bootable CD-ROM (.ISO)</label>
+        <input type="file" id="cdrom-file" accept=".iso,.img" />
+      </div>
+
+      <div class="field">
+        <label for="fda-file">Floppy Drive A: (.IMG / .IMA)</label>
+        <input type="file" id="fda-file" accept=".img,.ima,.bin,.flp" />
+      </div>
+
+      <div class="field">
+        <label for="hda-file">Hard Disk C: (.IMG)</label>
+        <input type="file" id="hda-file" accept=".img,.bin" />
+      </div>
+
+      <div class="telemetry-box">
+        CPU: <span>x86 32-bit (WASM JIT)</span><br />
+        BIOS: <span>SeaBIOS + VGABIOS</span><br />
+        Audio: <span>Sound Blaster 16</span><br />
+        Tip: <span>Click inside VM display to capture mouse; press ESC to release.</span>
+      </div>
+    </aside>
+
+    <!-- Right VGA Console -->
+    <section class="panel">
+      <div class="panel-title">
+        <span id="active-profile">CONSOLE: READY TO BOOT</span>
+        <span id="speed-readout" style="color:var(--cyan);">0.0 MIPS</span>
+      </div>
+
+      <div class="screen-toolbar">
+        <button type="button" onclick="sendCtrlAltDel()">Ctrl+Alt+Del</button>
+        <button type="button" class="amber" onclick="lockMouse()">Capture Mouse</button>
+        <button type="button" onclick="goFullscreen()">Fullscreen</button>
+        <button type="button" onclick="saveSnapshot()">Save State (.BIN)</button>
+      </div>
+
+      <div class="screen-wrap">
+        <div id="placeholder" class="placeholder-msg">
+          <strong>[ x86 VIRTUAL MACHINE READY ]</strong>
+          Select a Quick-Boot OS profile (Linux, FreeDOS, KolibriOS) or mount your own local .ISO / .IMG file on the left, then click <b>POWER ON</b>.
+        </div>
+        <div id="screen_container" style="display:none;">
+          <div id="text_screen"></div>
+          <canvas id="vga_canvas"></canvas>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>MAGIC GOAT STUDIO // CANADA // CLIENT-SIDE V86 WEBASSEMBLY VM</div>
+    <div>Runs 100% in browser memory — zero server upload</div>
+  </footer>
+
+  <script>
+    let emulator = null;
+    let statsTimer = null;
+
+    const PROFILES = {
+      linux4: {
+        name: "Buildroot Linux 4.16",
+        cdrom: { url: "https://copy.sh/v86/images/linux4.iso" }
+      },
+      freedos: {
+        name: "FreeDOS 1.2",
+        fda: { url: "https://copy.sh/v86/images/freedos722.img" }
+      },
+      kolibri: {
+        name: "KolibriOS GUI",
+        fda: { url: "https://copy.sh/v86/images/kolibri.img" }
+      },
+      custom: {
+        name: "Custom Local Media"
+      }
+    };
+
+    function setStatus(text, color = "var(--green)") {
+      const badge = document.getElementById("vm-status");
+      badge.textContent = text;
+      badge.style.color = color;
+      badge.style.borderColor = color;
+    }
+
+    function stopVm() {
+      if (statsTimer) {
+        clearInterval(statsTimer);
+        statsTimer = null;
+      }
+      if (emulator) {
+        try {
+          emulator.destroy();
+        } catch {}
+        emulator = null;
+      }
+      document.getElementById("screen_container").style.display = "none";
+      document.getElementById("placeholder").style.display = "block";
+      document.getElementById("active-profile").textContent = "CONSOLE: POWERED OFF";
+      document.getElementById("speed-readout").textContent = "0.0 MIPS";
+      setStatus("● HYPERVISOR STANDBY", "var(--amber)");
+    }
+
+    function bootVm() {
+      if (typeof V86 === "undefined" && typeof V86Starter === "undefined") {
+        alert("v86 WebAssembly engine failed to load from CDN. Check internet connection.");
+        return;
+      }
+
+      stopVm();
+
+      const profileKey = document.getElementById("preset-os").value;
+      const profile = PROFILES[profileKey] || PROFILES.custom;
+      const ramMB = parseInt(document.getElementById("ram-size").value, 10);
+      const vramMB = parseInt(document.getElementById("vram-size").value, 10);
+
+      const cdromInput = document.getElementById("cdrom-file").files[0];
+      const fdaInput = document.getElementById("fda-file").files[0];
+      const hdaInput = document.getElementById("hda-file").files[0];
+
+      const config = {
+        wasm_path: "https://copy.sh/v86/build/v86.wasm",
+        memory_size: ramMB * 1024 * 1024,
+        vga_memory_size: vramMB * 1024 * 1024,
+        screen_container: document.getElementById("screen_container"),
+        bios: { url: "https://copy.sh/v86/bios/seabios.bin" },
+        vga_bios: { url: "https://copy.sh/v86/bios/vgabios.bin" },
+        autostart: true
+      };
+
+      // Attach preset media if no local override is selected
+      if (profile.cdrom && !cdromInput) config.cdrom = profile.cdrom;
+      if (profile.fda && !fdaInput) config.fda = profile.fda;
+
+      // Local file overrides (runs straight from browser memory, zero upload)
+      if (cdromInput) config.cdrom = { buffer: cdromInput };
+      if (fdaInput) config.fda = { buffer: fdaInput };
+      if (hdaInput) config.hda = { buffer: hdaInput };
+
+      document.getElementById("placeholder").style.display = "none";
+      document.getElementById("screen_container").style.display = "flex";
+      document.getElementById("active-profile").textContent = `RUNNING: ${profile.name.toUpperCase()} (${ramMB}MB RAM)`;
+      setStatus("● VM RUNNING", "var(--green)");
+
+      const Constructor = typeof V86 !== "undefined" ? V86 : V86Starter;
+      emulator = new Constructor(config);
+
+      let lastInstr = 0;
+      statsTimer = setInterval(() => {
+        if (!emulator || !emulator.get_instruction_counter) return;
+        const nowInstr = emulator.get_instruction_counter();
+        const mips = ((nowInstr - lastInstr) / 1000000).toFixed(1);
+        lastInstr = nowInstr;
+        if (Number(mips) >= 0) {
+          document.getElementById("speed-readout").textContent = `${mips} MIPS`;
+        }
+      }, 1000);
+    }
+
+    function sendCtrlAltDel() {
+      if (!emulator) return;
+      // Scan codes: Ctrl (0x1D), Alt (0x38), Del (0x53)
+      emulator.keyboard_send_scancodes([0x1D, 0x38, 0x53, 0xD3, 0xB8, 0x9D]);
+    }
+
+    function lockMouse() {
+      const container = document.getElementById("screen_container");
+      if (container && container.requestPointerLock) {
+        container.requestPointerLock();
+      }
+    }
+
+    function goFullscreen() {
+      const container = document.getElementById("screen_container");
+      if (container && container.requestFullscreen) {
+        container.requestFullscreen();
+      }
+    }
+
+    async function saveSnapshot() {
+      if (!emulator) {
+        alert("Power on a VM first before saving a state snapshot.");
+        return;
+      }
+      const state = await emulator.save_state();
+      const blob = new Blob([state], { type: "application/octet-stream" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `magicgoat-vm-state-${Date.now()}.bin`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

@@ -361,8 +361,13 @@
       letter-spacing: 0.06em;
     }
 
-    .btn-order:hover {
+    .btn-order:hover:not(:disabled) {
       background: rgba(57, 255, 20, 0.24);
+    }
+
+    .btn-order:disabled {
+      opacity: 0.5;
+      cursor: wait;
     }
 
     .btn-copy {
@@ -382,11 +387,21 @@
       background: rgba(255, 158, 0, 0.16);
     }
 
-    .status-msg {
-      margin-top: 10px;
-      font-size: 0.82rem;
+    .status-banner {
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid var(--green);
+      background: rgba(57, 255, 20, 0.08);
       color: var(--green);
-      min-height: 18px;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      display: none;
+    }
+
+    .status-banner.error {
+      border-color: var(--red);
+      background: rgba(255, 59, 59, 0.08);
+      color: var(--red);
     }
 
     /* Footer */
@@ -426,7 +441,7 @@
       </div>
       <h1>CUSTOM DRONE &amp; AIRFRAME KITS</h1>
       <p class="subtitle">
-        Precision 3D-printed airframes, carbon-fiber quad kits, and pre-flashed avionics packages built to order in New Brunswick. Select a base kit below or customize every subsystem.
+        Precision 3D-printed airframes, carbon-fiber quad kits, and pre-flashed avionics packages built to order in New Brunswick. Configure your kit below to submit an order directly.
       </p>
     </header>
 
@@ -438,11 +453,11 @@
         <div>
           <div class="kit-top">
             <span class="badge amber">Sub-250g Delta</span>
-            <span class="price-tag">$115 CAD</span>
+            <span class="price-tag">$130 CAD</span>
           </div>
           <h2>"Sleek Bat" Printed Wing Kit</h2>
           <p>
-            Lightweight blended-wing-body delta printed in high-temp ASA/PETG with integrated TPU nose bumper and hardware pack.
+            Lightweight blended-wing-body delta printed in UV-resistant ASA with integrated TPU nose bumper and hardware pack.
           </p>
           <ul class="bom-list">
             <li>Full multi-part interlocking ASA airframe</li>
@@ -459,4 +474,287 @@
       <article class="kit-card">
         <div>
           <div class="kit-top">
-            <span class="badge cyan">425mm Carbon
+            <span class="badge cyan">425mm Carbon</span>
+            <span class="price-tag">$217 CAD</span>
+          </div>
+          <h2>425mm Sensor &amp; Loiter Frame Kit</h2>
+          <p>
+            Rigid 425mm carbon-fiber platform with custom 3D-printed GPS mast, optical-flow downward mount, and ELRS receiver.
+          </p>
+          <ul class="bom-list">
+            <li>425mm carbon arms &amp; center plates</li>
+            <li>Printed BE-880 GPS + MTF-01 flow mounts</li>
+            <li>ExpressLRS 2.4GHz Diversity Receiver</li>
+            <li>Vibration-damped stack standoffs</li>
+          </ul>
+        </div>
+        <button class="btn-select" onclick="loadPreset('quad-425', 'none', 'elrs', 'none', 'petg')">
+          Load Into Configurator &rarr;
+        </button>
+      </article>
+
+      <article class="kit-card">
+        <div>
+          <div class="kit-top">
+            <span class="badge">Bench-Tested BNF</span>
+            <span class="price-tag">$497 CAD</span>
+          </div>
+          <h2>425mm H743 Complete Avionics Kit</h2>
+          <p>
+            Complete builder's bundle with H743 flight controller, 60A 4-in-1 ESC, GPS/magnetometer, optical flow, VTX, and ELRS receiver.
+          </p>
+          <ul class="bom-list">
+            <li>425mm carbon frame + custom TPU/PETG mounts</li>
+            <li>H743 FC + 60A ESC + BE-880 GPS + MTF-01 Flow</li>
+            <li>ExpressLRS 2.4GHz RX + 200mW Micro VTX</li>
+            <li>Pre-flashed &amp; bench-tested before dispatch</li>
+          </ul>
+        </div>
+        <button class="btn-select" onclick="loadPreset('quad-425', 'h743-nav', 'elrs', 'vtx-200', 'petg')">
+          Load Into Configurator &rarr;
+        </button>
+      </article>
+    </section>
+
+    <!-- Custom Configurator & Order Request -->
+    <div class="section-title">Custom Build Configurator &amp; Direct Order</div>
+
+    <section class="order-layout">
+      <!-- Left: Hardware Options -->
+      <div class="panel-box">
+        <h3>1. Configure Hardware</h3>
+        <div class="field-stack">
+          <div class="field">
+            <label for="opt-frame">Airframe Platform</label>
+            <select id="opt-frame" onchange="updateQuote()">
+              <option value="sleek-bat" data-price="115" data-weight="135">Sleek Bat Sub-250g Delta (ASA + Carbon Spars) — $115</option>
+              <option value="quad-425" data-price="185" data-weight="390" selected>425mm Carbon Quad + Printed Sensor Mounts — $185</option>
+              <option value="f450-dev" data-price="165" data-weight="440">F450 Modular Dev Frame + 920KV Motors — $165</option>
+              <option value="custom-cad" data-price="140" data-weight="250">Custom OpenSCAD / Fusion 360 Print Run — $140</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="opt-fc">Flight Controller &amp; ESC Stack</label>
+            <select id="opt-fc" onchange="updateQuote()">
+              <option value="none" data-price="0" data-weight="0">None (Airframe &amp; Hardware Only) — +$0</option>
+              <option value="wing-fc" data-price="85" data-weight="28">F405 Wing FC + 40A Brushless ESC — +$85</option>
+              <option value="h743-stack" data-price="175" data-weight="42" selected>H743 FC + 60A 4-in-1 ESC (Pre-Flashed) — +$175</option>
+              <option value="h743-nav" data-price="235" data-weight="64">H743 Stack + BE-880 GPS + MTF-01 Optical Flow — +$235</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="opt-rx">Radio Control Link</label>
+            <select id="opt-rx" onchange="updateQuote()">
+              <option value="none" data-price="0" data-weight="0">None (Supply Your Own RX) — +$0</option>
+              <option value="elrs" data-price="32" data-weight="5" selected>ExpressLRS 2.4GHz Diversity Receiver (CRSF) — +$32</option>
+              <option value="ibus" data-price="24" data-weight="8">FlySky i-BUS Telemetry Receiver — +$24</option>
+              <option value="espnow" data-price="38" data-weight="14">Paired ESP32-32E ESP-NOW Telemetry Modules — +$38</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="opt-vtx">Video / FPV System</label>
+            <select id="opt-vtx" onchange="updateQuote()">
+              <option value="none" data-price="0" data-weight="0" selected>None (Line-of-Sight / Autonomous) — +$0</option>
+              <option value="vtx-200" data-price="45" data-weight="12">200mW 5.8GHz Micro VTX + 700TVL Camera — +$45</option>
+              <option value="vtx-800" data-price="78" data-weight="22">800mW SmartAudio VTX + Low-Light CMOS Cam — +$78</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="opt-mat">3D-Printed Parts Material &amp; Color</label>
+            <select id="opt-mat" onchange="updateQuote()">
+              <option value="petg" data-price="0" selected>Carbon-Black PETG + High-Vis Orange TPU — +$0</option>
+              <option value="asa" data-price="15">UV-Resistant ASA + Black TPU — +$15</option>
+              <option value="cf-petg" data-price="25">Carbon-Fiber Reinforced PETG — +$25</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Quote Summary & Direct Submission -->
+      <div class="panel-box">
+        <h3>2. Build Manifest &amp; Direct Order</h3>
+
+        <div class="summary-box">
+          <div class="summary-row">
+            <span>Est. Dry Kit Weight:</span>
+            <span class="summary-val" id="sum-weight">437 g</span>
+          </div>
+          <div class="summary-row">
+            <span>Payment Method:</span>
+            <span class="summary-val">Interac e-Transfer / Invoice on Confirm</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping / Pickup:</span>
+            <span class="summary-val">Canada Post or Woodstock NB Pickup</span>
+          </div>
+          <div class="summary-row">
+            <span>Estimated Total (CAD):</span>
+            <span class="summary-total" id="sum-price">$392.00 CAD</span>
+          </div>
+        </div>
+
+        <form id="order-form" class="field-stack" onsubmit="submitOrder(event)">
+          <div class="field">
+            <label for="cust-name">Your Name / Callsign *</label>
+            <input type="text" id="cust-name" required placeholder="e.g. Alex Mercer" />
+          </div>
+          <div class="field">
+            <label for="cust-email">Reply Email Address *</label>
+            <input type="email" id="cust-email" required placeholder="you@example.com" />
+          </div>
+          <div class="field">
+            <label for="cust-ship">Delivery Method &amp; Postal Code</label>
+            <input type="text" id="cust-ship" placeholder="e.g. Canada Post to E7M 1A1 or Local Pickup Woodstock NB" />
+          </div>
+          <div class="field">
+            <label for="cust-notes">Custom Notes (Firmware, Color Accent, Battery Plug)</label>
+            <textarea id="cust-notes" placeholder="e.g. Pre-flash INAV 7, XT60 pigtail, neon green TPU bumpers..."></textarea>
+          </div>
+
+          <div class="action-row">
+            <button type="submit" id="btn-submit" class="btn-order">Place Order Request</button>
+            <button type="button" class="btn-copy" onclick="copyManifest()">Copy Spec Sheet</button>
+          </div>
+        </form>
+
+        <div class="status-banner" id="order-banner"></div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div>&copy; 2026 MAGIC GOAT STUDIO // WOODSTOCK, NB</div>
+    <div>
+      <a href="/">Portal Home</a> &middot;
+      <a href="/drones.html">Drone Lab</a> &middot;
+      <a href="mailto:matt@magicgoat.studio">matt@magicgoat.studio</a>
+    </div>
+  </footer>
+
+  <script>
+    function getSelectedOption(id) {
+      const el = document.getElementById(id);
+      return el.options[el.selectedIndex];
+    }
+
+    function updateQuote() {
+      const ids = ["opt-frame", "opt-fc", "opt-rx", "opt-vtx", "opt-mat"];
+      let total = 0;
+      let weight = 0;
+
+      ids.forEach(id => {
+        const opt = getSelectedOption(id);
+        total += parseFloat(opt.dataset.price || 0);
+        weight += parseFloat(opt.dataset.weight || 0);
+      });
+
+      document.getElementById("sum-price").textContent = `$${total.toFixed(2)} CAD`;
+      document.getElementById("sum-weight").textContent = `${weight} g`;
+    }
+
+    function showBanner(msg, isError = false) {
+      const banner = document.getElementById("order-banner");
+      banner.textContent = msg;
+      banner.className = isError ? "status-banner error" : "status-banner";
+      banner.style.display = "block";
+    }
+
+    function loadPreset(frame, fc, rx, vtx, mat) {
+      document.getElementById("opt-frame").value = frame;
+      document.getElementById("opt-fc").value = fc;
+      document.getElementById("opt-rx").value = rx;
+      document.getElementById("opt-vtx").value = vtx;
+      document.getElementById("opt-mat").value = mat;
+      updateQuote();
+      document.getElementById("opt-frame").scrollIntoView({ behavior: "smooth", block: "center" });
+      showBanner("Preset loaded into configurator. Enter your contact info below to place the order.");
+    }
+
+    function buildManifestText() {
+      const name = document.getElementById("cust-name").value.trim() || "[Not provided]";
+      const email = document.getElementById("cust-email").value.trim() || "[Not provided]";
+      const ship = document.getElementById("cust-ship").value.trim() || "Not specified";
+      const notes = document.getElementById("cust-notes").value.trim() || "None";
+
+      return [
+        "MAGIC GOAT STUDIO — CUSTOM DRONE KIT ORDER REQUEST",
+        "==================================================",
+        `Customer:   ${name}`,
+        `Reply To:   ${email}`,
+        `Delivery:   ${ship}`,
+        "",
+        "SELECTED CONFIGURATION:",
+        `- Airframe:  ${getSelectedOption("opt-frame").text}`,
+        `- FC/ESC:    ${getSelectedOption("opt-fc").text}`,
+        `- Radio RX:  ${getSelectedOption("opt-rx").text}`,
+        `- Video/VTX: ${getSelectedOption("opt-vtx").text}`,
+        `- Material:  ${getSelectedOption("opt-mat").text}`,
+        "",
+        `Est. Dry Weight: ${document.getElementById("sum-weight").textContent}`,
+        `Estimated Total: ${document.getElementById("sum-price").textContent}`,
+        "",
+        `Builder Notes: ${notes}`
+      ].join("\n");
+    }
+
+    async function submitOrder(e) {
+      e.preventDefault();
+      const btn = document.getElementById("btn-submit");
+      btn.disabled = true;
+      btn.textContent = "Transmitting Order...";
+
+      const payload = {
+        frame: document.getElementById("opt-frame").value,
+        fc: document.getElementById("opt-fc").value,
+        rx: document.getElementById("opt-rx").value,
+        vtx: document.getElementById("opt-vtx").value,
+        mat: document.getElementById("opt-mat").value,
+        name: document.getElementById("cust-name").value.trim(),
+        email: document.getElementById("cust-email").value.trim(),
+        shipping: document.getElementById("cust-ship").value.trim(),
+        notes: document.getElementById("cust-notes").value.trim()
+      };
+
+      try {
+        const res = await fetch("/api/order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (!res.ok || !data.ok) {
+          throw new Error(data.error || "Order submission failed.");
+        }
+
+        showBanner(
+          `ORDER LOGGED [${data.orderId}] — Total: $${data.totalCad.toFixed(2)} CAD (${data.totalWeight}g). A confirmation has been dispatched and we will reply within 24 hours with stock & Interac e-Transfer details.`
+        );
+        document.getElementById("order-form").reset();
+        updateQuote();
+      } catch (err) {
+        showBanner(`ERROR: ${err.message}`, true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Place Order Request";
+      }
+    }
+
+    async function copyManifest() {
+      const manifest = buildManifestText();
+      try {
+        await navigator.clipboard.writeText(manifest);
+        showBanner("Build spec sheet copied to clipboard!");
+      } catch {
+        showBanner("Unable to access clipboard automatically.", true);
+      }
+    }
+
+    updateQuote();
+  </script>
+</body>
+</html>

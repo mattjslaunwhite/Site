@@ -18,7 +18,7 @@
       --muted: #6c8b94;
       --text: #d7f7ff;
       --topbar-h: 54px;
-      --sidebar-w: 250px;
+      --sidebar-w: 255px;
     }
 
     * {
@@ -135,14 +135,22 @@
     .topbar-right {
       display: flex;
       align-items: center;
-      gap: 14px;
-      font-size: 0.8rem;
-      color: var(--green);
+      gap: 10px;
+      font-size: 0.78rem;
+    }
+
+    .build-pill {
+      border: 1px solid rgba(255, 158, 0, 0.45);
+      background: rgba(255, 158, 0, 0.07);
+      color: var(--amber);
+      padding: 3px 8px;
+      letter-spacing: 0.05em;
     }
 
     .sys-pill {
       border: 1px solid rgba(57, 255, 20, 0.4);
       background: rgba(57, 255, 20, 0.06);
+      color: var(--green);
       padding: 3px 8px;
       letter-spacing: 0.06em;
     }
@@ -237,7 +245,7 @@
       padding: 12px;
       font-size: 0.76rem;
       color: var(--muted);
-      line-height: 1.55;
+      line-height: 1.6;
     }
 
     .side-telemetry strong {
@@ -250,6 +258,10 @@
 
     .side-telemetry span {
       color: var(--green);
+    }
+
+    .side-telemetry span.amber {
+      color: var(--amber);
     }
 
     /* ================= MAIN WORKSPACE ================= */
@@ -278,12 +290,26 @@
       position: relative;
     }
 
+    .welcome-top-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
     .welcome-kicker {
       font-size: 0.78rem;
       color: var(--green);
       text-transform: uppercase;
       letter-spacing: 0.12em;
-      margin-bottom: 8px;
+    }
+
+    .welcome-build-tag {
+      font-size: 0.76rem;
+      color: var(--amber);
+      letter-spacing: 0.06em;
     }
 
     .welcome-panel h1 {
@@ -580,7 +606,7 @@
         display: inline-block;
       }
 
-      .topbar-nav {
+      .topbar-nav, .build-pill {
         display: none;
       }
 
@@ -622,7 +648,8 @@
     </nav>
 
     <div class="topbar-right">
-      <span class="sys-pill" id="clock">LOCAL 00:00:00</span>
+      <span class="build-pill" id="top-build">BUILD 20261119.1836</span>
+      <span class="sys-pill" id="clock">2026-11-19 00:00:00</span>
     </div>
   </header>
 
@@ -693,8 +720,9 @@
       <div class="side-telemetry">
         <strong>Node Telemetry</strong>
         Host: <span>magicgoat.studio</span><br />
-        Region: <span>Woodstock, NB</span><br />
-        Status: <span>ONLINE // READY</span>
+        Region: <span>Canada</span><br />
+        Build ID: <span class="amber" id="side-build">20261119.1836</span><br />
+        Stamp: <span id="side-stamp">2026-11-19 18:36</span>
       </div>
     </aside>
 
@@ -704,10 +732,13 @@
 
         <!-- WELCOME TEXT SPOT -->
         <section class="welcome-panel" id="welcome">
-          <div class="welcome-kicker">// WELCOME TO THE WORKBENCH</div>
+          <div class="welcome-top-row">
+            <div class="welcome-kicker">// WELCOME TO THE WORKBENCH</div>
+            <div class="welcome-build-tag" id="hero-build">REV: BUILD 20261119.1836 // CANADA</div>
+          </div>
           <h1>MAGIC GOAT STUDIO PORTAL</h1>
           <p class="welcome-text">
-            Welcome to the digital workshop of <em>Matt-R&eacute;al Slaunwhite</em> in Woodstock, New Brunswick. This portal brings together interactive retro operating system recreations, custom 3D-printed UAV airframes, off-grid 24V solar telemetry, and browser-native hardware tools—all running straight from the edge with zero bloat.
+            Welcome to the digital workshop of <em>Matt-R&eacute;al Slaunwhite</em> in Canada. This portal brings together interactive retro operating system recreations, custom 3D-printed UAV airframes, off-grid 24V solar telemetry, and browser-native hardware tools—all running straight from the edge with zero bloat.
           </p>
           <div class="welcome-actions">
             <a class="btn-hero" href="/win95.html">Boot Windows 95 &rarr;</a>
@@ -879,7 +910,7 @@
       </div>
 
       <footer>
-        <div>&copy; 2026 MAGIC GOAT STUDIO // WOODSTOCK, NB</div>
+        <div id="footer-build">&copy; 2026 MAGIC GOAT STUDIO // CANADA // BUILD 20261119.1836</div>
         <div>
           <a href="mailto:matt@magicgoat.studio">matt@magicgoat.studio</a> &middot;
           <a href="https://github.com/mattjslaunwhite/Site" target="_blank" rel="noopener">GitHub Repo</a>
@@ -894,19 +925,42 @@
       document.getElementById("sidebar").classList.toggle("open");
     }
 
-    // Close mobile sidebar when clicking a sidebar link
     document.querySelectorAll(".side-link").forEach(link => {
       link.addEventListener("click", () => {
         document.getElementById("sidebar").classList.remove("open");
       });
     });
 
-    // Live Local Clock
+    // Dynamic Date/Time Build Number System (YYYYMMDD.HHMM + Live Clock)
+    function initBuildSystem() {
+      const mod = new Date(document.lastModified || Date.now());
+      const pad = n => String(n).padStart(2, "0");
+      const yyyy = mod.getFullYear();
+      const mm = pad(mod.getMonth() + 1);
+      const dd = pad(mod.getDate());
+      const hh = pad(mod.getHours());
+      const min = pad(mod.getMinutes());
+
+      const buildNum = `${yyyy}${mm}${dd}.${hh}${min}`;
+      const stampStr = `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+
+      document.getElementById("top-build").textContent = `BUILD ${buildNum}`;
+      document.getElementById("side-build").textContent = buildNum;
+      document.getElementById("side-stamp").textContent = stampStr;
+      document.getElementById("hero-build").textContent = `REV: BUILD ${buildNum} // CANADA`;
+      document.getElementById("footer-build").innerHTML =
+        `&copy; ${yyyy} MAGIC GOAT STUDIO // CANADA // BUILD ${buildNum}`;
+    }
+
     function updateClock() {
       const now = new Date();
-      document.getElementById("clock").textContent =
-        "LOCAL " + now.toLocaleTimeString([], { hour12: false });
+      const pad = n => String(n).padStart(2, "0");
+      const datePart = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+      const timePart = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      document.getElementById("clock").textContent = `${datePart} ${timePart}`;
     }
+
+    initBuildSystem();
     updateClock();
     setInterval(updateClock, 1000);
 

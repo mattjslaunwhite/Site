@@ -261,12 +261,35 @@
       padding: 20px;
     }
 
-    .panel-box h3 {
+    .panel-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .panel-header-row h3 {
       font-size: 1rem;
       color: var(--cyan);
-      margin-bottom: 14px;
       text-transform: uppercase;
       letter-spacing: 0.06em;
+    }
+
+    .btn-bom-toggle {
+      background: #020506;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.72rem;
+      padding: 4px 8px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .btn-bom-toggle:hover, .btn-bom-toggle.active {
+      border-color: var(--amber);
+      color: var(--amber);
     }
 
     .field-stack {
@@ -337,6 +360,52 @@
     .summary-total {
       color: var(--green);
       text-shadow: 0 0 8px rgba(57, 255, 20, 0.35);
+    }
+
+    /* BOM vs Retail Ledger */
+    .bom-ledger {
+      display: none;
+      background: #030608;
+      border: 1px solid var(--amber);
+      padding: 12px;
+      margin-bottom: 14px;
+      font-size: 0.8rem;
+    }
+
+    .bom-ledger-title {
+      color: var(--amber);
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-bottom: 8px;
+      letter-spacing: 0.06em;
+    }
+
+    .bom-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .bom-table th, .bom-table td {
+      padding: 4px 6px;
+      border-bottom: 1px solid var(--border);
+      text-align: right;
+    }
+
+    .bom-table th:first-child, .bom-table td:first-child {
+      text-align: left;
+    }
+
+    .bom-table th {
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    .bom-table tr.totals td {
+      border-top: 1px solid var(--amber);
+      border-bottom: none;
+      font-weight: bold;
+      padding-top: 6px;
     }
 
     .action-row {
@@ -437,11 +506,11 @@
           <a class="nav-link" href="/">&larr; Portal Home</a>
           <a class="nav-link" href="/drones.html">Drone Lab</a>
         </div>
-        <div class="status-tag"><span class="pulse"></span>BUILD QUEUE: OPEN // WOODSTOCK, NB (CAD)</div>
+        <div class="status-tag"><span class="pulse"></span>ORDERS DISPATCH: ORDERS@MAGICGOAT.STUDIO</div>
       </div>
       <h1>CUSTOM DRONE &amp; AIRFRAME KITS</h1>
       <p class="subtitle">
-        Precision 3D-printed airframes, carbon-fiber quad kits, and pre-flashed avionics packages built to order in New Brunswick. Configure your kit below to submit an order directly.
+        Precision 3D-printed airframes, carbon-fiber quad kits, and pre-flashed avionics packages built to order in Woodstock, NB. Configure your kit below to submit an order directly.
       </p>
     </header>
 
@@ -522,53 +591,55 @@
     <section class="order-layout">
       <!-- Left: Hardware Options -->
       <div class="panel-box">
-        <h3>1. Configure Hardware</h3>
+        <div class="panel-header-row">
+          <h3>1. Configure Hardware</h3>
+        </div>
         <div class="field-stack">
           <div class="field">
             <label for="opt-frame">Airframe Platform</label>
             <select id="opt-frame" onchange="updateQuote()">
-              <option value="sleek-bat" data-price="115" data-weight="135">Sleek Bat Sub-250g Delta (ASA + Carbon Spars) — $115</option>
-              <option value="quad-425" data-price="185" data-weight="390" selected>425mm Carbon Quad + Printed Sensor Mounts — $185</option>
-              <option value="f450-dev" data-price="165" data-weight="440">F450 Modular Dev Frame + 920KV Motors — $165</option>
-              <option value="custom-cad" data-price="140" data-weight="250">Custom OpenSCAD / Fusion 360 Print Run — $140</option>
+              <option value="sleek-bat" data-bom="34" data-price="115" data-weight="135">Sleek Bat Sub-250g Delta (ASA + Carbon Spars) — $115</option>
+              <option value="quad-425" data-bom="68" data-price="185" data-weight="390" selected>425mm Carbon Quad + Printed Sensor Mounts — $185</option>
+              <option value="f450-dev" data-bom="62" data-price="165" data-weight="440">F450 Modular Dev Frame + 920KV Motors — $165</option>
+              <option value="custom-cad" data-bom="28" data-price="140" data-weight="250">Custom OpenSCAD / Fusion 360 Print Run — $140</option>
             </select>
           </div>
 
           <div class="field">
             <label for="opt-fc">Flight Controller &amp; ESC Stack</label>
             <select id="opt-fc" onchange="updateQuote()">
-              <option value="none" data-price="0" data-weight="0">None (Airframe &amp; Hardware Only) — +$0</option>
-              <option value="wing-fc" data-price="85" data-weight="28">F405 Wing FC + 40A Brushless ESC — +$85</option>
-              <option value="h743-stack" data-price="175" data-weight="42" selected>H743 FC + 60A 4-in-1 ESC (Pre-Flashed) — +$175</option>
-              <option value="h743-nav" data-price="235" data-weight="64">H743 Stack + BE-880 GPS + MTF-01 Optical Flow — +$235</option>
+              <option value="none" data-bom="0" data-price="0" data-weight="0">None (Airframe &amp; Hardware Only) — +$0</option>
+              <option value="wing-fc" data-bom="48" data-price="85" data-weight="28">F405 Wing FC + 40A Brushless ESC — +$85</option>
+              <option value="h743-stack" data-bom="108" data-price="175" data-weight="42" selected>H743 FC + 60A 4-in-1 ESC (Pre-Flashed) — +$175</option>
+              <option value="h743-nav" data-bom="148" data-price="235" data-weight="64">H743 Stack + BE-880 GPS + MTF-01 Optical Flow — +$235</option>
             </select>
           </div>
 
           <div class="field">
             <label for="opt-rx">Radio Control Link</label>
             <select id="opt-rx" onchange="updateQuote()">
-              <option value="none" data-price="0" data-weight="0">None (Supply Your Own RX) — +$0</option>
-              <option value="elrs" data-price="32" data-weight="5" selected>ExpressLRS 2.4GHz Diversity Receiver (CRSF) — +$32</option>
-              <option value="ibus" data-price="24" data-weight="8">FlySky i-BUS Telemetry Receiver — +$24</option>
-              <option value="espnow" data-price="38" data-weight="14">Paired ESP32-32E ESP-NOW Telemetry Modules — +$38</option>
+              <option value="none" data-bom="0" data-price="0" data-weight="0">None (Supply Your Own RX) — +$0</option>
+              <option value="elrs" data-bom="16" data-price="32" data-weight="5" selected>ExpressLRS 2.4GHz Diversity Receiver (CRSF) — +$32</option>
+              <option value="ibus" data-bom="11" data-price="24" data-weight="8">FlySky i-BUS Telemetry Receiver — +$24</option>
+              <option value="espnow" data-bom="14" data-price="38" data-weight="14">Paired ESP32-32E ESP-NOW Telemetry Modules — +$38</option>
             </select>
           </div>
 
           <div class="field">
             <label for="opt-vtx">Video / FPV System</label>
             <select id="opt-vtx" onchange="updateQuote()">
-              <option value="none" data-price="0" data-weight="0" selected>None (Line-of-Sight / Autonomous) — +$0</option>
-              <option value="vtx-200" data-price="45" data-weight="12">200mW 5.8GHz Micro VTX + 700TVL Camera — +$45</option>
-              <option value="vtx-800" data-price="78" data-weight="22">800mW SmartAudio VTX + Low-Light CMOS Cam — +$78</option>
+              <option value="none" data-bom="0" data-price="0" data-weight="0" selected>None (Line-of-Sight / Autonomous) — +$0</option>
+              <option value="vtx-200" data-bom="22" data-price="45" data-weight="12">200mW 5.8GHz Micro VTX + 700TVL Camera — +$45</option>
+              <option value="vtx-800" data-bom="42" data-price="78" data-weight="22">800mW SmartAudio VTX + Low-Light CMOS Cam — +$78</option>
             </select>
           </div>
 
           <div class="field">
             <label for="opt-mat">3D-Printed Parts Material &amp; Color</label>
             <select id="opt-mat" onchange="updateQuote()">
-              <option value="petg" data-price="0" selected>Carbon-Black PETG + High-Vis Orange TPU — +$0</option>
-              <option value="asa" data-price="15">UV-Resistant ASA + Black TPU — +$15</option>
-              <option value="cf-petg" data-price="25">Carbon-Fiber Reinforced PETG — +$25</option>
+              <option value="petg" data-bom="0" data-price="0" selected>Carbon-Black PETG + High-Vis Orange TPU — +$0</option>
+              <option value="asa" data-bom="5" data-price="15">UV-Resistant ASA + Black TPU — +$15</option>
+              <option value="cf-petg" data-bom="10" data-price="25">Carbon-Fiber Reinforced PETG — +$25</option>
             </select>
           </div>
         </div>
@@ -576,7 +647,12 @@
 
       <!-- Right: Quote Summary & Direct Submission -->
       <div class="panel-box">
-        <h3>2. Build Manifest &amp; Direct Order</h3>
+        <div class="panel-header-row">
+          <h3>2. Build Manifest &amp; Order</h3>
+          <button type="button" id="btn-bom-toggle" class="btn-bom-toggle" onclick="toggleBomLedger()">
+            BOM vs. Retail
+          </button>
+        </div>
 
         <div class="summary-box">
           <div class="summary-row">
@@ -584,17 +660,33 @@
             <span class="summary-val" id="sum-weight">437 g</span>
           </div>
           <div class="summary-row">
+            <span>Order Desk:</span>
+            <span class="summary-val">orders@magicgoat.studio</span>
+          </div>
+          <div class="summary-row">
             <span>Payment Method:</span>
-            <span class="summary-val">Interac e-Transfer / Invoice on Confirm</span>
+            <span class="summary-val">Interac e-Transfer / Invoice</span>
           </div>
           <div class="summary-row">
-            <span>Shipping / Pickup:</span>
-            <span class="summary-val">Canada Post or Woodstock NB Pickup</span>
-          </div>
-          <div class="summary-row">
-            <span>Estimated Total (CAD):</span>
+            <span>Estimated Retail Total (CAD):</span>
             <span class="summary-total" id="sum-price">$392.00 CAD</span>
           </div>
+        </div>
+
+        <!-- Toggleable BOM vs Retail Breakdown -->
+        <div class="bom-ledger" id="bom-ledger">
+          <div class="bom-ledger-title">Studio BOM Cost vs. Retail Breakdown (CAD)</div>
+          <table class="bom-table">
+            <thead>
+              <tr>
+                <th>Subsystem</th>
+                <th>BOM</th>
+                <th>Retail</th>
+                <th>Margin</th>
+              </tr>
+            </thead>
+            <tbody id="bom-tbody"></tbody>
+          </table>
         </div>
 
         <form id="order-form" class="field-stack" onsubmit="submitOrder(event)">
@@ -631,29 +723,74 @@
     <div>
       <a href="/">Portal Home</a> &middot;
       <a href="/drones.html">Drone Lab</a> &middot;
-      <a href="mailto:matt@magicgoat.studio">matt@magicgoat.studio</a>
+      <a href="mailto:orders@magicgoat.studio">orders@magicgoat.studio</a>
     </div>
   </footer>
 
   <script>
+    const SUBSYSTEMS = [
+      { id: "opt-frame", label: "Airframe" },
+      { id: "opt-fc", label: "FC / ESC" },
+      { id: "opt-rx", label: "Radio RX" },
+      { id: "opt-vtx", label: "Video / VTX" },
+      { id: "opt-mat", label: "Filament" }
+    ];
+
     function getSelectedOption(id) {
       const el = document.getElementById(id);
       return el.options[el.selectedIndex];
     }
 
     function updateQuote() {
-      const ids = ["opt-frame", "opt-fc", "opt-rx", "opt-vtx", "opt-mat"];
-      let total = 0;
+      let totalRetail = 0;
+      let totalBom = 0;
       let weight = 0;
+      const tbody = document.getElementById("bom-tbody");
+      tbody.innerHTML = "";
 
-      ids.forEach(id => {
-        const opt = getSelectedOption(id);
-        total += parseFloat(opt.dataset.price || 0);
-        weight += parseFloat(opt.dataset.weight || 0);
+      SUBSYSTEMS.forEach(item => {
+        const opt = getSelectedOption(item.id);
+        const bom = parseFloat(opt.dataset.bom || 0);
+        const retail = parseFloat(opt.dataset.price || 0);
+        const w = parseFloat(opt.dataset.weight || 0);
+        const diff = retail - bom;
+
+        totalBom += bom;
+        totalRetail += retail;
+        weight += w;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.label}</td>
+          <td>$${bom.toFixed(0)}</td>
+          <td>$${retail.toFixed(0)}</td>
+          <td style="color:var(--green);">+$${diff.toFixed(0)}</td>
+        `;
+        tbody.appendChild(tr);
       });
 
-      document.getElementById("sum-price").textContent = `$${total.toFixed(2)} CAD`;
+      const netMargin = totalRetail - totalBom;
+      const marginPct = totalRetail > 0 ? ((netMargin / totalRetail) * 100).toFixed(0) : "0";
+      const totalRow = document.createElement("tr");
+      totalRow.className = "totals";
+      totalRow.innerHTML = `
+        <td>TOTAL</td>
+        <td>$${totalBom.toFixed(2)}</td>
+        <td>$${totalRetail.toFixed(2)}</td>
+        <td style="color:var(--green);">+$${netMargin.toFixed(2)} (${marginPct}%)</td>
+      `;
+      tbody.appendChild(totalRow);
+
+      document.getElementById("sum-price").textContent = `$${totalRetail.toFixed(2)} CAD`;
       document.getElementById("sum-weight").textContent = `${weight} g`;
+    }
+
+    function toggleBomLedger() {
+      const ledger = document.getElementById("bom-ledger");
+      const btn = document.getElementById("btn-bom-toggle");
+      const isOpen = ledger.style.display === "block";
+      ledger.style.display = isOpen ? "none" : "block";
+      btn.classList.toggle("active", !isOpen);
     }
 
     function showBanner(msg, isError = false) {
@@ -683,6 +820,7 @@
       return [
         "MAGIC GOAT STUDIO — CUSTOM DRONE KIT ORDER REQUEST",
         "==================================================",
+        `Order Desk: orders@magicgoat.studio`,
         `Customer:   ${name}`,
         `Reply To:   ${email}`,
         `Delivery:   ${ship}`,
@@ -732,7 +870,7 @@
         }
 
         showBanner(
-          `ORDER LOGGED [${data.orderId}] — Total: $${data.totalCad.toFixed(2)} CAD (${data.totalWeight}g). A confirmation has been dispatched and we will reply within 24 hours with stock & Interac e-Transfer details.`
+          `ORDER LOGGED [${data.orderId}] — Dispatched to orders@magicgoat.studio ($${data.totalCad.toFixed(2)} CAD / ${data.totalWeight}g). A confirmation receipt has been sent to ${payload.email}.`
         );
         document.getElementById("order-form").reset();
         updateQuote();

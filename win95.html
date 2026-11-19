@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Windows 95 — Magic Goat Studio</title>
+  <style>
+    :root {
+      --desktop: #008080;
+      --win-grey: #c0c0c0;
+      --win-dark: #808080;
+      --win-darker: #000000;
+      --win-light: #ffffff;
+      --win-lighter: #dfdfdf;
+      --title-active: #000080;
+      --title-inactive: #808080;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--desktop);
+      font-family: "MS Sans Serif", "Tahoma", "Arial", sans-serif;
+      font-size: 12px;
+      color: #000;
+    }
+
+    /* Classic Win95 Bevels */
+    .bevel-out {
+      background: var(--win-grey);
+      border-top: 1px solid var(--win-light);
+      border-left: 1px solid var(--win-light);
+      border-right: 1px solid var(--win-darker);
+      border-bottom: 1px solid var(--win-darker);
+      box-shadow: inset 1px 1px 0 var(--win-lighter), inset -1px -1px 0 var(--win-dark);
+    }
+
+    .bevel-in {
+      background: #ffffff;
+      border-top: 1px solid var(--win-dark);
+      border-left: 1px solid var(--win-dark);
+      border-right: 1px solid var(--win-light);
+      border-bottom: 1px solid var(--win-light);
+      box-shadow: inset 1px 1px 0 var(--win-darker), inset -1px -1px 0 var(--win-lighter);
+    }
+
+    .btn-95 {
+      background: var(--win-grey);
+      border-top: 1px solid var(--win-light);
+      border-left: 1px solid var(--win-light);
+      border-right: 1px solid var(--win-darker);
+      border-bottom: 1px solid var(--win-darker);
+      box-shadow: inset 1px 1px 0 var(--win-lighter), inset -1px -1px 0 var(--win-dark);
+      padding: 3px 10px;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .btn-95:active, .btn-95.pressed {
+      border-top: 1px solid var(--win-darker);
+      border-left: 1px solid var(--win-darker);
+      border-right: 1px solid var(--win-light);
+      border-bottom: 1px solid var(--win-light);
+      box-shadow: inset 1px 1px 0 var(--win-dark);
+      padding: 4px 9px 2px 11px;
+    }
+
+    /* Desktop Icons */
+    #desktop {
+      position: relative;
+      width: 100%;
+      height: calc(100vh - 28px);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 18px;
+    }
+
+    .desk-icon {
+      width: 74px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      padding: 4px 2px;
+    }
+
+    .desk-icon .glyph {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 4px;
+      filter: drop-shadow(1px 1px 0 rgba(0,0,0,0.4));
+    }
+
+    .desk-icon .label {
+      color: #ffffff;
+      padding: 1px 3px;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .desk-icon.selected .label {
+      background: #000080;
+      outline: 1px dotted #ffff00;
+    }
+
+    /* Windows */
+    .window {
+      position: absolute;
+      min-width: 240px;
+      padding: 3px;
+      display: none;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .title-bar {
+      background: var(--title-active);
+      color: #ffffff;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3px;
+      font-weight: bold;
+      cursor: move;
+    }
+
+    .title-bar.inactive {
+      background: var(--title-inactive);
+      color: #c0c0c0;
+    }
+
+    .title-left {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .title-controls {
+      display: flex;
+      gap: 2px;
+    }
+
+    .win-ctrl {
+      width: 16px;
+      height: 14px;
+      background: var(--win-grey);
+      color: #000;
+      border-top: 1px solid #fff;
+      border-left: 1px solid #fff;
+      border-right: 1px solid #000;
+      border-bottom: 1px solid #000;
+      box-shadow: inset -1px -1px 0 #808080;
+      font-size: 10px;
+      line-height: 11px;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .win-ctrl:active {
+      border-top: 1px solid #000;
+      border-left: 1px solid #000;
+      border-right: 1px solid #fff;
+      border-bottom: 1px solid #fff;
+      box-shadow: none;
+    }
+
+    .menu-bar {
+      display: flex;
+      gap: 12px;
+      padding: 3px 6px;
+      background: var(--win-grey);
+    }
+
+    .menu-bar span u {
+      text-decoration: underline;
+    }
+
+    .win-body {
+      margin: 2px;
+      padding: 10px;
+      flex: 1;
+      overflow: auto;
+    }
+
+    .status-strip {
+      display: flex;
+      gap: 3px;
+      margin-top: 3px;
+      font-size: 11px;
+    }
+
+    .status-cell {
+      padding: 2px 6px;
+      border-top: 1px solid var(--win-dark);
+      border-left: 1px solid var(--win-dark);
+      border-right: 1px solid var(--win-light);
+      border-bottom: 1px solid var(--win-light);
+      flex: 1;
+    }
+
+    /* Taskbar & Start Menu */
+    #taskbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 28px;
+      background: var(--win-grey);
+      border-top: 1px solid var(--win-light);
+      box-shadow: inset 0 1px 0 var(--win-lighter);
+      display: flex;
+      align-items: center;
+      padding: 2px 4px;
+      gap: 4px;
+      z-index: 9999;
+    }
+
+    #start-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: bold;
+      height: 22px;
+      padding: 0 7px;
+    }
+
+    .win-logo {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      width: 14px;
+      height: 14px;
+    }
+    .win-logo span:nth-child(1) { background: #ff0000; }
+    .win-logo span:nth-child(2) { background: #00aa00; }
+    .win-logo span:nth-child(3) { background: #0000ff; }
+    .win-logo span:nth-child(4) { background: #ffaa00; }
+
+    .task-divider {
+      width: 2px;
+      height: 20px;
+      border-left: 1px solid var(--win-dark);
+      border-right: 1px solid var(--win-light);
+      margin: 0 2px;
+    }
+
+    #task-list {
+      display: flex;
+      gap: 4px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .task-item {
+      height: 22px;
+      min-width: 110px;
+      max-width: 165px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0 6px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-weight: normal;
+    }
+
+    .task-item.active {
+      font-weight: bold;
+      background: #dfdfdf;
+      border-top: 1px solid var(--win-darker);
+      border-left: 1px solid var(--win-darker);
+      border-right: 1px solid var(--win-light);
+      border-bottom: 1px solid var(--win-light);
+      box-shadow: inset 1px 1px 0 var(--win-dark);
+    }
+
+    #tray {
+      height: 22px;
+      padding: 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-top: 1px solid var(--win-dark);
+      border-left: 1px solid var(--win-dark);
+      border-right: 1px solid var(--win-light);
+      border-bottom: 1px solid var(--win-light);
+      font-size: 11px;
+    }
+
+    /* Start Menu Popup */
+    #start-menu {
+      position: fixed;
+      bottom: 28px;
+      left: 2px;
+      width: 215px;
+      display: none;
+      z-index: 10000;
+      padding: 2px;
+    }
+
+    .start-inner {
+      display: flex;
+    }
+
+    .start-banner {
+      width: 24px;
+      background: linear-gradient(180deg, #000080 0%, #0000ff 100%);
+      color: #c0c0c0;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-weight: bold;
+      font-size: 15px;
+      letter-spacing: 1px;
+      padding: 8px 3px;
+      display: flex;
+      align-items: center;
+    }
+
+    .start-banner b {
+      color: #ffffff;
+    }
+
+    .start-items {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .start-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      cursor: pointer;
+    }
+
+    .start-item:hover {
+      background: #000080;
+      color: #ffffff;
+    }
+
+    .start-sep {
+      height: 2px;
+      border-top: 1px solid var(--win-dark);
+      border-bottom: 1px solid var(--win-light);
+      margin: 2px 4px;
+    }
+
+    /* App Specific Styles */
+    .folder-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+      gap: 14px;
+      padding: 6px;
+    }
+
+    .folder-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .folder-item:hover span {
+      background: #000080;
+      color: #fff;
+    }
+
+    textarea.notepad-txt {
+      width: 100%;
+      height: 210px;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: "Fixedsys", "Courier New", monospace;
+      font-size: 13px;
+      user-select: text;
+    }
+
+    .dos-box {
+      background: #000;
+      color: #c0c0c0;
+      font-family: "Courier New", monospace;
+      padding: 8px;
+      height: 230px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      user-select: text;
+    }
+
+    .dos-log {
+      overflow-y: auto;
+      white-space: pre-wrap;
+      line-height: 1.35;
+    }
+
+    .dos-row {
+      display: flex;
+      gap: 4px;
+    }
+
+    .dos-cmd {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 12px;
+      flex: 1;
+    }
+
+    /* Paint Canvas */
+    .paint-tools {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .swatch {
+      width: 18px;
+      height: 18px;
+      border: 1px solid #000;
+      cursor: pointer;
+    }
+
+    canvas#paint-canvas {
+      background: #fff;
+      cursor: crosshair;
+      display: block;
+    }
+
+    /* Calculator */
+    .calc-disp {
+      width: 100%;
+      text-align: right;
+      padding: 4px 6px;
+      font-family: "Courier New", monospace;
+      font-weight: bold;
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .calc-pad {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+    }
+
+    /* Minesweeper */
+    .mine-board {
+      display: grid;
+      grid-template-columns: repeat(9, 22px);
+      gap: 1px;
+      background: #808080;
+      border: 2px solid #808080;
+      width: max-content;
+      margin: 8px auto 0;
+    }
+
+    .m-cell {
+      width: 22px;
+      height: 22px;
+      background: var(--win-grey);
+      border-top: 2px solid #fff;
+      border-left: 2px solid #fff;
+      border-right: 2px solid #808080;
+      border-bottom: 2px solid #808080;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .m-cell.open {
+      border: 1px solid #808080;
+      background: #d4d4d4;
+      cursor: default;
+    }
+
+    /* BSOD Easter Egg */
+    #bsod {
+      position: fixed;
+      inset: 0;
+      background: #0000aa;
+      color: #ffffff;
+      font-family: "Courier New", monospace;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 99999;
+      text-align: center;
+    }
+
+    #bsod .badge {
+      background: #c0c0c0;
+      color: #0000aa;
+      font-weight: bold;
+      padding: 2px 10px;
+      margin-bottom: 20px;
+    }
+
+    #bsod p {
+      max-width: 620px;
+      text-align: left;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Desktop Area -->
+  <div id="desktop" onclick="deselectIcons(event)">
+    <div class="desk-icon" onclick="selectIcon(this)" ondblclick="openApp('win-mycomp')">
+      <div class="glyph">&#128187;</div>
+      <div class="label">My Computer</div>
+    </div>
+
+    <div class="desk-icon" onclick="selectIcon(this)" ondblclick="openApp('win-recycle')">
+      <div class="glyph">&#128465;</div>
+      <div class="label">Recycle Bin</div>
+    </div>
+
+    <div class="desk-icon" onclick="selectIcon(this)" ondblclick="openApp('win-notepad')">
+      <div class="glyph">&#128221;</div>
+      <div class="label">Welcome.txt</div>
+    </div>
+
+    <div class="desk-icon" onclick="selectIcon(this)" ondblclick="openApp('win-dos')">
+      <div class="glyph">&#128435;</div>
+      <div class="label">MS-DOS Prompt</div>
+    </div>
+
+    <div class="desk-icon" onclick="selectIcon(this)" ondblclick="openApp('win-paint')">
+      <div class="glyph">&#127912;</div>
+      <div class="label">Paint</div>
+    </div>
+
+    <div class="desk-icon" onclick="selectIcon(this)" ondblclick="openApp('win-mine')">
+      <div class="glyph">&#128163;</div>
+      <div class="label">Minesweeper</div>
+    </div>
+
+    <div class="desk-icon" onclick="selectIcon(this)" ondblclick="openApp('win-calc')">
+      <div class="glyph">&#129518;</div>
+      <div class="label">Calculator</div>
+    </div>
+
+    <div class="desk-icon" onclick="selectIcon(this)" ondblclick="window.location.href='/'">
+      <div class="glyph">&#127760;</div>
+      <div class="label">Magic Goat Portal</div>
+    </div>
+  </div>
+
+  <!-- My Computer Window -->
+  <div class="window bevel-out" id="win-mycomp" data-title="My Computer" data-icon="&#128187;" style="top: 40px; left: 110px; width: 430px;">
+    <div class="title-bar" onmousedown="beginDrag(event, 'win-mycomp')">
+      <div class="title-left"><span>&#128187;</span><span>My Computer</span></div>
+      <div class="title-controls">
+        <button class="win-ctrl" onclick="minimizeApp('win-mycomp')">_</button>
+        <button class="win-ctrl" onclick="closeApp('win-mycomp')">X</button>
+      </div>
+    </div>
+    <div class="menu-bar">
+      <span><u>F</u>ile</span><span><u>E</u>dit</span><span><u>V</u>iew</span><span><u>H</u>elp</span>
+    </div>
+    <div class="win-body bevel-in">
+      <div class="folder-grid">
+        <div class="folder-item" ondblclick="openApp('win-sysprop')">
+          <div style="font-size:28px;">&#128190;</div>
+          <span>(C:) ALICETWO</span>
+        </div>
+        <div class="folder-item" ondblclick="openApp('win-sysprop')">
+          <div style="font-size:28px;">&#128191;</div>
+          <span>(D:) Projects CD</span>
+        </div>
+        <div class="folder-item" ondblclick="openApp('win-sysprop')">
+          <div style="font-size:28px;">&#9881;</div>
+          <span>Control Panel</span>
+        </div>
+        <div class="folder-item" ondblclick="window.location.href='/win311.html'">
+          <div style="font-size:28px;">&#128193;</div>
+          <span>Win 3.11 Legacy</span>
+        </div>
+      </div>
+    </div>
+    <div class="status-strip">
+      <div class="status-cell">4 object(s)</div>
+      <div class="status-cell">Double-click a drive or icon</div>
+    </div>
+  </div>
+
+  <!-- System Properties Window -->
+  <div class="window bevel-out" id="win-sysprop" data-title="System Properties" data-icon="&#9881;" style="top: 85px; left: 210px; width: 370px;">
+    <div class="title-bar" onmousedown="beginDrag(event, 'win-sysprop')">
+      <div class="title-left"><span>&#9881;</span><span>System Properties</span></div>
+      <div class="title-controls">
+        <button class="win-ctrl" onclick="closeApp('win-sysprop')">X</button>
+      </div>
+    </div>
+    <div class="win-body">
+      <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:12px;">
+        <div style="font-size:38px;">&#128187;</div>
+        <div style="line-height:1.45;">
+          <b>System:</b><br />
+          Microsoft Windows 95<br />
+          4.00.950 B (Magic Goat Edge Build)<br /><br />
+          <b>Registered to:</b><br />
+          Matt-R&eacute;al Slaunwhite<br />
+          Magic Goat Studio — Woodstock, NB<br /><br />
+          <b>Computer:</b><br />
+          AMD Ryzen 9 / Cloudflare Edge Node<br />
+          64,000 MB RAM
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <button class="btn-95" onclick="closeApp('win-sysprop')">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recycle Bin Window -->
+  <div class="window bevel-out" id="win-recycle" data-title="Recycle Bin" data-icon="&#128465;" style="top: 120px; left: 180px; width: 360px;">
+    <div class="title-bar" onmousedown="beginDrag(event, 'win-recycle')">
+      <div class="title-left"><span>&#128465;</span><span>Recycle Bin</span></div>
+      <div class="title-controls">
+        <button class="win-ctrl" onclick="minimizeApp('win-recycle')">_</button>
+        <button class="win-ctrl" onclick="closeApp('win-recycle')">X</button>
+      </div>
+    </div>
+    <div class="win-body bevel-in" style="height:140px;color:#808080;">
+      The Recycle Bin is empty.
+    </div>
+    <div class="status-strip">
+      <div class="status-cell">0 object(s)</div>
+    </div>
+  </div>
+
+  <!-- Notepad Window -->
+  <div class="window bevel-out" id="win-notepad" data-title="Welcome.txt - Notepad" data-icon="&#128221;" style="top: 65px; left: 260px; width: 410px;">
+    <div class="title-bar" onmousedown="beginDrag(event, 'win-notepad')">
+      <div class="title-left"><span>&#128221;</span><span>Welcome.txt - Notepad</span></div>
+      <div class="title-controls">
+        <button class="win-ctrl" onclick="minimizeApp('win-notepad')">_</button>
+        <button class="win-ctrl" onclick="closeApp('win-notepad')">X</button>
+      </div>
+    </div>
+    <div class="menu-bar">
+      <span><u>F</u>ile</span><span><u>E</u>dit</span><span><u>S</u>earch</span><span><u>H</u>elp</span>
+    </div>
+    <div class="win-body bevel-in" style="padding:4px;">
+      <textarea class="notepad-txt">WELCOME TO WINDOWS 95 — MAGIC GOAT STUDIO
+=========================================
+Hosted live at: https://magicgoat.studio/win95.html
+
+Tips:
+- Click the Start button in the bottom-left corner to launch apps.
+- Double-click desktop icons to open Paint, MS-DOS, Minesweeper, or Calculator.
+- Type BSOD in MS-DOS Prompt for a classic 1995 surprise.</textarea>
+    </div>
+  </div>
+
+  <!-- MS-DOS Prompt Window -->
+  <div class="window bevel-out" id="win-dos" data-title="MS-DOS Prompt" data-icon="&#128435;" style="top: 130px; left: 150px; width: 460px;">
+    <div class="title-bar" onmousedown="beginDrag(event, 'win-dos')">
+      <div class="title-left"><span>&#128435;</span><span>MS-DOS Prompt</span></div>
+      <div class="title-controls">
+        <button class="win-ctrl" onclick="minimizeApp('win-dos')">_</button>
+        <button class="win-ctrl" onclick="closeApp('win-dos')">X</button>
+      </div>
+    </div>
+    <div class="win-body bevel-in" style="padding:0;background:#000;">
+      <div class="dos-box" onclick="document.getElementById('dos-cmd').focus()">
+        <div class="dos-log" id="dos-log">Microsoft(R) Windows 95
+   (C)Copyright Microsoft Corp 1981-1995.
+
+Type HELP for commands.
+
+</div>
+        <div class="dos-row">
+          <span>C:\WINDOWS&gt;</span>
+          <input class="dos-cmd" id="dos-cmd" type="text" autocomplete="off" onkeydown="runDos(event)" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paint Window -->
+  <div class="window bevel-out" id="win-paint" data-title="untitled - Paint" data-icon="&#127912;" style="top: 55px; left: 310px; width: 430px;">
+    <div class="title-bar" onmousedown="beginDrag(event, 'win-paint')">
+      <div class="title-left"><span>&#127912;</span><span>untitled - Paint</span></div>
+      <div class="title-controls">
+        <button class="win-ctrl" onclick="minimizeApp('win-paint')">_</button>
+        <button class="win-ctrl" onclick="closeApp('win-paint')">X</button>
+      </div>
+    </div>
+    <div class="win-body">
+      <div class="paint-tools">
+        <div class="swatch" style="background:#000000" onclick="paintColor='#000000'"></div>
+        <div class="swatch" style="background:#808080" onclick="paintColor='#808080'"></div>
+        <div class="swatch" style="background:#800000" onclick="paintColor='#800000'"></div>
+        <div class="swatch" style="background:#ff0000" onclick="paintColor='#ff0000'"></div>
+        <div class="swatch" style="background:#008000" onclick="paintColor='#008000'"></div>
+        <div class="swatch" style="background:#00ff00" onclick="paintColor='#00ff00'"></div>
+        <div class="swatch" style="background:#000080" onclick="paintColor='#000080'"></div>
+        <div class="swatch" style="background:#00f3ff" onclick="paintColor='#00f3ff'"></div>
+        <div class="swatch" style="background:#ffff00" onclick="paintColor='#ffff00'"></div>
+        <div class="swatch" style="background:#ffffff" onclick="paintColor='#ffffff'"></div>
+        <button class="btn-95" onclick="clearCanvas()">Clear</button>
+      </div>
+      <div class="bevel-in" style="width:max-content;">
+        <canvas id="paint-canvas" width="396" height="210"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Minesweeper Window -->
+  <div class="window bevel-out" id="win-mine" data-title="Minesweeper" data-icon="&#128163;" style="top: 100px; left: 490px; width: 245px;">
+    <div class="title-bar" onmousedown="beginDrag(event, 'win-mine')">
+      <div class="title-left"><span>&#128163;</span><span>Minesweeper</span></div>
+      <div class="title-controls">
+        <button class="win-ctrl" onclick="minimizeApp('win-mine')">_</button>
+        <button class="win-ctrl" onclick="closeApp('win-mine')">X</button>
+      </div>
+    </div>
+    <div class="win-body" style="text-align:center;">
+      <button class="btn-95" id="mine-reset" onclick="setupMines()">&#128578; Reset</button>
+      <div class="mine-board" id="mine-board"></div>
+    </div>
+  </div>
+
+  <!-- Calculator Window -->
+  <div class="window bevel-out" id="win-calc" data-title="Calculator" data-icon="&#129518;" style="top: 140px; left: 540px; width: 225px;">
+    <div class="title-bar" onmousedown="beginDrag(event, 'win-calc')">
+      <div class="title-left"><span>&#129518;</span><span>Calculator</span></div>
+      <div class="title-controls">
+        <button class="win-ctrl" onclick="minimizeApp('win-calc')">_</button>
+        <button class="win-ctrl" onclick="closeApp('win-calc')">X</button>
+      </div>
+    </div>
+    <div class="win-body">
+      <input class="calc-disp bevel-in" id="calc-out" type="text" value="0" readonly />
+      <div class="calc-pad">
+        <button class="btn-95" onclick="cPress('7')">7</button>
+        <button class="btn-95" onclick="cPress('8')">8</button>
+        <button class="btn-95" onclick="cPress('9')">9</button>
+        <button class="btn-95" onclick="cPress('/')">/</button>
+        <button class="btn-95" onclick="cPress('4')">4</button>
+        <button class="btn-95" onclick="cPress('5')">5</button>
+        <button class="btn-95" onclick="cPress('6')">6</button>
+        <button class="btn-95" onclick="cPress('*')">*</button>
+        <button class="btn-95" onclick="cPress('1')">1</button>
+        <button class="btn-95" onclick="cPress('2')">2</button>
+        <button class="btn-95" onclick="cPress('3')">3</button>
+        <button class="btn-95" onclick="cPress('-')">-</button>
+        <button class="btn-95" onclick="cClear()">C</button>
+        <button class="btn-95" onclick="cPress('0')">0</button>
+        <button class="btn-95" onclick="cEq()">=</button>
+        <button class="btn-95" onclick="cPress('+')">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shut Down Dialog -->
+  <div class="window bevel-out" id="win-shutdown" data-title="Shut Down Windows" data-icon="&#128268;" style="top: 30%; left: 35%; width: 340px;">
+    <div class="title-bar" onmousedown="beginDrag(event, 'win-shutdown')">
+      <div class="title-left"><span>Shut Down Windows</span></div>
+      <div class="title-controls">
+        <button class="win-ctrl" onclick="closeApp('win-shutdown')">X</button>
+      </div>
+    </div>
+    <div class="win-body">
+      <div style="display:flex;gap:12px;margin-bottom:14px;">
+        <div style="font-size:32px;">&#128187;</div>
+        <div>
+          Are you sure you want to:<br /><br />
+          <label><input type="radio" name="sd" checked /> Shut down and return to Magic Goat Portal</label><br />
+          <label><input type="radio" name="sd" id="sd-win311" /> Restart in Windows 3.11</label>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:6px;">
+        <button class="btn-95" onclick="execShutdown()">Yes</button>
+        <button class="btn-95" onclick="closeApp('win-shutdown')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start Menu -->
+  <div class="bevel-out" id="start-menu">
+    <div class="start-inner">
+      <div class="start-banner"><b>Windows</b>95</div>
+      <div class="start-items">
+        <div class="start-item" onclick="startLaunch('win-mycomp')"><span>&#128187;</span><span>My Computer</span></div>
+        <div class="start-item" onclick="startLaunch('win-notepad')"><span>&#128221;</span><span>Notepad</span></div>
+        <div class="start-item" onclick="startLaunch('win-paint')"><span>&#127912;</span><span>Paint</span></div>
+        <div class="start-item" onclick="startLaunch('win-mine')"><span>&#128163;</span><span>Minesweeper</span></div>
+        <div class="start-item" onclick="startLaunch('win-calc')"><span>&#129518;</span><span>Calculator</span></div>
+        <div class="start-item" onclick="startLaunch('win-dos')"><span>&#128435;</span><span>MS-DOS Prompt</span></div>
+        <div class="start-sep"></div>
+        <div class="start-item" onclick="window.location.href='/'"><span>&#127760;</span><span>Magic Goat Portal</span></div>
+        <div class="start-item" onclick="startLaunch('win-shutdown')"><span>&#128268;</span><span>Shut Down...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Taskbar -->
+  <div id="taskbar">
+    <button class="btn-95" id="start-btn" onclick="toggleStart(event)">
+      <span class="win-logo"><span></span><span></span><span></span><span></span></span>
+      <span>Start</span>
+    </button>
+    <div class="task-divider"></div>
+    <div id="task-list"></div>
+    <div id="tray">
+      <span>&#128266;</span>
+      <span id="tray-clock">12:00 PM</span>
+    </div>
+  </div>
+
+  <!-- BSOD Overlay -->
+  <div id="bsod" onclick="this.style.display='none'">
+    <div class="badge">Windows</div>
+    <p>
+      A fatal exception 0E has occurred at 0028:C0011E36 in VXD VMM(01) + 00010E36.
+      The current application will be terminated.<br /><br />
+      * Press any key or click anywhere to return to Windows 95.<br />
+      * No actual goats were harmed during this edge deployment.
+    </p>
+  </div>
+
+  <script>
+    let zCounter = 20;
+    const openWindows = new Set();
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById("tray-clock").textContent =
+        now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    function toggleStart(e) {
+      e.stopPropagation();
+      const menu = document.getElementById("start-menu");
+      const btn = document.getElementById("start-btn");
+      const isOpen = menu.style.display === "block";
+      menu.style.display = isOpen ? "none" : "block";
+      btn.classList.toggle("pressed", !isOpen);
+    }
+
+    document.addEventListener("click", () => {
+      document.getElementById("start-menu").style.display = "none";
+      document.getElementById("start-btn").classList.remove("pressed");
+    });
+
+    document.addEventListener("keydown", () => {
+      document.getElementById("bsod").style.display = "none";
+    });
+
+    function startLaunch(id) {
+      document.getElementById("start-menu").style.display = "none";
+      document.getElementById("start-btn").classList.remove("pressed");
+      openApp(id);
+    }
+
+    function selectIcon(el) {
+      document.querySelectorAll(".desk-icon").forEach(i => i.classList.remove("selected"));
+      el.classList.add("selected");
+    }
+
+    function deselectIcons(e) {
+      if (e.target.id === "desktop") {
+        document.querySelectorAll(".desk-icon").forEach(i => i.classList.remove("selected"));
+      }
+    }
+
+    function focusApp(id) {
+      const win = document.getElementById(id);
+      if (!win) return;
+      zCounter++;
+      win.style.zIndex = zCounter;
+      document.querySelectorAll(".title-bar").forEach(tb => tb.classList.add("inactive"));
+      win.querySelector(".title-bar").classList.remove("inactive");
+      document.querySelectorAll(".task-item").forEach(ti => ti.classList.remove("active"));
+      const taskBtn = document.getElementById("task-" + id);
+      if (taskBtn) taskBtn.classList.add("active");
+    }
+
+    function openApp(id) {
+      const win = document.getElementById(id);
+      if (!win) return;
+      win.style.display = "flex";
+      openWindows.add(id);
+      renderTaskbar();
+      focusApp(id);
+      if (id === "win-dos") document.getElementById("dos-cmd").focus();
+      if (id === "win-mine" && !document.getElementById("mine-board").hasChildNodes()) setupMines();
+    }
+
+    function minimizeApp(id) {
+      const win = document.getElementById(id);
+      if (win) win.style.display = "none";
+      const taskBtn = document.getElementById("task-" + id);
+      if (taskBtn) taskBtn.classList.remove("active");
+    }
+
+    function closeApp(id) {
+      const win = document.getElementById(id);
+      if (win) win.style.display = "none";
+      openWindows.delete(id);
+      renderTaskbar();
+    }
+
+    function renderTaskbar() {
+      const list = document.getElementById("task-list");
+      list.innerHTML = "";
+      openWindows.forEach(id => {
+        const win = document.getElementById(id);
+        const btn = document.createElement("button");
+        btn.className = "btn-95 task-item";
+        btn.id = "task-" + id;
+        btn.innerHTML = `<span>${win.dataset.icon || ""}</span><span>${win.dataset.title}</span>`;
+        btn.onclick = () => {
+          if (win.style.display === "none") {
+            win.style.display = "flex";
+            focusApp(id);
+          } else if (btn.classList.contains("active")) {
+            minimizeApp(id);
+          } else {
+            focusApp(id);
+          }
+        };
+        list.appendChild(btn);
+      });
+    }
+
+    // Window Dragging
+    let activeDrag = null, dx = 0, dy = 0;
+    function beginDrag(e, id) {
+      if (e.target.tagName === "BUTTON") return;
+      activeDrag = document.getElementById(id);
+      focusApp(id);
+      dx = e.clientX - activeDrag.offsetLeft;
+      dy = e.clientY - activeDrag.offsetTop;
+      document.onmousemove = (ev) => {
+        if (!activeDrag) return;
+        activeDrag.style.left = Math.max(0, ev.clientX - dx) + "px";
+        activeDrag.style.top = Math.max(0, ev.clientY - dy) + "px";
+      };
+      document.onmouseup = () => {
+        activeDrag = null;
+        document.onmousemove = null;
+      };
+    }
+
+    // MS-DOS Prompt
+    function runDos(e) {
+      if (e.key !== "Enter") return;
+      const inp = document.getElementById("dos-cmd");
+      const log = document.getElementById("dos-log");
+      const raw = inp.value.trim();
+      const cmd = raw.toUpperCase();
+      log.textContent += `C:\\WINDOWS>${raw}\n`;
+      if (cmd === "HELP") {
+        log.textContent += "Available commands: DIR, VER, TIME, CLS, BSOD, PORTAL, EXIT\n\n";
+      } else if (cmd === "VER") {
+        log.textContent += "Windows 95. [Version 4.00.950]\n\n";
+      } else if (cmd === "DIR") {
+        log.textContent += " Volume in drive C is ALICETWO\n Directory of C:\\WINDOWS\n\nWIN95    HTML     15,420  11-19-26  1:51p\nWIN311   HTML     11,240  11-19-26  1:45p\nINDEX    HTML      4,820  11-19-26  1:45p\n        3 file(s)     31,480 bytes\n\n";
+      } else if (cmd === "TIME") {
+        log.textContent += "Current time is " + new Date().toLocaleTimeString() + "\n\n";
+      } else if (cmd === "CLS") {
+        log.textContent = "";
+      } else if (cmd === "BSOD") {
+        document.getElementById("bsod").style.display = "flex";
+      } else if (cmd === "PORTAL") {
+        window.location.href = "/";
+      } else if (cmd === "EXIT") {
+        closeApp("win-dos");
+      } else if (raw !== "") {
+        log.textContent += "Bad command or file name\n\n";
+      }
+      inp.value = "";
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // Paint Canvas
+    let paintColor = "#000000", painting = false;
+    const canvas = document.getElementById("paint-canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.addEventListener("mousedown", (e) => { painting = true; draw(e); });
+    canvas.addEventListener("mouseup", () => { painting = false; ctx.beginPath(); });
+    canvas.addEventListener("mousemove", draw);
+    function draw(e) {
+      if (!painting) return;
+      const rect = canvas.getBoundingClientRect();
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = paintColor;
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Calculator
+    let cBuf = "";
+    function cPress(ch) { cBuf += ch; document.getElementById("calc-out").value = cBuf; }
+    function cClear() { cBuf = ""; document.getElementById("calc-out").value = "0"; }
+    function cEq() {
+      try {
+        if (!/^[0-9+\-*/.]+$/.test(cBuf)) throw new Error();
+        cBuf = String(Function('"use strict";return (' + cBuf + ')')());
+        document.getElementById("calc-out").value = cBuf;
+      } catch {
+        document.getElementById("calc-out").value = "Error";
+        cBuf = "";
+      }
+    }
+
+    // Minesweeper (9x9, 10 mines)
+    let mGrid = [];
+    function setupMines() {
+      const board = document.getElementById("mine-board");
+      document.getElementById("mine-reset").innerHTML = "&#128578; Reset";
+      board.innerHTML = "";
+      mGrid = Array(81).fill(0);
+      let placed = 0;
+      while (placed < 10) {
+        const idx = Math.floor(Math.random() * 81);
+        if (mGrid[idx] !== -1) { mGrid[idx] = -1; placed++; }
+      }
+      for (let i = 0; i < 81; i++) {
+        if (mGrid[i] === -1) continue;
+        const r = Math.floor(i / 9), c = i % 9;
+        let n = 0;
+        for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+            const nr = r + dr, nc = c + dc;
+            if (nr >= 0 && nr < 9 && nc >= 0 && nc < 9 && mGrid[nr * 9 + nc] === -1) n++;
+          }
+        }
+        mGrid[i] = n;
+      }
+      for (let i = 0; i < 81; i++) {
+        const cell = document.createElement("div");
+        cell.className = "m-cell";
+        cell.onclick = () => clickMine(i);
+        cell.oncontextmenu = (e) => {
+          e.preventDefault();
+          if (!cell.classList.contains("open")) cell.textContent = cell.textContent === "🚩" ? "" : "🚩";
+        };
+        board.appendChild(cell);
+      }
+    }
+
+    function clickMine(i) {
+      const cells = document.getElementById("mine-board").children;
+      const cell = cells[i];
+      if (!cell || cell.classList.contains("open") || cell.textContent === "🚩") return;
+      cell.classList.add("open");
+      if (mGrid[i] === -1) {
+        cell.textContent = "💣";
+        cell.style.background = "#ff0000";
+        document.getElementById("mine-reset").innerHTML = "&#128565; Game Over";
+        for (let j = 0; j < 81; j++) {
+          if (mGrid[j] === -1) { cells[j].classList.add("open"); cells[j].textContent = "💣"; }
+        }
+        return;
+      }
+      if (mGrid[i] > 0) {
+        cell.textContent = mGrid[i];
+        const cols = ["", "#0000ff", "#008000", "#ff0000", "#000080", "#800000", "#008080", "#000", "#808080"];
+        cell.style.color = cols[mGrid[i]];
+      } else {
+        const r = Math.floor(i / 9), c = i % 9;
+        for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+            const nr = r + dr, nc = c + dc;
+            if (nr >= 0 && nr < 9 && nc >= 0 && nc < 9) clickMine(nr * 9 + nc);
+          }
+        }
+      }
+    }
+
+    function execShutdown() {
+      if (document.getElementById("sd-win311").checked) {
+        window.location.href = "/win311.html";
+      } else {
+        window.location.href = "/";
+      }
+    }
+
+    // Open Welcome.txt automatically on boot
+    openApp("win-notepad");
+  </script>
+</body>
+</html>

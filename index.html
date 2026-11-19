@@ -3,24 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MAGIC GOAT STUDIO // PROJECT PORTAL</title>
+  <title>MAGIC GOAT STUDIO // COMMAND PORTAL</title>
   <style>
     :root {
       --bg: #000000;
-      --panel: #070b0d;
+      --panel: #060a0c;
+      --panel-alt: #030608;
       --border: #123640;
+      --border-bright: #1e5766;
       --cyan: #00f3ff;
       --green: #39ff14;
       --amber: #ff9e00;
       --red: #ff3b3b;
       --muted: #6c8b94;
       --text: #d7f7ff;
+      --topbar-h: 54px;
+      --sidebar-w: 250px;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
@@ -30,57 +38,69 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 24px 16px;
       background-image:
-        radial-gradient(circle at 50% 0%, rgba(0, 243, 255, 0.08), transparent 60%),
+        radial-gradient(circle at 60% 0%, rgba(0, 243, 255, 0.07), transparent 65%),
         repeating-linear-gradient(
           0deg,
-          rgba(255, 255, 255, 0.015) 0px,
-          rgba(255, 255, 255, 0.015) 1px,
+          rgba(255, 255, 255, 0.014) 0px,
+          rgba(255, 255, 255, 0.014) 1px,
           transparent 1px,
           transparent 3px
         );
     }
 
-    .container {
-      max-width: 1040px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    /* Top VFD Status Header */
-    .vfd-header {
-      border: 1px solid var(--border);
-      background: var(--panel);
-      padding: 20px 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 0 24px rgba(0, 243, 255, 0.08);
-    }
-
-    .status-bar {
+    /* ================= TOP BAR ================= */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--topbar-h);
+      background: #04080a;
+      border-bottom: 1px solid var(--border-bright);
+      box-shadow: 0 2px 18px rgba(0, 243, 255, 0.12);
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
       justify-content: space-between;
+      padding: 0 18px;
+      gap: 12px;
+    }
+
+    .topbar-left {
+      display: flex;
       align-items: center;
       gap: 12px;
-      font-size: 0.82rem;
-      color: var(--green);
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 12px;
-      margin-bottom: 16px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: #020506;
+      color: var(--cyan);
+      border: 1px solid var(--border-bright);
+      padding: 5px 10px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--cyan);
+      font-weight: bold;
+      font-size: 1.05rem;
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
     }
 
     .pulse {
       display: inline-block;
-      width: 8px;
-      height: 8px;
+      width: 9px;
+      height: 9px;
       background: var(--green);
       border-radius: 50%;
       box-shadow: 0 0 8px var(--green);
-      margin-right: 8px;
       animation: blink 1.6s infinite;
     }
 
@@ -89,27 +109,240 @@
       50% { opacity: 0.25; }
     }
 
-    h1 {
-      font-size: clamp(1.6rem, 4vw, 2.4rem);
+    .topbar-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .top-link {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 6px 10px;
+      border: 1px solid transparent;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+
+    .top-link:hover, .top-link.active {
       color: var(--cyan);
-      text-shadow: 0 0 12px rgba(0, 243, 255, 0.55);
-      letter-spacing: 0.1em;
+      border-color: var(--border-bright);
+      background: rgba(0, 243, 255, 0.08);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 0.8rem;
+      color: var(--green);
+    }
+
+    .sys-pill {
+      border: 1px solid rgba(57, 255, 20, 0.4);
+      background: rgba(57, 255, 20, 0.06);
+      padding: 3px 8px;
+      letter-spacing: 0.06em;
+    }
+
+    /* ================= SHELL LAYOUT ================= */
+    .shell {
+      display: flex;
+      flex: 1;
+      min-height: calc(100vh - var(--topbar-h));
+    }
+
+    /* ================= SIDEBAR ================= */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: var(--panel-alt);
+      border-right: 1px solid var(--border);
+      padding: 20px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .side-group {
+      margin-bottom: 20px;
+    }
+
+    .side-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--amber);
+      padding: 0 8px 8px;
+      border-bottom: 1px dashed var(--border);
       margin-bottom: 8px;
     }
 
-    .subtitle {
-      color: var(--muted);
-      font-size: 0.95rem;
-      line-height: 1.5;
+    .side-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    .subtitle span {
+    .side-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.84rem;
+      border: 1px solid transparent;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .side-link:hover {
+      background: rgba(0, 243, 255, 0.09);
+      border-color: var(--border-bright);
+      color: var(--cyan);
+    }
+
+    .side-link.active {
+      background: rgba(0, 243, 255, 0.14);
+      border-color: var(--cyan);
+      color: var(--cyan);
+      font-weight: bold;
+    }
+
+    .side-badge {
+      font-size: 0.68rem;
+      padding: 1px 5px;
+      border: 1px solid var(--green);
+      color: var(--green);
+      text-transform: uppercase;
+    }
+
+    .side-badge.amber {
+      border-color: var(--amber);
       color: var(--amber);
     }
 
-    /* Section Label */
+    .side-badge.muted {
+      border-color: var(--muted);
+      color: var(--muted);
+    }
+
+    .side-telemetry {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      padding: 12px;
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .side-telemetry strong {
+      color: var(--cyan);
+      display: block;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .side-telemetry span {
+      color: var(--green);
+    }
+
+    /* ================= MAIN WORKSPACE ================= */
+    .main-area {
+      flex: 1;
+      min-width: 0;
+      padding: 24px 24px 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .content-wrap {
+      max-width: 1060px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Welcome Hero Box */
+    .welcome-panel {
+      border: 1px solid var(--border-bright);
+      background: var(--panel);
+      padding: 22px 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 0 28px rgba(0, 243, 255, 0.08);
+      position: relative;
+    }
+
+    .welcome-kicker {
+      font-size: 0.78rem;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 8px;
+    }
+
+    .welcome-panel h1 {
+      font-size: clamp(1.5rem, 3.4vw, 2.2rem);
+      color: var(--cyan);
+      text-shadow: 0 0 12px rgba(0, 243, 255, 0.5);
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .welcome-text {
+      color: var(--text);
+      font-size: 0.92rem;
+      line-height: 1.65;
+      max-width: 820px;
+      margin-bottom: 16px;
+    }
+
+    .welcome-text em {
+      color: var(--amber);
+      font-style: normal;
+    }
+
+    .welcome-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn-hero {
+      display: inline-block;
+      text-decoration: none;
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      background: rgba(0, 243, 255, 0.08);
+      transition: background 0.15s;
+    }
+
+    .btn-hero:hover {
+      background: rgba(0, 243, 255, 0.2);
+    }
+
+    .btn-hero.green {
+      border-color: var(--green);
+      color: var(--green);
+      background: rgba(57, 255, 20, 0.08);
+    }
+
+    .btn-hero.green:hover {
+      background: rgba(57, 255, 20, 0.2);
+    }
+
+    /* Section Title */
     .section-title {
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       text-transform: uppercase;
       letter-spacing: 0.14em;
       color: var(--amber);
@@ -129,7 +362,7 @@
     /* Project Grid */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 18px;
       margin-bottom: 32px;
     }
@@ -137,7 +370,7 @@
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
-      padding: 20px;
+      padding: 18px;
       text-decoration: none;
       color: inherit;
       display: flex;
@@ -157,11 +390,11 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
     }
 
     .tag {
-      padding: 2px 8px;
+      padding: 2px 7px;
       border: 1px solid var(--cyan);
       color: var(--cyan);
       text-transform: uppercase;
@@ -176,7 +409,6 @@
     .tag.store {
       border-color: var(--amber);
       color: var(--amber);
-      box-shadow: 0 0 8px rgba(255, 158, 0, 0.2);
     }
 
     .tag.soon {
@@ -185,20 +417,20 @@
     }
 
     .card h2 {
-      font-size: 1.15rem;
+      font-size: 1.12rem;
       color: var(--text);
       margin-bottom: 8px;
     }
 
     .card p {
-      font-size: 0.86rem;
+      font-size: 0.85rem;
       color: var(--muted);
       line-height: 1.5;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .card-footer {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--cyan);
       display: flex;
       justify-content: space-between;
@@ -240,8 +472,8 @@
       color: var(--text);
       border: 1px solid var(--border);
       font-family: "Courier New", Courier, monospace;
-      font-size: 0.85rem;
-      padding: 7px 12px;
+      font-size: 0.84rem;
+      padding: 7px 11px;
       outline: none;
     }
 
@@ -287,10 +519,10 @@
       background: #010304;
       border: 1px solid var(--border);
       color: var(--green);
-      height: 240px;
+      height: 220px;
       overflow-y: auto;
       padding: 12px;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       line-height: 1.4;
       white-space: pre-wrap;
       word-break: break-all;
@@ -320,7 +552,7 @@
 
     /* Footer */
     footer {
-      max-width: 1040px;
+      max-width: 1060px;
       width: 100%;
       margin: 0 auto;
       border-top: 1px solid var(--border);
@@ -341,191 +573,334 @@
     footer a:hover {
       text-decoration: underline;
     }
+
+    /* Responsive Mobile Drawer */
+    @media (max-width: 860px) {
+      .menu-toggle {
+        display: inline-block;
+      }
+
+      .topbar-nav {
+        display: none;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: var(--topbar-h);
+        left: 0;
+        bottom: 0;
+        z-index: 90;
+        transform: translateX(-100%);
+        transition: transform 0.2s ease;
+        box-shadow: 6px 0 24px rgba(0, 0, 0, 0.85);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header class="vfd-header">
-      <div class="status-bar">
-        <div><span class="pulse"></span>SYS.ONLINE // MAGICGOAT.STUDIO [6 NODES]</div>
-        <div id="clock">LOCAL 00:00:00</div>
-      </div>
-      <h1>MAGIC GOAT STUDIO</h1>
-      <p class="subtitle">
-        Hardware, embedded telemetry, retro OS simulators, custom 3D-printed aircraft, and experimental web builds.
-        <span>Select a node below to launch or connect via USB Serial.</span>
-      </p>
-    </header>
 
-    <div class="section-title">Active Nodes, Storefront &amp; Staged Modules</div>
-
-    <main class="grid">
-      <!-- Node 01: Order Custom Drone Kits -->
-      <a class="card" href="/kits.html">
-        <div>
-          <div class="card-top">
-            <span class="tag store">● Order Kits</span>
-            <span>NODE 01 // /kits.html</span>
-          </div>
-          <h2>Custom Drone Kits</h2>
-          <p>
-            Configure and order 3D-printed Sleek Bat sub-250g delta kits, 425mm carbon sensor frames, and pre-flashed H743 avionics bundles.
-          </p>
-        </div>
-        <div class="card-footer">
-          <span>CONFIGURE KIT</span>
-          <span>[ &rarr; ]</span>
-        </div>
+  <!-- ================= TOP COMMAND BAR ================= -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle Menu">&#9776; MENU</button>
+      <a class="brand" href="/">
+        <span class="pulse"></span>
+        <span>MAGIC GOAT STUDIO</span>
       </a>
+    </div>
 
-      <!-- Node 02: Custom Drone & UAV Lab -->
-      <a class="card" href="/drones.html">
-        <div>
-          <div class="card-top">
-            <span class="tag live">● Active Lab</span>
-            <span>NODE 02 // /drones.html</span>
-          </div>
-          <h2>Drone &amp; UAV Bench</h2>
-          <p>
-            Airframe specs, interactive AUW/thrust/flight-time estimator, H743 UART wiring pinouts, and pre-flight verification checklist.
-          </p>
-        </div>
-        <div class="card-footer">
-          <span>OPEN HANGAR</span>
-          <span>[ &rarr; ]</span>
-        </div>
-      </a>
+    <nav class="topbar-nav" aria-label="Primary Top Navigation">
+      <a class="top-link active" href="/">Portal</a>
+      <a class="top-link" href="/drones.html">Drone Lab</a>
+      <a class="top-link" href="/win95.html">Win95</a>
+      <a class="top-link" href="/win311.html">Win3.11</a>
+      <a class="top-link" href="#serial-bench">Serial Bench</a>
+    </nav>
 
-      <!-- Node 03: Windows 95 Simulator -->
-      <a class="card" href="/win95.html">
-        <div>
-          <div class="card-top">
-            <span class="tag live">● Interactive</span>
-            <span>NODE 03 // /win95.html</span>
-          </div>
-          <h2>Windows 95 Desktop</h2>
-          <p>
-            Classic 1995 desktop simulator with Start Menu, Taskbar, My Computer, Paint, Minesweeper, Calculator, Notepad, and MS-DOS Prompt.
-          </p>
-        </div>
-        <div class="card-footer">
-          <span>BOOT WIN95</span>
-          <span>[ &rarr; ]</span>
-        </div>
-      </a>
+    <div class="topbar-right">
+      <span class="sys-pill" id="clock">LOCAL 00:00:00</span>
+    </div>
+  </header>
 
-      <!-- Node 04: Windows 3.11 Simulator -->
-      <a class="card" href="/win311.html">
-        <div>
-          <div class="card-top">
-            <span class="tag live">● Interactive</span>
-            <span>NODE 04 // /win311.html</span>
-          </div>
-          <h2>Windows for Workgroups 3.11</h2>
-          <p>
-            Interactive browser-based Windows 3.11 desktop environment with Program Manager, Notepad, Calculator, Minesweeper, and MS-DOS Prompt.
-          </p>
-        </div>
-        <div class="card-footer">
-          <span>LAUNCH DESKTOP</span>
-          <span>[ &rarr; ]</span>
-        </div>
-      </a>
+  <!-- ================= WORKSPACE SHELL ================= -->
+  <div class="shell">
 
-      <!-- Node 05: OMNIos / VFD Utilities -->
-      <a class="card" href="#omnios" onclick="alert('OMNIos web build staged — drop omnios.html into the repo to activate.'); return false;">
-        <div>
-          <div class="card-top">
-            <span class="tag soon">Staged</span>
-            <span>NODE 05 // /omnios.html</span>
-          </div>
-          <h2>OMNIos VFD Console</h2>
-          <p>
-            Vacuum Fluorescent Display utility suite featuring RF/unit converters, offline field notes, and telemetry packet decoders.
-          </p>
+    <!-- LEFT NAVIGATION SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div>
+        <div class="side-group">
+          <div class="side-label">Portal Navigation</div>
+          <ul class="side-list">
+            <li><a class="side-link active" href="#welcome"><span>&gt; Overview &amp; Welcome</span></a></li>
+            <li><a class="side-link" href="#nodes"><span>&gt; Project Directory</span></a></li>
+            <li><a class="side-link" href="#serial-bench"><span>&gt; USB Serial Terminal</span></a></li>
+          </ul>
         </div>
-        <div class="card-footer">
-          <span>MODULE SLOT 05</span>
-          <span>[ STANDBY ]</span>
-        </div>
-      </a>
 
-      <!-- Node 06: Embedded, RF & Solar Lab -->
-      <a class="card" href="#lab" onclick="alert('RF, Telemetry & Solar Lab slot staged — add lab.html to activate.'); return false;">
-        <div>
-          <div class="card-top">
-            <span class="tag soon">Staged</span>
-            <span>NODE 06 // /lab.html</span>
-          </div>
-          <h2>RF, Telemetry &amp; Solar Lab</h2>
-          <p>
-            Build logs, OpenSCAD/Fusion 360 STL releases, ESP32/CC1101 firmware notes, and 24V LiFePO4 off-grid schematics.
-          </p>
+        <div class="side-group">
+          <div class="side-label">Retro OS Simulators</div>
+          <ul class="side-list">
+            <li>
+              <a class="side-link" href="/win95.html">
+                <span>Windows 95</span>
+                <span class="side-badge">LIVE</span>
+              </a>
+            </li>
+            <li>
+              <a class="side-link" href="/win311.html">
+                <span>Windows 3.11</span>
+                <span class="side-badge">LIVE</span>
+              </a>
+            </li>
+          </ul>
         </div>
-        <div class="card-footer">
-          <span>MODULE SLOT 06</span>
-          <span>[ STANDBY ]</span>
+
+        <div class="side-group">
+          <div class="side-label">Hardware &amp; Labs</div>
+          <ul class="side-list">
+            <li>
+              <a class="side-link" href="/drones.html">
+                <span>Drone &amp; UAV Lab</span>
+                <span class="side-badge">LIVE</span>
+              </a>
+            </li>
+            <li>
+              <a class="side-link" href="/kits.html">
+                <span>Airframe Kits</span>
+                <span class="side-badge amber">BETA</span>
+              </a>
+            </li>
+            <li>
+              <a class="side-link" href="#omnios" onclick="alert('OMNIos web build staged — drop omnios.html into the repo to activate.'); return false;">
+                <span>OMNIos Console</span>
+                <span class="side-badge muted">SOON</span>
+              </a>
+            </li>
+            <li>
+              <a class="side-link" href="#lab" onclick="alert('RF & Solar Lab slot staged — add lab.html to activate.'); return false;">
+                <span>RF &amp; Solar Lab</span>
+                <span class="side-badge muted">SOON</span>
+              </a>
+            </li>
+          </ul>
         </div>
-      </a>
-    </main>
-
-    <!-- Built-in Web Serial Console -->
-    <div class="section-title">Hardware Bench // USB Web Serial Terminal</div>
-
-    <section class="serial-panel">
-      <div class="serial-controls">
-        <button id="btn-connect" class="btn-connect" onclick="toggleSerial()">Connect Port</button>
-        <select id="baud-rate" title="Baud Rate">
-          <option value="9600">9600 baud</option>
-          <option value="19200">19200 baud</option>
-          <option value="38400">38400 baud</option>
-          <option value="57600">57600 baud</option>
-          <option value="115200" selected>115200 baud</option>
-          <option value="230400">230400 baud</option>
-          <option value="460800">460800 baud</option>
-          <option value="921600">921600 baud</option>
-        </select>
-        <select id="line-ending" title="Line Ending">
-          <option value="\r\n" selected>CRLF (\r\n)</option>
-          <option value="\n">LF (\n)</option>
-          <option value="\r">CR (\r)</option>
-          <option value="">None</option>
-        </select>
-        <button class="btn-action" onclick="clearSerial()">Clear</button>
-        <button class="btn-action" onclick="downloadLog()">Save Log</button>
-        <label class="checkbox-label">
-          <input type="checkbox" id="chk-timestamp" /> Timestamps
-        </label>
-        <label class="checkbox-label">
-          <input type="checkbox" id="chk-autoscroll" checked /> Auto-scroll
-        </label>
-        <div id="serial-status" class="serial-status">● Disconnected</div>
       </div>
 
-      <div id="serial-log" class="serial-terminal">[VFD SERIAL MONITOR READY — Click "Connect Port" to attach an ESP32, Arduino, GPS, or UART adapter]
+      <div class="side-telemetry">
+        <strong>Node Telemetry</strong>
+        Host: <span>magicgoat.studio</span><br />
+        Region: <span>Woodstock, NB</span><br />
+        Status: <span>ONLINE // READY</span>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="main-area">
+      <div class="content-wrap">
+
+        <!-- WELCOME TEXT SPOT -->
+        <section class="welcome-panel" id="welcome">
+          <div class="welcome-kicker">// WELCOME TO THE WORKBENCH</div>
+          <h1>MAGIC GOAT STUDIO PORTAL</h1>
+          <p class="welcome-text">
+            Welcome to the digital workshop of <em>Matt-R&eacute;al Slaunwhite</em> in Woodstock, New Brunswick. This portal brings together interactive retro operating system recreations, custom 3D-printed UAV airframes, off-grid 24V solar telemetry, and browser-native hardware tools—all running straight from the edge with zero bloat.
+          </p>
+          <div class="welcome-actions">
+            <a class="btn-hero" href="/win95.html">Boot Windows 95 &rarr;</a>
+            <a class="btn-hero" href="/win311.html">Launch Win 3.11 &rarr;</a>
+            <a class="btn-hero green" href="/drones.html">Open Drone Lab &rarr;</a>
+          </div>
+        </section>
+
+        <!-- PROJECT DIRECTORY -->
+        <div class="section-title" id="nodes">Active Nodes &amp; Experimental Builds</div>
+
+        <main class="grid">
+          <!-- Node 01: Windows 95 Simulator -->
+          <a class="card" href="/win95.html">
+            <div>
+              <div class="card-top">
+                <span class="tag live">● Interactive</span>
+                <span>/win95.html</span>
+              </div>
+              <h2>Windows 95 Desktop</h2>
+              <p>
+                Classic 1995 desktop simulator with Start Menu, Taskbar, My Computer, Paint, Minesweeper, Calculator, Notepad, and MS-DOS Prompt.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>BOOT WIN95</span>
+              <span>[ &rarr; ]</span>
+            </div>
+          </a>
+
+          <!-- Node 02: Windows 3.11 Simulator -->
+          <a class="card" href="/win311.html">
+            <div>
+              <div class="card-top">
+                <span class="tag live">● Interactive</span>
+                <span>/win311.html</span>
+              </div>
+              <h2>Windows for Workgroups 3.11</h2>
+              <p>
+                Interactive browser-based Windows 3.11 desktop environment with Program Manager, Notepad, Calculator, Minesweeper, and MS-DOS Prompt.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>LAUNCH DESKTOP</span>
+              <span>[ &rarr; ]</span>
+            </div>
+          </a>
+
+          <!-- Node 03: Custom Drone & UAV Lab -->
+          <a class="card" href="/drones.html">
+            <div>
+              <div class="card-top">
+                <span class="tag live">● Active Lab</span>
+                <span>/drones.html</span>
+              </div>
+              <h2>Drone &amp; UAV Bench</h2>
+              <p>
+                425mm H743 quad &amp; sub-250g Sleek Bat delta specs, interactive AUW/thrust/flight-time estimator, UART pinouts, and pre-flight checklist.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>OPEN HANGAR</span>
+              <span>[ &rarr; ]</span>
+            </div>
+          </a>
+
+          <!-- Node 04: Custom Drone Kits (Back-burnered Storefront) -->
+          <a class="card" href="/kits.html">
+            <div>
+              <div class="card-top">
+                <span class="tag store">● Preview</span>
+                <span>/kits.html</span>
+              </div>
+              <h2>Custom Drone Kits</h2>
+              <p>
+                Interactive hardware configurator and weight/spec builder for 3D-printed Sleek Bat delta wings and 425mm carbon sensor frames.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>VIEW CONFIGURATOR</span>
+              <span>[ &rarr; ]</span>
+            </div>
+          </a>
+
+          <!-- Node 05: OMNIos / VFD Utilities -->
+          <a class="card" href="#omnios" onclick="alert('OMNIos web build staged — drop omnios.html into the repo to activate.'); return false;">
+            <div>
+              <div class="card-top">
+                <span class="tag soon">Staged</span>
+                <span>/omnios.html</span>
+              </div>
+              <h2>OMNIos VFD Console</h2>
+              <p>
+                Vacuum Fluorescent Display utility suite featuring RF/unit converters, offline field notes, and telemetry packet decoders.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>MODULE SLOT 05</span>
+              <span>[ STANDBY ]</span>
+            </div>
+          </a>
+
+          <!-- Node 06: Embedded, RF & Solar Lab -->
+          <a class="card" href="#lab" onclick="alert('RF, Telemetry & Solar Lab slot staged — add lab.html to activate.'); return false;">
+            <div>
+              <div class="card-top">
+                <span class="tag soon">Staged</span>
+                <span>/lab.html</span>
+              </div>
+              <h2>RF, Telemetry &amp; Solar Lab</h2>
+              <p>
+                Build logs, OpenSCAD/Fusion 360 STL releases, ESP32/CC1101 firmware notes, and 24V LiFePO4 off-grid schematics.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>MODULE SLOT 06</span>
+              <span>[ STANDBY ]</span>
+            </div>
+          </a>
+        </main>
+
+        <!-- BUILT-IN WEB SERIAL CONSOLE -->
+        <div class="section-title" id="serial-bench">Hardware Bench // USB Web Serial Terminal</div>
+
+        <section class="serial-panel">
+          <div class="serial-controls">
+            <button id="btn-connect" class="btn-connect" onclick="toggleSerial()">Connect Port</button>
+            <select id="baud-rate" title="Baud Rate">
+              <option value="9600">9600 baud</option>
+              <option value="19200">19200 baud</option>
+              <option value="38400">38400 baud</option>
+              <option value="57600">57600 baud</option>
+              <option value="115200" selected>115200 baud</option>
+              <option value="230400">230400 baud</option>
+              <option value="460800">460800 baud</option>
+              <option value="921600">921600 baud</option>
+            </select>
+            <select id="line-ending" title="Line Ending">
+              <option value="\r\n" selected>CRLF (\r\n)</option>
+              <option value="\n">LF (\n)</option>
+              <option value="\r">CR (\r)</option>
+              <option value="">None</option>
+            </select>
+            <button class="btn-action" onclick="clearSerial()">Clear</button>
+            <button class="btn-action" onclick="downloadLog()">Save Log</button>
+            <label class="checkbox-label">
+              <input type="checkbox" id="chk-timestamp" /> Timestamps
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="chk-autoscroll" checked /> Auto-scroll
+            </label>
+            <div id="serial-status" class="serial-status">● Disconnected</div>
+          </div>
+
+          <div id="serial-log" class="serial-terminal">[VFD SERIAL MONITOR READY — Click "Connect Port" to attach an ESP32, Arduino, GPS, or UART adapter]
 </div>
 
-      <div class="serial-tx-row">
-        <input
-          type="text"
-          id="serial-input"
-          placeholder="Type AT command or serial payload and press Enter..."
-          onkeydown="if (event.key === 'Enter') sendSerial();"
-        />
-        <button class="btn-action" onclick="sendSerial()">Send TX</button>
+          <div class="serial-tx-row">
+            <input
+              type="text"
+              id="serial-input"
+              placeholder="Type AT command or serial payload and press Enter..."
+              onkeydown="if (event.key === 'Enter') sendSerial();"
+            />
+            <button class="btn-action" onclick="sendSerial()">Send TX</button>
+          </div>
+        </section>
+
       </div>
-    </section>
+
+      <footer>
+        <div>&copy; 2026 MAGIC GOAT STUDIO // WOODSTOCK, NB</div>
+        <div>
+          <a href="mailto:matt@magicgoat.studio">matt@magicgoat.studio</a> &middot;
+          <a href="https://github.com/mattjslaunwhite/Site" target="_blank" rel="noopener">GitHub Repo</a>
+        </div>
+      </footer>
+    </div>
   </div>
 
-  <footer>
-    <div>&copy; 2026 MAGIC GOAT STUDIO // WOODSTOCK, NB</div>
-    <div>
-      <a href="mailto:matt@magicgoat.studio">matt@magicgoat.studio</a> &middot;
-      <a href="https://github.com/mattjslaunwhite/Site" target="_blank" rel="noopener">GitHub Repo</a>
-    </div>
-  </footer>
-
   <script>
+    // Mobile Sidebar Drawer Toggle
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("open");
+    }
+
+    // Close mobile sidebar when clicking a sidebar link
+    document.querySelectorAll(".side-link").forEach(link => {
+      link.addEventListener("click", () => {
+        document.getElementById("sidebar").classList.remove("open");
+      });
+    });
+
     // Live Local Clock
     function updateClock() {
       const now = new Date();
@@ -682,7 +1057,6 @@
       URL.revokeObjectURL(url);
     }
 
-    // Handle physical USB unplug
     if ("serial" in navigator) {
       navigator.serial.addEventListener("disconnect", () => {
         if (port) disconnectSerial();

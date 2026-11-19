@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Windows for Workgroups 3.11 — Magic Goat Studio</title>
+  <style>
+    :root {
+      --desktop: #008080;
+      --win-bg: #c0c0c0;
+      --title-active: #000080;
+      --title-text: #ffffff;
+      --border-light: #ffffff;
+      --border-dark: #808080;
+      --border-black: #000000;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--desktop);
+      font-family: "MS Sans Serif", "Tahoma", "Arial", sans-serif;
+      font-size: 13px;
+    }
+
+    /* Classic Win 3.11 3D Bevels */
+    .bevel-out {
+      background: var(--win-bg);
+      border-top: 2px solid var(--border-light);
+      border-left: 2px solid var(--border-light);
+      border-right: 2px solid var(--border-dark);
+      border-bottom: 2px solid var(--border-dark);
+      box-shadow: 1px 1px 0 var(--border-black);
+    }
+
+    .bevel-in {
+      background: #ffffff;
+      border-top: 2px solid var(--border-dark);
+      border-left: 2px solid var(--border-dark);
+      border-right: 2px solid var(--border-light);
+      border-bottom: 2px solid var(--border-light);
+    }
+
+    /* Window Frame */
+    .window {
+      position: absolute;
+      min-width: 260px;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #000;
+      background: var(--win-bg);
+      padding: 2px;
+    }
+
+    .title-bar {
+      background: var(--title-active);
+      color: var(--title-text);
+      font-weight: bold;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2px;
+      cursor: move;
+    }
+
+    .title-bar.inactive {
+      background: #ffffff;
+      color: #000000;
+      border-bottom: 1px solid #808080;
+    }
+
+    .win-btn {
+      width: 18px;
+      height: 18px;
+      background: var(--win-bg);
+      color: #000;
+      border-top: 1px solid #fff;
+      border-left: 1px solid #fff;
+      border-right: 1px solid #808080;
+      border-bottom: 1px solid #808080;
+      font-size: 11px;
+      line-height: 15px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .win-btn:active {
+      border-top: 1px solid #808080;
+      border-left: 1px solid #808080;
+      border-right: 1px solid #fff;
+      border-bottom: 1px solid #fff;
+    }
+
+    .menu-bar {
+      display: flex;
+      gap: 14px;
+      padding: 3px 8px;
+      border-bottom: 1px solid #808080;
+      background: var(--win-bg);
+    }
+
+    .menu-bar span u {
+      text-decoration: underline;
+    }
+
+    .window-body {
+      padding: 10px;
+      background: #ffffff;
+      border: 1px solid #808080;
+      margin: 2px;
+      flex: 1;
+      overflow: auto;
+    }
+
+    /* Program Manager Icons */
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+      gap: 16px;
+      padding: 8px;
+    }
+
+    .prog-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .prog-icon:hover .icon-label {
+      background: #000080;
+      color: #fff;
+    }
+
+    .icon-glyph {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 4px;
+      background: #e6e6e6;
+      border: 1px solid #000;
+    }
+
+    .icon-label {
+      padding: 1px 4px;
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    /* Minimized Desktop Icons */
+    #minimized-dock {
+      position: fixed;
+      bottom: 8px;
+      left: 8px;
+      display: flex;
+      gap: 12px;
+      z-index: 5;
+    }
+
+    .min-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      color: #fff;
+      text-shadow: 1px 1px #000;
+      font-size: 11px;
+    }
+
+    /* Notepad */
+    textarea.notepad-area {
+      width: 100%;
+      height: 220px;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: "Courier New", monospace;
+      font-size: 13px;
+      user-select: text;
+    }
+
+    /* MS-DOS */
+    .dos-screen {
+      background: #000000;
+      color: #c0c0c0;
+      font-family: "Courier New", monospace;
+      padding: 8px;
+      height: 240px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      user-select: text;
+    }
+
+    .dos-output {
+      overflow-y: auto;
+      white-space: pre-wrap;
+      font-size: 12.5px;
+      line-height: 1.35;
+    }
+
+    .dos-input-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dos-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-family: "Courier New", monospace;
+      font-size: 12.5px;
+      flex: 1;
+    }
+
+    /* Calculator */
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      margin-top: 8px;
+    }
+
+    .calc-display {
+      width: 100%;
+      text-align: right;
+      padding: 4px 6px;
+      font-family: "Courier New", monospace;
+      font-weight: bold;
+      font-size: 15px;
+      background: #fff;
+      border: 1px solid #808080;
+    }
+
+    .calc-btn {
+      padding: 6px;
+      background: var(--win-bg);
+      border-top: 2px solid #fff;
+      border-left: 2px solid #fff;
+      border-right: 2px solid #808080;
+      border-bottom: 2px solid #808080;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .calc-btn:active {
+      border-top: 2px solid #808080;
+      border-left: 2px solid #808080;
+      border-right: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+    }
+
+    /* Minesweeper */
+    .mine-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 24px);
+      gap: 1px;
+      background: #808080;
+      border: 2px solid #808080;
+      width: max-content;
+      margin: 8px auto 0;
+    }
+
+    .mine-cell {
+      width: 24px;
+      height: 24px;
+      background: var(--win-bg);
+      border-top: 2px solid #fff;
+      border-left: 2px solid #fff;
+      border-right: 2px solid #808080;
+      border-bottom: 2px solid #808080;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .mine-cell.open {
+      border: 1px solid #808080;
+      background: #d8d8d8;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Program Manager Window -->
+  <div class="window bevel-out" id="win-progman" style="top: 36px; left: 40px; width: 490px; z-index: 10;">
+    <div class="title-bar" onmousedown="startDrag(event, 'win-progman')">
+      <button class="win-btn" title="System Menu" onclick="alert('Windows for Workgroups 3.11\nMagic Goat Studio Edition')">&#8212;</button>
+      <span>Program Manager - [Main]</span>
+      <div>
+        <button class="win-btn" onclick="minimizeWin('win-progman', 'Program Manager')">&#9662;</button>
+      </div>
+    </div>
+    <div class="menu-bar">
+      <span><u>F</u>ile</span>
+      <span><u>O</u>ptions</span>
+      <span><u>W</u>indow</span>
+      <span><u>H</u>elp</span>
+    </div>
+    <div class="window-body">
+      <div class="icon-grid">
+        <div class="prog-icon" ondblclick="openWin('win-notepad')" onclick="openWin('win-notepad')">
+          <div class="icon-glyph">&#128221;</div>
+          <div class="icon-label">Notepad</div>
+        </div>
+        <div class="prog-icon" ondblclick="openWin('win-dos')" onclick="openWin('win-dos')">
+          <div class="icon-glyph" style="background:#000;color:#fff;font-size:12px;">MS-DOS</div>
+          <div class="icon-label">MS-DOS Prompt</div>
+        </div>
+        <div class="prog-icon" ondblclick="openWin('win-calc')" onclick="openWin('win-calc')">
+          <div class="icon-glyph">&#129518;</div>
+          <div class="icon-label">Calculator</div>
+        </div>
+        <div class="prog-icon" ondblclick="openWin('win-mine')" onclick="openWin('win-mine')">
+          <div class="icon-glyph">&#128163;</div>
+          <div class="icon-label">Minesweeper</div>
+        </div>
+        <div class="prog-icon" onclick="window.location.href='/'">
+          <div class="icon-glyph" style="background:#000;color:#00f3ff;">&#8962;</div>
+          <div class="icon-label">Exit to Portal</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notepad Window -->
+  <div class="window bevel-out" id="win-notepad" style="top: 90px; left: 320px; width: 380px; display: none; z-index: 11;">
+    <div class="title-bar" onmousedown="startDrag(event, 'win-notepad')">
+      <button class="win-btn" onclick="closeWin('win-notepad')">&#8212;</button>
+      <span>Notepad - README.TXT</span>
+      <button class="win-btn" onclick="minimizeWin('win-notepad', 'Notepad')">&#9662;</button>
+    </div>
+    <div class="menu-bar">
+      <span><u>F</u>ile</span>
+      <span><u>E</u>dit</span>
+      <span><u>S</u>earch</span>
+    </div>
+    <div class="window-body" style="padding:4px;">
+      <textarea class="notepad-area">MAGIC GOAT STUDIO — WFW 3.11 NODE
+==================================
+Host: magicgoat.studio
+Runtime: Cloudflare Edge Worker
+
+Click any icon in Program Manager to launch utilities, or click "Exit to Portal" to return to the main project hub.</textarea>
+    </div>
+  </div>
+
+  <!-- MS-DOS Prompt Window -->
+  <div class="window bevel-out" id="win-dos" style="top: 150px; left: 160px; width: 440px; display: none; z-index: 12;">
+    <div class="title-bar" onmousedown="startDrag(event, 'win-dos')">
+      <button class="win-btn" onclick="closeWin('win-dos')">&#8212;</button>
+      <span>MS-DOS Prompt</span>
+      <button class="win-btn" onclick="minimizeWin('win-dos', 'MS-DOS')">&#9662;</button>
+    </div>
+    <div class="window-body" style="padding:0;background:#000;">
+      <div class="dos-screen" onclick="document.getElementById('dos-in').focus()">
+        <div class="dos-output" id="dos-out">Microsoft(R) MS-DOS(R) Version 6.22
+(C)Copyright Microsoft Corp 1981-1994.
+Type HELP for available commands.
+
+</div>
+        <div class="dos-input-row">
+          <span>C:\MAGICGOAT&gt;</span>
+          <input class="dos-input" id="dos-in" type="text" autocomplete="off" onkeydown="handleDos(event)" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calculator Window -->
+  <div class="window bevel-out" id="win-calc" style="top: 70px; left: 560px; width: 240px; display: none; z-index: 13;">
+    <div class="title-bar" onmousedown="startDrag(event, 'win-calc')">
+      <button class="win-btn" onclick="closeWin('win-calc')">&#8212;</button>
+      <span>Calculator</span>
+      <button class="win-btn" onclick="minimizeWin('win-calc', 'Calculator')">&#9662;</button>
+    </div>
+    <div class="window-body" style="background:#c0c0c0;">
+      <input class="calc-display" id="calc-disp" type="text" value="0" readonly />
+      <div class="calc-grid">
+        <button class="calc-btn" onclick="calcKey('7')">7</button>
+        <button class="calc-btn" onclick="calcKey('8')">8</button>
+        <button class="calc-btn" onclick="calcKey('9')">9</button>
+        <button class="calc-btn" onclick="calcKey('/')">/</button>
+        <button class="calc-btn" onclick="calcKey('4')">4</button>
+        <button class="calc-btn" onclick="calcKey('5')">5</button>
+        <button class="calc-btn" onclick="calcKey('6')">6</button>
+        <button class="calc-btn" onclick="calcKey('*')">*</button>
+        <button class="calc-btn" onclick="calcKey('1')">1</button>
+        <button class="calc-btn" onclick="calcKey('2')">2</button>
+        <button class="calc-btn" onclick="calcKey('3')">3</button>
+        <button class="calc-btn" onclick="calcKey('-')">-</button>
+        <button class="calc-btn" onclick="calcClear()">C</button>
+        <button class="calc-btn" onclick="calcKey('0')">0</button>
+        <button class="calc-btn" onclick="calcEval()">=</button>
+        <button class="calc-btn" onclick="calcKey('+')">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Minesweeper Window -->
+  <div class="window bevel-out" id="win-mine" style="top: 210px; left: 480px; width: 250px; display: none; z-index: 14;">
+    <div class="title-bar" onmousedown="startDrag(event, 'win-mine')">
+      <button class="win-btn" onclick="closeWin('win-mine')">&#8212;</button>
+      <span>Minesweeper</span>
+      <button class="win-btn" onclick="minimizeWin('win-mine', 'Minesweeper')">&#9662;</button>
+    </div>
+    <div class="window-body" style="background:#c0c0c0;text-align:center;">
+      <button class="calc-btn" onclick="initMines()" id="mine-face">&#128578; New Game</button>
+      <div class="mine-grid" id="mine-grid"></div>
+    </div>
+  </div>
+
+  <!-- Minimized Icons Dock -->
+  <div id="minimized-dock"></div>
+
+  <script>
+    let topZ = 20;
+
+    function focusWin(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      topZ++;
+      el.style.zIndex = topZ;
+      document.querySelectorAll(".title-bar").forEach(tb => tb.classList.add("inactive"));
+      el.querySelector(".title-bar").classList.remove("inactive");
+    }
+
+    function openWin(id) {
+      const el = document.getElementById(id);
+      el.style.display = "flex";
+      const minEl = document.getElementById("min-" + id);
+      if (minEl) minEl.remove();
+      focusWin(id);
+      if (id === "win-dos") document.getElementById("dos-in").focus();
+      if (id === "win-mine" && !document.getElementById("mine-grid").hasChildNodes()) initMines();
+    }
+
+    function closeWin(id) {
+      document.getElementById(id).style.display = "none";
+    }
+
+    function minimizeWin(id, label) {
+      document.getElementById(id).style.display = "none";
+      if (document.getElementById("min-" + id)) return;
+      const dock = document.getElementById("minimized-dock");
+      const btn = document.createElement("div");
+      btn.className = "min-icon";
+      btn.id = "min-" + id;
+      btn.innerHTML = `<div class="icon-glyph">&#9635;</div><span>${label}</span>`;
+      btn.onclick = () => openWin(id);
+      dock.appendChild(btn);
+    }
+
+    // Draggable Windows
+    let dragEl = null, offsetX = 0, offsetY = 0;
+    function startDrag(e, id) {
+      if (e.target.tagName === "BUTTON") return;
+      dragEl = document.getElementById(id);
+      focusWin(id);
+      offsetX = e.clientX - dragEl.offsetLeft;
+      offsetY = e.clientY - dragEl.offsetTop;
+      document.onmousemove = (ev) => {
+        if (!dragEl) return;
+        dragEl.style.left = Math.max(0, ev.clientX - offsetX) + "px";
+        dragEl.style.top = Math.max(0, ev.clientY - offsetY) + "px";
+      };
+      document.onmouseup = () => {
+        dragEl = null;
+        document.onmousemove = null;
+      };
+    }
+
+    // MS-DOS Prompt Logic
+    function handleDos(e) {
+      if (e.key !== "Enter") return;
+      const input = document.getElementById("dos-in");
+      const out = document.getElementById("dos-out");
+      const raw = input.value.trim();
+      const cmd = raw.toUpperCase();
+      out.textContent += `C:\\MAGICGOAT>${raw}\n`;
+      if (cmd === "HELP") {
+        out.textContent += "Commands: DIR, VER, TIME, CLS, PORTAL, EXIT\n\n";
+      } else if (cmd === "DIR") {
+        out.textContent += " Volume in drive C is MAGICGOAT\n Directory of C:\\MAGICGOAT\n\nINDEX    HTML      4,820  11-19-26  1:45p\nWIN311   HTML     11,240  11-19-26  1:45p\nREADME   TXT         256  11-19-26  1:45p\n        3 file(s)     16,316 bytes\n\n";
+      } else if (cmd === "VER") {
+        out.textContent += "MS-DOS Version 6.22 [Magic Goat Studio Edge Node]\n\n";
+      } else if (cmd === "TIME") {
+        out.textContent += "Current time is " + new Date().toLocaleTimeString() + "\n\n";
+      } else if (cmd === "CLS") {
+        out.textContent = "";
+      } else if (cmd === "PORTAL") {
+        window.location.href = "/";
+      } else if (cmd === "EXIT") {
+        closeWin("win-dos");
+      } else if (raw !== "") {
+        out.textContent += "Bad command or file name\n\n";
+      }
+      input.value = "";
+      out.scrollTop = out.scrollHeight;
+    }
+
+    // Calculator Logic
+    let calcBuf = "";
+    function calcKey(k) {
+      calcBuf += k;
+      document.getElementById("calc-disp").value = calcBuf;
+    }
+    function calcClear() {
+      calcBuf = "";
+      document.getElementById("calc-disp").value = "0";
+    }
+    function calcEval() {
+      try {
+        if (!/^[0-9+\-*/.]+$/.test(calcBuf)) throw new Error();
+        const res = Function('"use strict";return (' + calcBuf + ')')();
+        calcBuf = String(res);
+        document.getElementById("calc-disp").value = calcBuf;
+      } catch {
+        document.getElementById("calc-disp").value = "Error";
+        calcBuf = "";
+      }
+    }
+
+    // Minesweeper Logic (8x8, 10 mines)
+    let board = [];
+    function initMines() {
+      const grid = document.getElementById("mine-grid");
+      document.getElementById("mine-face").innerHTML = "&#128578; New Game";
+      grid.innerHTML = "";
+      board = Array(64).fill(0);
+      let placed = 0;
+      while (placed < 10) {
+        const idx = Math.floor(Math.random() * 64);
+        if (board[idx] !== -1) { board[idx] = -1; placed++; }
+      }
+      for (let i = 0; i < 64; i++) {
+        if (board[i] === -1) continue;
+        const r = Math.floor(i / 8), c = i % 8;
+        let count = 0;
+        for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+            const nr = r + dr, nc = c + dc;
+            if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && board[nr * 8 + nc] === -1) count++;
+          }
+        }
+        board[i] = count;
+      }
+      for (let i = 0; i < 64; i++) {
+        const cell = document.createElement("div");
+        cell.className = "mine-cell";
+        cell.dataset.idx = i;
+        cell.onclick = () => revealCell(i);
+        cell.oncontextmenu = (e) => {
+          e.preventDefault();
+          if (!cell.classList.contains("open")) {
+            cell.textContent = cell.textContent === "🚩" ? "" : "🚩";
+          }
+        };
+        grid.appendChild(cell);
+      }
+    }
+
+    function revealCell(i) {
+      const cells = document.getElementById("mine-grid").children;
+      const cell = cells[i];
+      if (!cell || cell.classList.contains("open") || cell.textContent === "🚩") return;
+      cell.classList.add("open");
+      if (board[i] === -1) {
+        cell.textContent = "💣";
+        cell.style.background = "#ff4d4d";
+        document.getElementById("mine-face").innerHTML = "&#128565; Boom!";
+        for (let j = 0; j < 64; j++) {
+          if (board[j] === -1) { cells[j].classList.add("open"); cells[j].textContent = "💣"; }
+        }
+        return;
+      }
+      if (board[i] > 0) {
+        cell.textContent = board[i];
+        const colors = ["", "#0000ff", "#008000", "#ff0000", "#000080", "#800000", "#008080", "#000", "#808080"];
+        cell.style.color = colors[board[i]];
+      } else {
+        const r = Math.floor(i / 8), c = i % 8;
+        for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+            const nr = r + dr, nc = c + dc;
+            if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) revealCell(nr * 8 + nc);
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>

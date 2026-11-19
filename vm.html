@@ -101,7 +101,7 @@
       padding: 0 16px;
       flex: 1;
       display: grid;
-      grid-template-columns: 320px 1fr;
+      grid-template-columns: 335px 1fr;
       gap: 18px;
     }
 
@@ -127,14 +127,21 @@
     }
 
     .field {
-      margin-bottom: 12px;
+      margin-bottom: 11px;
       display: flex;
       flex-direction: column;
       gap: 5px;
     }
 
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 11px;
+    }
+
     .field label {
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       color: var(--muted);
       text-transform: uppercase;
     }
@@ -144,8 +151,8 @@
       color: var(--text);
       border: 1px solid var(--border-bright);
       font-family: "Courier New", Courier, monospace;
-      font-size: 0.82rem;
-      padding: 7px 9px;
+      font-size: 0.8rem;
+      padding: 7px 8px;
       outline: none;
       width: 100%;
     }
@@ -158,7 +165,7 @@
       background: var(--panel-alt);
       border: 1px solid var(--border);
       padding: 9px 10px;
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       color: var(--cyan);
       line-height: 1.45;
       margin-bottom: 12px;
@@ -220,7 +227,7 @@
       border: 1px solid var(--border);
       background: var(--panel-alt);
       padding: 10px;
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       color: var(--muted);
       line-height: 1.55;
     }
@@ -229,19 +236,118 @@
       color: var(--green);
     }
 
+    .telemetry-box span.amber {
+      color: var(--amber);
+    }
+
+    /* ================= HARDWARE STATUS BEZEL ================= */
+    .hw-bezel {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #020507;
+      border: 1px solid var(--border-bright);
+      padding: 8px 12px;
+      margin-bottom: 12px;
+    }
+
+    .led-bank {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .led-unit {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.74rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 7px;
+      border: 1px solid #0d262d;
+      background: #04090c;
+      transition: border-color 0.08s, color 0.08s;
+    }
+
+    .led-bulb {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #17272b;
+      border: 1px solid #26424a;
+      transition: background 0.06s, box-shadow 0.06s;
+    }
+
+    /* Active LED states */
+    .led-unit.on-green {
+      color: var(--green);
+      border-color: rgba(57, 255, 20, 0.45);
+    }
+    .led-unit.on-green .led-bulb {
+      background: var(--green);
+      border-color: var(--green);
+      box-shadow: 0 0 9px var(--green);
+    }
+
+    .led-unit.on-amber {
+      color: var(--amber);
+      border-color: rgba(255, 158, 0, 0.55);
+    }
+    .led-unit.on-amber .led-bulb {
+      background: var(--amber);
+      border-color: var(--amber);
+      box-shadow: 0 0 9px var(--amber);
+    }
+
+    .led-unit.on-cyan {
+      color: var(--cyan);
+      border-color: rgba(0, 243, 255, 0.55);
+    }
+    .led-unit.on-cyan .led-bulb {
+      background: var(--cyan);
+      border-color: var(--cyan);
+      box-shadow: 0 0 9px var(--cyan);
+    }
+
+    .led-unit.on-red {
+      color: var(--red);
+      border-color: rgba(255, 59, 59, 0.55);
+    }
+    .led-unit.on-red .led-bulb {
+      background: var(--red);
+      border-color: var(--red);
+      box-shadow: 0 0 9px var(--red);
+    }
+
+    .io-counters {
+      display: flex;
+      gap: 12px;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .io-counters span {
+      color: var(--cyan);
+    }
+
     /* VM Screen Container */
     .screen-toolbar {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       align-items: center;
     }
 
     .screen-wrap {
       background: #000000;
       border: 1px solid var(--border-bright);
-      min-height: 460px;
+      min-height: 450px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -345,7 +451,7 @@
         <label for="preset-os">Select Distro / OS</label>
         <select id="preset-os" onchange="onProfileChange()">
           <option value="buildroot">Buildroot Linux 4.16 (Fast Shell + Net)</option>
-          <option value="tinycore">TinyCore Linux 15 (X11 GUI Desktop)</option>
+          <option value="tinycore">TinyCore Linux (X11 GUI Desktop)</option>
           <option value="kolibri">KolibriOS (32-bit GUI Assembly OS)</option>
           <option value="freedos">FreeDOS 1.2 (16-bit Real Mode)</option>
           <option value="bios">SeaBIOS POST Only (Verify Hypervisor)</option>
@@ -357,23 +463,33 @@
         Kernel 4.16.13 with BusyBox, GCC, Python, and NE2000 networking (~6.5 MB). Auto-logs in as root.
       </div>
 
-      <div class="field">
-        <label for="ram-size">System RAM</label>
-        <select id="ram-size">
-          <option value="64">64 MB</option>
-          <option value="128" selected>128 MB</option>
-          <option value="256">256 MB</option>
-          <option value="512">512 MB</option>
-        </select>
+      <div class="field-row">
+        <div class="field" style="margin-bottom:0;">
+          <label for="host-ram">Host RAM Pool</label>
+          <select id="host-ram" onchange="populateRamOptions(true)">
+            <option value="auto" selected>Auto-Detect</option>
+            <option value="4">4 GB Host</option>
+            <option value="8">8 GB Host</option>
+            <option value="16">16 GB Host</option>
+            <option value="32">32 GB Host</option>
+            <option value="64">64 GB Host</option>
+          </select>
+        </div>
+
+        <div class="field" style="margin-bottom:0;">
+          <label for="vram-size">VGA VRAM</label>
+          <select id="vram-size">
+            <option value="8">8 MB SVGA</option>
+            <option value="16" selected>16 MB SVGA</option>
+            <option value="32">32 MB SVGA</option>
+            <option value="64">64 MB SVGA</option>
+          </select>
+        </div>
       </div>
 
       <div class="field">
-        <label for="vram-size">VGA Video Memory</label>
-        <select id="vram-size">
-          <option value="8" selected>8 MB SVGA</option>
-          <option value="16">16 MB SVGA</option>
-          <option value="32">32 MB SVGA</option>
-        </select>
+        <label for="ram-size">VM System RAM (Up to 70% Host)</label>
+        <select id="ram-size"></select>
       </div>
 
       <div class="btn-grid">
@@ -402,8 +518,8 @@
 
       <div class="telemetry-box">
         WASM Engine: <span id="engine-state">Checking...</span><br />
-        BIOS Source: <span>jsDelivr CORS CDN</span><br />
-        Local ISOs: <span>Alpine x86, TinyCore, Puppy, Debian i386</span>
+        Detected RAM: <span id="detected-ram-label">Scanning...</span><br />
+        70% VM Ceiling: <span class="amber" id="max-ram-label">-- MB</span>
       </div>
     </aside>
 
@@ -412,6 +528,41 @@
       <div class="panel-title">
         <span id="active-profile">CONSOLE: READY TO BOOT</span>
         <span id="speed-readout" style="color:var(--cyan);">0.0 MIPS</span>
+      </div>
+
+      <!-- Virtual Hardware Front-Panel LEDs -->
+      <div class="hw-bezel" aria-label="Virtual Hardware Status Indicators">
+        <div class="led-bank">
+          <div class="led-unit" id="led-pwr" title="System Power / WASM CPU">
+            <span class="led-bulb"></span>
+            <span>PWR</span>
+          </div>
+          <div class="led-unit" id="led-hdd" title="ATA/ATAPI Disk & CD-ROM Activity">
+            <span class="led-bulb"></span>
+            <span>HDD/CD</span>
+          </div>
+          <div class="led-unit" id="led-fdd" title="Floppy Controller Status">
+            <span class="led-bulb"></span>
+            <span>FDD</span>
+          </div>
+          <div class="led-unit" id="led-lan" title="NE2000 PCI Ethernet Link & Frame Activity">
+            <span class="led-bulb"></span>
+            <span>LAN</span>
+          </div>
+          <div class="led-unit" id="led-tty" title="COM1 / ttyS0 Serial UART Activity">
+            <span class="led-bulb"></span>
+            <span>TTY0</span>
+          </div>
+          <div class="led-unit" id="led-mouse" title="PS/2 Pointer Lock Capture">
+            <span class="led-bulb"></span>
+            <span>MOUSE</span>
+          </div>
+        </div>
+
+        <div class="io-counters">
+          <div>DISK: <span id="stat-disk">0 KB</span></div>
+          <div>NET: <span id="stat-net">0 PKT</span></div>
+        </div>
       </div>
 
       <div class="screen-toolbar">
@@ -448,9 +599,91 @@
   <script>
     let emulator = null;
     let statsTimer = null;
+    const ledTimers = {};
+    let diskBytes = 0;
+    let netPackets = 0;
 
-    // Check if libv86.js loaded cleanly from jsDelivr
+    // 32-bit x86 / WASM linear memory practical ceiling in browser tabs is 3072 MB
+    const X86_WASM_MAX_MB = 3072;
+
+    function setLed(id, stateClass) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove("on-green", "on-amber", "on-cyan", "on-red");
+      if (stateClass) el.classList.add(stateClass);
+    }
+
+    function pulseLed(id, activeClass, baseClass = "", durationMs = 140) {
+      setLed(id, activeClass);
+      if (ledTimers[id]) clearTimeout(ledTimers[id]);
+      ledTimers[id] = setTimeout(() => {
+        setLed(id, baseClass);
+      }, durationMs);
+    }
+
+    function resetHardwareLeds() {
+      Object.values(ledTimers).forEach(t => clearTimeout(t));
+      ["led-pwr", "led-hdd", "led-fdd", "led-lan", "led-tty", "led-mouse"].forEach(id => setLed(id, ""));
+      diskBytes = 0;
+      netPackets = 0;
+      document.getElementById("stat-disk").textContent = "0 KB";
+      document.getElementById("stat-net").textContent = "0 PKT";
+    }
+
+    // Monitor browser Pointer Lock so the MOUSE LED reflects real capture state
+    document.addEventListener("pointerlockchange", () => {
+      const locked = document.pointerLockElement === document.getElementById("screen_container");
+      setLed("led-mouse", locked ? "on-cyan" : "");
+    });
+
+    function getHostRamGB() {
+      const override = document.getElementById("host-ram").value;
+      if (override !== "auto") {
+        return parseFloat(override);
+      }
+      return navigator.deviceMemory || 8;
+    }
+
+    function populateRamOptions(selectMax = false) {
+      const hostGB = getHostRamGB();
+      const isAuto = document.getElementById("host-ram").value === "auto";
+      const rawSeventyPctMB = Math.floor(hostGB * 1024 * 0.70);
+      const cappedMaxMB = Math.min(X86_WASM_MAX_MB, Math.max(128, Math.floor(rawSeventyPctMB / 64) * 64));
+
+      document.getElementById("detected-ram-label").textContent =
+        isAuto ? `${hostGB} GB (Browser API${hostGB >= 8 ? " cap" : ""})` : `${hostGB} GB (Manual)`;
+      document.getElementById("max-ram-label").textContent =
+        `${cappedMaxMB} MB${rawSeventyPctMB > X86_WASM_MAX_MB ? " (32-bit x86 max)" : ""}`;
+
+      const presets = [64, 128, 256, 512, 768, 1024, 1536, 2048, 2560, 3072];
+      const optionsSet = new Set(presets.filter(mb => mb <= cappedMaxMB));
+      optionsSet.add(cappedMaxMB);
+
+      const sortedOptions = Array.from(optionsSet).sort((a, b) => a - b);
+      const ramSelect = document.getElementById("ram-size");
+      const prevVal = parseInt(ramSelect.value, 10);
+
+      ramSelect.innerHTML = "";
+      sortedOptions.forEach(mb => {
+        const opt = document.createElement("option");
+        opt.value = String(mb);
+        const pct = Math.round((mb / (hostGB * 1024)) * 100);
+        const isMax = mb === cappedMaxMB;
+        opt.textContent = `${mb} MB (${(mb / 1024).toFixed(mb % 1024 === 0 ? 0 : 2)} GB) — ~${pct}%${isMax ? " [MAX 70%]" : ""}`;
+        ramSelect.appendChild(opt);
+      });
+
+      if (selectMax) {
+        ramSelect.value = String(cappedMaxMB);
+      } else if (prevVal && sortedOptions.includes(prevVal)) {
+        ramSelect.value = String(prevVal);
+      } else {
+        ramSelect.value = String(cappedMaxMB);
+      }
+    }
+
     window.addEventListener("load", () => {
+      populateRamOptions(true);
       const el = document.getElementById("engine-state");
       if (typeof V86 !== "undefined" || typeof V86Starter !== "undefined") {
         el.textContent = "libv86 READY";
@@ -461,48 +694,41 @@
       }
     });
 
-    // CORS-safe URLs via jsDelivr GitHub mirror so browser fetch() never gets blocked
     const JSDELIVR_V86 = "https://cdn.jsdelivr.net/npm/v86@latest";
     const CORS_IMAGES = "https://cdn.jsdelivr.net/gh/copy/v86@master/images";
 
     const PROFILES = {
       buildroot: {
         name: "Buildroot Linux 4.16",
-        ram: "128",
         vram: "8",
         note: "Kernel 4.16.13 with BusyBox, GCC, Python, and NE2000 networking (~6.5 MB). Auto-logs in as root.",
         cdrom: { url: `${CORS_IMAGES}/linux4.iso` }
       },
       tinycore: {
         name: "TinyCore Linux (X11 GUI)",
-        ram: "256",
         vram: "16",
         note: "Graphical FLWM/X11 Linux desktop (~23 MB). Boots straight into Xorg GUI with terminal and package manager.",
         cdrom: { url: "https://cdn.jsdelivr.net/gh/nicholas-ochoa/OpenSolaris-v86@main/TinyCore-current.iso" }
       },
       kolibri: {
         name: "KolibriOS GUI",
-        ram: "128",
         vram: "16",
         note: "Ultra-fast 1.44 MB 32-bit x86 graphical OS written in FASM assembly. Boots to desktop in ~3 seconds.",
         fda: { url: `${CORS_IMAGES}/kolibri.img` }
       },
       freedos: {
         name: "FreeDOS 1.2",
-        ram: "64",
         vram: "8",
         note: "720 KB 16-bit DOS floppy image with EDIT and classic real-mode utilities.",
         fda: { url: `${CORS_IMAGES}/freedos722.img` }
       },
       bios: {
         name: "SeaBIOS POST Diagnostic",
-        ram: "64",
         vram: "8",
         note: "Boots SeaBIOS with zero disk images to verify WASM CPU & VGA initialization immediately."
       },
       custom: {
         name: "Custom Local Media",
-        ram: "256",
         vram: "16",
         note: "Mount any 32-bit x86 Linux .ISO (Alpine x86, TinyCore, Puppy Linux, Debian i386) or .IMG disk below."
       }
@@ -518,7 +744,6 @@
       const key = document.getElementById("preset-os").value;
       const p = PROFILES[key] || PROFILES.custom;
       document.getElementById("distro-notes").textContent = p.note;
-      if (p.ram) document.getElementById("ram-size").value = p.ram;
       if (p.vram) document.getElementById("vram-size").value = p.vram;
     }
 
@@ -540,6 +765,7 @@
         } catch {}
         emulator = null;
       }
+      resetHardwareLeds();
       document.getElementById("screen_container").style.display = "none";
       document.getElementById("placeholder").style.display = "block";
       document.getElementById("active-profile").textContent = "CONSOLE: POWERED OFF";
@@ -556,6 +782,7 @@
       }
 
       stopVm();
+      setLed("led-pwr", "on-amber");
 
       const profileKey = document.getElementById("preset-os").value;
       const profile = PROFILES[profileKey] || PROFILES.custom;
@@ -568,7 +795,7 @@
 
       const uartEl = document.getElementById("uart-log");
       uartEl.textContent = "";
-      logDiag(`[INIT] Starting ${profile.name} (${ramMB}MB RAM / ${vramMB}MB VRAM)...`);
+      logDiag(`[INIT] Starting ${profile.name} (${ramMB}MB System RAM / ${vramMB}MB VRAM)...`);
       logDiag(`[FETCH] Loading v86.wasm + SeaBIOS + VGABIOS from jsDelivr...`);
 
       const config = {
@@ -582,7 +809,6 @@
         autostart: true
       };
 
-      // Attach preset media if no local file override is selected
       if (profile.cdrom && !cdromInput) {
         config.cdrom = profile.cdrom;
         logDiag(`[MEDIA] CD-ROM URL: ${profile.cdrom.url}`);
@@ -596,7 +822,6 @@
         logDiag(`[MEDIA] Disk URL: ${profile.hda.url}`);
       }
 
-      // Local file overrides (runs straight from browser memory, zero upload)
       if (cdromInput) {
         config.cdrom = { buffer: cdromInput };
         logDiag(`[LOCAL] Mounted ISO: ${cdromInput.name} (${(cdromInput.size / 1048576).toFixed(1)} MB)`);
@@ -610,6 +835,9 @@
         logDiag(`[LOCAL] Mounted HDD: ${hdaInput.name}`);
       }
 
+      const hasFloppy = Boolean(config.fda);
+      const hasDiskOrCd = Boolean(config.cdrom || config.hda);
+
       document.getElementById("placeholder").style.display = "none";
       document.getElementById("screen_container").style.display = "flex";
       document.getElementById("active-profile").textContent = `RUNNING: ${profile.name.toUpperCase()} (${ramMB}MB RAM)`;
@@ -619,11 +847,50 @@
         emulator = new Constructor(config);
 
         emulator.add_listener("emulator-ready", function () {
-          logDiag("[POST] SeaBIOS & WASM CPU initialized — executing boot sector...");
+          setLed("led-pwr", "on-green");
+          if (hasFloppy) setLed("led-fdd", "on-green");
+          if (hasDiskOrCd) setLed("led-hdd", "on-green");
+          setLed("led-lan", "on-green");
+          logDiag(`[POST] SeaBIOS & WASM CPU initialized (${ramMB} MB RAM allocated) — executing boot sector...`);
           setStatus("● VM RUNNING", "var(--green)");
         });
 
+        // ATA / IDE Disk & CD-ROM Activity LED
+        emulator.add_listener("ide-read-start", function () {
+          setLed("led-hdd", "on-amber");
+        });
+
+        emulator.add_listener("ide-read-end", function (data) {
+          const bytes = Array.isArray(data) ? (data[1] || 512) : 512;
+          diskBytes += bytes;
+          document.getElementById("stat-disk").textContent =
+            diskBytes >= 1048576 ? `${(diskBytes / 1048576).toFixed(1)} MB` : `${Math.round(diskBytes / 1024)} KB`;
+          pulseLed("led-hdd", "on-amber", "on-green", 130);
+        });
+
+        emulator.add_listener("ide-write-end", function (data) {
+          const bytes = Array.isArray(data) ? (data[1] || 512) : 512;
+          diskBytes += bytes;
+          document.getElementById("stat-disk").textContent =
+            diskBytes >= 1048576 ? `${(diskBytes / 1048576).toFixed(1)} MB` : `${Math.round(diskBytes / 1024)} KB`;
+          pulseLed("led-hdd", "on-red", "on-green", 160);
+        });
+
+        // NE2000 Ethernet TX / RX Activity LED
+        emulator.add_listener("net0-send", function () {
+          netPackets++;
+          document.getElementById("stat-net").textContent = `${netPackets} PKT`;
+          pulseLed("led-lan", "on-cyan", "on-green", 140);
+        });
+
+        emulator.add_listener("net0-receive", function () {
+          netPackets++;
+          document.getElementById("stat-net").textContent = `${netPackets} PKT`;
+          pulseLed("led-lan", "on-amber", "on-green", 140);
+        });
+
         emulator.add_listener("download-progress", function (e) {
+          pulseLed("led-hdd", "on-amber", hasDiskOrCd ? "on-green" : "", 180);
           if (e.lengthComputable && e.total > 0) {
             const pct = Math.round((e.loaded / e.total) * 100);
             if (pct % 25 === 0) {
@@ -633,12 +900,14 @@
         });
 
         emulator.add_listener("download-error", function (e) {
+          setLed("led-hdd", "on-red");
           logDiag(`[DOWNLOAD ERROR] Failed fetching ${e.file_name || "image"} — try 'SeaBIOS POST Only' or mount a local .ISO file.`);
           setStatus("● IMAGE FETCH FAILED", "var(--red)");
         });
 
-        // Stream COM1 / ttyS0 serial output to the VFD log box
+        // Stream COM1 / ttyS0 serial output & flash TTY0 LED
         emulator.add_listener("serial0-output-byte", function (byte) {
+          pulseLed("led-tty", "on-cyan", "", 110);
           const ch = String.fromCharCode(byte);
           if (ch === "\r") return;
           uartEl.textContent += ch;
@@ -659,6 +928,7 @@
           }
         }, 1000);
       } catch (err) {
+        setLed("led-pwr", "on-red");
         logDiag(`[EXCEPTION] ${err.message}`);
         setStatus("● BOOT FAILED", "var(--red)");
       }

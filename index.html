@@ -1,0 +1,3697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microsoft Windows for Workgroups 3.11</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --desktop-bg: #008080;
+    --win-bg: #c0c0c0;
+    --win-border-light: #ffffff;
+    --win-border-mid: #c0c0c0;
+    --win-border-dark: #808080;
+    --win-border-black: #000000;
+    --title-active-bg: #000080;
+    --title-active-text: #ffffff;
+    --title-inactive-bg: #808080;
+    --title-inactive-text: #c0c0c0;
+    --win-text: #000000;
+    --highlight-bg: #000080;
+    --highlight-text: #ffffff;
+    --sys-font: "MS Sans Serif", "Tahoma", "Geneva", sans-serif;
+    --mono-font: "VT323", "Fixedsys", "Courier New", monospace;
+  }
+
+  * {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #111;
+    font-family: var(--sys-font);
+    font-size: 12px;
+    color: var(--win-text);
+  }
+
+  /* Retro Hardware Utility Strip */
+  #hw-toolbar {
+    position: fixed;
+    top: 6px;
+    right: 8px;
+    z-index: 99999;
+    display: flex;
+    gap: 6px;
+    background: rgba(15, 15, 18, 0.85);
+    padding: 4px 8px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: #ccc;
+    font-family: monospace;
+    font-size: 11px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  }
+  #hw-toolbar button {
+    background: #2a2a30;
+    color: #eee;
+    border: 1px solid #555;
+    padding: 2px 7px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: 11px;
+    border-radius: 2px;
+  }
+  #hw-toolbar button:hover {
+    background: #3e3e48;
+  }
+  #hw-toolbar button.active {
+    background: #008080;
+    color: #fff;
+    border-color: #00cccc;
+  }
+
+  /* Desktop Viewport */
+  #crt-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--desktop-bg);
+    overflow: hidden;
+    transition: background-color 0.2s;
+  }
+
+  /* CRT Scanline & Vignette Effect */
+  #crt-overlay {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99990;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    background-size: 100% 3px, 6px 100%;
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.35);
+    display: none;
+  }
+  #crt-overlay.enabled {
+    display: block;
+  }
+
+  /* Classic 3D Bevels */
+  .bevel-out {
+    background-color: var(--win-bg);
+    border-top: 2px solid var(--win-border-light);
+    border-left: 2px solid var(--win-border-light);
+    border-right: 2px solid var(--win-border-dark);
+    border-bottom: 2px solid var(--win-border-dark);
+    box-shadow: 1px 1px 0 var(--win-border-black);
+  }
+
+  .bevel-in {
+    background-color: #ffffff;
+    border-top: 2px solid var(--win-border-dark);
+    border-left: 2px solid var(--win-border-dark);
+    border-right: 2px solid var(--win-border-light);
+    border-bottom: 2px solid var(--win-border-light);
+  }
+
+  .win-btn {
+    background-color: var(--win-bg);
+    color: var(--win-text);
+    border-top: 2px solid var(--win-border-light);
+    border-left: 2px solid var(--win-border-light);
+    border-right: 2px solid var(--win-border-dark);
+    border-bottom: 2px solid var(--win-border-dark);
+    outline: 1px solid var(--win-border-black);
+    padding: 3px 10px;
+    font-family: var(--sys-font);
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .win-btn:active, .win-btn.pressed {
+    border-top: 2px solid var(--win-border-dark);
+    border-left: 2px solid var(--win-border-dark);
+    border-right: 2px solid var(--win-border-light);
+    border-bottom: 2px solid var(--win-border-light);
+    padding: 4px 9px 2px 11px;
+  }
+  .win-btn.default-btn {
+    outline: 2px solid var(--win-border-black);
+  }
+
+  /* Boot Screen & Splash */
+  #boot-screen {
+    position: fixed;
+    inset: 0;
+    background: #000000;
+    color: #c0c0c0;
+    font-family: var(--mono-font);
+    font-size: 20px;
+    padding: 24px;
+    z-index: 95000;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  #boot-text {
+    white-space: pre-wrap;
+    line-height: 1.25;
+  }
+  .cursor-blink {
+    display: inline-block;
+    width: 10px;
+    height: 18px;
+    background: #c0c0c0;
+    animation: blink 0.8s steps(2, start) infinite;
+    vertical-align: bottom;
+  }
+  @keyframes blink {
+    to { visibility: hidden; }
+  }
+
+  #splash-screen {
+    position: fixed;
+    inset: 0;
+    background: #000080;
+    z-index: 94000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .splash-card {
+    background: #c0c0c0;
+    border: 4px solid #ffffff;
+    border-right-color: #808080;
+    border-bottom-color: #808080;
+    outline: 2px solid #000;
+    padding: 28px 44px;
+    text-align: center;
+    box-shadow: 12px 12px 0 rgba(0,0,0,0.6);
+    max-width: 92vw;
+  }
+
+  /* Shutdown Screen */
+  #shutdown-screen {
+    position: fixed;
+    inset: 0;
+    background: #000000;
+    color: #ff8c00;
+    font-family: var(--sys-font);
+    z-index: 96000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 24px;
+  }
+
+  /* Windows 3.11 Window Frame */
+  .w31-window {
+    position: absolute;
+    background-color: var(--win-bg);
+    border: 3px solid var(--win-bg);
+    outline: 1px solid var(--win-border-black);
+    box-shadow: inset 1px 1px 0 var(--win-border-light), inset -1px -1px 0 var(--win-border-dark), 3px 3px 0 rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+    min-height: 110px;
+  }
+
+  .w31-window.active {
+    border-color: var(--title-active-bg);
+  }
+
+  /* Resize Handles */
+  .resizer {
+    position: absolute;
+    z-index: 20;
+  }
+  .resizer.n { top: -4px; left: 6px; right: 6px; height: 6px; cursor: ns-resize; }
+  .resizer.s { bottom: -4px; left: 6px; right: 6px; height: 6px; cursor: ns-resize; }
+  .resizer.e { right: -4px; top: 6px; bottom: 6px; width: 6px; cursor: ew-resize; }
+  .resizer.w { left: -4px; top: 6px; bottom: 6px; width: 6px; cursor: ew-resize; }
+  .resizer.nw { top: -4px; left: -4px; width: 10px; height: 10px; cursor: nwse-resize; }
+  .resizer.ne { top: -4px; right: -4px; width: 10px; height: 10px; cursor: nesw-resize; }
+  .resizer.sw { bottom: -4px; left: -4px; width: 10px; height: 10px; cursor: nesw-resize; }
+  .resizer.se { bottom: -4px; right: -4px; width: 10px; height: 10px; cursor: nwse-resize; }
+
+  /* Title Bar */
+  .w31-titlebar {
+    height: 20px;
+    background-color: var(--title-inactive-bg);
+    color: var(--title-inactive-text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--win-border-black);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .w31-window.active > .w31-titlebar,
+  .mdi-window.active > .w31-titlebar {
+    background-color: var(--title-active-bg);
+    color: var(--title-active-text);
+  }
+
+  .w31-sysbtn {
+    width: 20px;
+    height: 19px;
+    background-color: #c0c0c0;
+    border-right: 1px solid #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .w31-sysbtn:active {
+    background-color: #808080;
+  }
+  .sys-bar-icon {
+    width: 11px;
+    height: 3px;
+    background: #ffffff;
+    border: 1px solid #000000;
+    box-shadow: 1px 1px 0 #808080;
+  }
+
+  .w31-title-text {
+    flex: 1;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 6px;
+    cursor: default;
+  }
+
+  .w31-win-controls {
+    display: flex;
+    height: 19px;
+    flex-shrink: 0;
+  }
+  .w31-ctrl-btn {
+    width: 19px;
+    height: 19px;
+    background-color: #c0c0c0;
+    border-left: 1px solid #000000;
+    border-top: 1px solid #ffffff;
+    border-right: 1px solid #808080;
+    border-bottom: 1px solid #808080;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .w31-ctrl-btn:active {
+    border-top: 1px solid #808080;
+    border-left: 1px solid #808080;
+    border-right: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
+  }
+
+  /* System Menu Dropdown */
+  .sys-dropdown {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    background: #c0c0c0;
+    border: 1px solid #000000;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+    z-index: 1000;
+    min-width: 135px;
+    color: #000;
+  }
+  .sys-dropdown-item {
+    padding: 3px 12px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .sys-dropdown-item:hover:not(.disabled) {
+    background: var(--highlight-bg);
+    color: var(--highlight-text);
+  }
+  .sys-dropdown-item.disabled {
+    color: #808080;
+    cursor: default;
+  }
+  .sys-dropdown-sep {
+    height: 1px;
+    background: #808080;
+    margin: 2px 0;
+  }
+
+  /* Menu Bar */
+  .w31-menubar {
+    height: 20px;
+    background: #ffffff;
+    color: #000000;
+    border-bottom: 1px solid #000000;
+    display: flex;
+    align-items: center;
+    padding: 0 2px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .w31-menu-item {
+    padding: 2px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    position: relative;
+  }
+  .w31-menu-item:hover, .w31-menu-item.open {
+    background: var(--highlight-bg);
+    color: var(--highlight-text);
+  }
+  .w31-menu-item u {
+    text-decoration: underline;
+  }
+  .w31-submenu {
+    position: absolute;
+    top: 19px;
+    left: 0;
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #000000;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.35);
+    min-width: 165px;
+    z-index: 2000;
+  }
+  .w31-submenu-item {
+    padding: 3px 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .w31-submenu-item:hover:not(.disabled) {
+    background: var(--highlight-bg);
+    color: var(--highlight-text);
+  }
+  .w31-submenu-item.disabled {
+    color: #808080;
+    cursor: default;
+  }
+
+  /* Window Content Area */
+  .w31-content {
+    flex: 1;
+    background: #ffffff;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* MDI Group Windows inside Program Manager */
+  .mdi-workspace {
+    flex: 1;
+    background: #ffffff;
+    position: relative;
+    overflow: hidden;
+  }
+  .mdi-window {
+    position: absolute;
+    background: #ffffff;
+    border: 2px solid #c0c0c0;
+    outline: 1px solid #000000;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.25);
+  }
+  .mdi-window.active {
+    border-color: var(--title-active-bg);
+  }
+  .mdi-icons-grid {
+    flex: 1;
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 12px 16px;
+    overflow-y: auto;
+    background: #ffffff;
+  }
+  .prog-icon-item {
+    width: 68px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    padding: 2px;
+  }
+  .prog-icon-item.selected .prog-icon-label {
+    background: var(--highlight-bg);
+    color: var(--highlight-text);
+    outline: 1px dotted #ffff00;
+  }
+  .prog-icon-label {
+    margin-top: 4px;
+    font-size: 11px;
+    line-height: 1.15;
+    word-break: break-word;
+    padding: 1px 3px;
+  }
+
+  /* Minimized MDI Group Icons at bottom of Program Manager */
+  .mdi-minimized-dock {
+    position: absolute;
+    bottom: 4px;
+    left: 6px;
+    right: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    pointer-events: none;
+    z-index: 50;
+  }
+  .mdi-min-icon {
+    pointer-events: auto;
+    width: 66px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+  }
+  .mdi-min-icon span {
+    background: #ffffff;
+    color: #000000;
+    font-size: 11px;
+    padding: 1px 3px;
+    margin-top: 2px;
+  }
+  .mdi-min-icon.selected span {
+    background: var(--highlight-bg);
+    color: var(--highlight-text);
+  }
+
+  /* Minimized Top-Level Desktop Windows Dock */
+  #desktop-minimized-dock {
+    position: fixed;
+    bottom: 8px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    pointer-events: none;
+    z-index: 8000;
+  }
+  .desktop-min-icon {
+    pointer-events: auto;
+    width: 72px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+  }
+  .desktop-min-icon span {
+    background: var(--desktop-bg);
+    color: #ffffff;
+    font-size: 11px;
+    padding: 1px 4px;
+    margin-top: 3px;
+    text-shadow: 1px 1px 0 #000;
+  }
+  .desktop-min-icon.selected span {
+    background: var(--highlight-bg);
+    color: var(--highlight-text);
+  }
+
+  /* Modal Dialogs */
+  .w31-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.15);
+    z-index: 85000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .w31-dialog {
+    background: var(--win-bg);
+    border: 3px solid var(--title-active-bg);
+    outline: 1px solid #000000;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.45);
+    min-width: 300px;
+    max-width: 92vw;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* App Specific Styles */
+  /* Minesweeper */
+  .mine-lcd {
+    background: #000000;
+    color: #ff0000;
+    font-family: var(--mono-font);
+    font-size: 26px;
+    line-height: 24px;
+    padding: 2px 5px;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    letter-spacing: 1px;
+  }
+  .mine-cell {
+    width: 20px;
+    height: 20px;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .mine-cell.revealed {
+    border: 1px solid #808080;
+    background: #c0c0c0;
+    cursor: default;
+  }
+  .mine-cell.exploded {
+    background: #ff0000;
+  }
+  .mine-c1 { color: #0000ff; }
+  .mine-c2 { color: #008000; }
+  .mine-c3 { color: #ff0000; }
+  .mine-c4 { color: #000080; }
+  .mine-c5 { color: #800000; }
+  .mine-c6 { color: #008080; }
+  .mine-c7 { color: #000000; }
+  .mine-c8 { color: #808080; }
+
+  /* Solitaire */
+  .sol-table {
+    background: #008000;
+    flex: 1;
+    padding: 10px;
+    position: relative;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .sol-slot {
+    width: 62px;
+    height: 86px;
+    border: 1px solid #005000;
+    background: rgba(0, 60, 0, 0.35);
+    border-radius: 4px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .sol-card {
+    width: 62px;
+    height: 86px;
+    border-radius: 4px;
+    border: 1px solid #000000;
+    background: #ffffff;
+    position: absolute;
+    left: 0;
+    box-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3px 4px;
+    font-weight: bold;
+    font-size: 13px;
+  }
+  .sol-card.selected {
+    outline: 2px solid #ffff00;
+    filter: brightness(0.95);
+  }
+  .sol-card.back-castle {
+    background: repeating-linear-gradient(45deg, #000080, #000080 4px, #0000ff 4px, #0000ff 8px);
+    border: 2px solid #ffffff;
+    outline: 1px solid #000000;
+  }
+  .sol-card.back-roses {
+    background: radial-gradient(circle, #ff0000 20%, #008000 22%, #008000 45%, #800000 48%);
+    background-size: 14px 14px;
+    border: 2px solid #ffffff;
+    outline: 1px solid #000000;
+  }
+  .sol-card.back-robot {
+    background: repeating-linear-gradient(0deg, #808080, #808080 3px, #c0c0c0 3px, #c0c0c0 6px);
+    border: 2px solid #ffffff;
+    outline: 1px solid #000000;
+  }
+  .sol-card.back-fish {
+    background: repeating-linear-gradient(135deg, #008080, #008080 5px, #00ffff 5px, #00ffff 10px);
+    border: 2px solid #ffffff;
+    outline: 1px solid #000000;
+  }
+
+  /* Paintbrush */
+  .pb-tool {
+    width: 24px;
+    height: 24px;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .pb-tool.active {
+    background: #e0e0e0;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+  }
+
+  /* Calculator */
+  .calc-btn {
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    outline: 1px solid #000000;
+    font-weight: bold;
+    font-size: 12px;
+    height: 26px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .calc-btn:active {
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+  }
+
+  /* Scrollbars retro feel */
+  ::-webkit-scrollbar {
+    width: 16px;
+    height: 16px;
+    background: #dfdfdf;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    outline: 1px solid #000;
+  }
+  ::-webkit-scrollbar-button {
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    outline: 1px solid #000;
+    width: 16px;
+    height: 16px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Retro Hardware Controls -->
+<div id="hw-toolbar">
+  <span>WFW 3.11</span>
+  <button id="btn-crt" onclick="toggleCRT()">CRT: OFF</button>
+  <button id="btn-sound" class="active" onclick="toggleSound()">SFX: ON</button>
+  <button onclick="openTaskList()">Tasks (Ctrl+Esc)</button>
+</div>
+
+<!-- CRT Overlay -->
+<div id="crt-overlay"></div>
+
+<!-- MS-DOS 6.22 Boot Screen -->
+<div id="boot-screen">
+  <div id="boot-text"></div>
+  <div style="text-align: right;">
+    <button onclick="skipBoot()" style="background:#333; color:#fff; border:1px solid #888; padding:6px 14px; font-family:monospace; cursor:pointer;">Skip Boot [ESC]</button>
+  </div>
+</div>
+
+<!-- Windows 3.11 Splash Screen -->
+<div id="splash-screen">
+  <div class="splash-card">
+    <div style="display:flex; align-items:center; justify-content:center; gap:18px; margin-bottom:14px;">
+      <!-- Classic Flying Windows 3.11 Flag SVG -->
+      <svg width="74" height="62" viewBox="0 0 74 62">
+        <!-- Trailing pixels -->
+        <rect x="2" y="12" width="4" height="4" fill="#000"/>
+        <rect x="8" y="10" width="5" height="5" fill="#ff0000"/>
+        <rect x="4" y="24" width="4" height="4" fill="#008000"/>
+        <rect x="10" y="34" width="5" height="5" fill="#0000ff"/>
+        <rect x="3" y="44" width="4" height="4" fill="#ffff00"/>
+        <!-- 4 Colored Panes -->
+        <path d="M22 10 Q32 6 42 10 L40 27 Q31 23 20 27 Z" fill="#ff0000" stroke="#000" stroke-width="2"/>
+        <path d="M45 11 Q55 15 65 11 L63 28 Q54 32 43 28 Z" fill="#00a800" stroke="#000" stroke-width="2"/>
+        <path d="M20 31 Q30 27 40 31 L38 48 Q29 44 18 48 Z" fill="#0055ff" stroke="#000" stroke-width="2"/>
+        <path d="M43 32 Q53 36 63 32 L61 49 Q52 53 41 49 Z" fill="#ffcc00" stroke="#000" stroke-width="2"/>
+      </svg>
+      <div style="text-align:left;">
+        <div style="font-size:15px; font-weight:bold; letter-spacing:0.5px;">Microsoft<sup style="font-size:9px;">&reg;</sup></div>
+        <div style="font-size:30px; font-weight:900; line-height:1; letter-spacing:-0.5px;">Windows<sup style="font-size:12px;">TM</sup></div>
+        <div style="font-size:14px; font-weight:bold; color:#000080;">for Workgroups <span style="color:#800000;">Version 3.11</span></div>
+      </div>
+    </div>
+    <div style="border-top:1px solid #808080; padding-top:8px; font-size:11px; color:#333;">
+      Copyright &copy; 1985-1993 Microsoft Corporation. All rights reserved.
+    </div>
+  </div>
+</div>
+
+<!-- Shutdown Screen -->
+<div id="shutdown-screen">
+  <div style="font-size: 26px; font-weight: bold; letter-spacing: 0.5px;">
+    It is now safe to turn off your computer.
+  </div>
+  <button class="win-btn" onclick="restartSystem()" style="font-size:14px; padding:6px 18px;">Restart Windows 3.11</button>
+</div>
+
+<!-- Main Desktop Surface -->
+<div id="crt-wrapper" onclick="handleDesktopClick(event)">
+  <div id="desktop-minimized-dock"></div>
+</div>
+
+<!-- Modal Layer -->
+<div id="modal-layer"></div>
+
+<script>
+/* ============================================================================
+   1. AUDIO ENGINE (Web Audio API Synthesized Windows 3.11 Chimes)
+   ============================================================================ */
+let soundEnabled = true;
+let crtEnabled = false;
+let audioCtx = null;
+
+function getAudioCtx() {
+  if (!audioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (Ctx) audioCtx = new Ctx();
+  }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playRetroSound(type) {
+  if (!soundEnabled) return;
+  try {
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    if (type === 'startup' || type === 'tada') {
+      // Classic bright FM brassy fanfare (TADA.WAV / Startup chime)
+      const notes = type === 'startup'
+        ? [{f: 261.63, t: 0, d: 0.16}, {f: 392.00, t: 0.14, d: 0.16}, {f: 523.25, t: 0.28, d: 0.22}, {f: 659.25, t: 0.45, d: 0.55}]
+        : [{f: 392.00, t: 0, d: 0.14}, {f: 523.25, t: 0.12, d: 0.65}];
+      notes.forEach(n => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(n.f, now + n.t);
+        gain.gain.setValueAtTime(0.001, now + n.t);
+        gain.gain.exponentialRampToValueAtTime(0.11, now + n.t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + n.t + n.d);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + n.t);
+        osc.stop(now + n.t + n.d + 0.02);
+      });
+    } else if (type === 'chord') {
+      // CHORD.WAV low warning chord
+      [146.83, 185.00, 220.00, 293.66].forEach(freq => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.46);
+      });
+    } else if (type === 'chimes') {
+      // CHIMES.WAV
+      [587.33, 880.00, 1174.66].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + i * 0.09);
+        gain.gain.setValueAtTime(0.1, now + i * 0.09);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.09 + 0.55);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + i * 0.09);
+        osc.stop(now + i * 0.09 + 0.56);
+      });
+    } else if (type === 'ding') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1046.5, now);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.36);
+    } else if (type === 'click') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(800, now);
+      gain.gain.setValueAtTime(0.03, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.025);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.03);
+    }
+  } catch (e) {}
+}
+
+function toggleCRT() {
+  crtEnabled = !crtEnabled;
+  const el = document.getElementById('crt-overlay');
+  const btn = document.getElementById('btn-crt');
+  el.classList.toggle('enabled', crtEnabled);
+  btn.classList.toggle('active', crtEnabled);
+  btn.textContent = crtEnabled ? 'CRT: ON' : 'CRT: OFF';
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  const btn = document.getElementById('btn-sound');
+  btn.classList.toggle('active', soundEnabled);
+  btn.textContent = soundEnabled ? 'SFX: ON' : 'SFX: OFF';
+  if (soundEnabled) playRetroSound('ding');
+}
+
+/* ============================================================================
+   2. PIXEL ART SVG ICON LIBRARY (Authentic 16-Color VGA Style)
+   ============================================================================ */
+function getIconSVG(name, size = 32) {
+  const icons = {
+    progman: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <rect x="2" y="3" width="28" height="25" fill="#c0c0c0" stroke="#000" stroke-width="2"/>
+      <rect x="3" y="4" width="26" height="5" fill="#000080"/>
+      <rect x="4" y="5" width="3" height="3" fill="#fff"/>
+      <rect x="5" y="11" width="9" height="6" fill="#ffff00" stroke="#000"/>
+      <rect x="17" y="11" width="9" height="6" fill="#00ffff" stroke="#000"/>
+      <rect x="5" y="19" width="9" height="6" fill="#ff00ff" stroke="#000"/>
+      <rect x="17" y="19" width="9" height="6" fill="#00ff00" stroke="#000"/>
+    </svg>`,
+    group: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <rect x="3" y="4" width="26" height="24" fill="#ffffff" stroke="#000" stroke-width="2"/>
+      <rect x="4" y="5" width="24" height="5" fill="#000080"/>
+      <rect x="7" y="13" width="4" height="4" fill="#ff0000"/>
+      <rect x="14" y="13" width="4" height="4" fill="#008000"/>
+      <rect x="21" y="13" width="4" height="4" fill="#0000ff"/>
+      <rect x="7" y="20" width="4" height="4" fill="#808000"/>
+      <rect x="14" y="20" width="4" height="4" fill="#008080"/>
+    </svg>`,
+    winfile: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <rect x="5" y="2" width="22" height="28" fill="#ffff00" stroke="#000" stroke-width="2"/>
+      <line x1="5" y1="11" x2="27" y2="11" stroke="#000" stroke-width="2"/>
+      <line x1="5" y1="20" x2="27" y2="20" stroke="#000" stroke-width="2"/>
+      <rect x="13" y="5" width="6" height="2" fill="#000"/>
+      <rect x="13" y="14" width="6" height="2" fill="#000"/>
+      <rect x="13" y="23" width="6" height="2" fill="#000"/>
+    </svg>`,
+    control: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <rect x="3" y="4" width="26" height="24" fill="#c0c0c0" stroke="#000" stroke-width="2"/>
+      <rect x="6" y="7" width="8" height="8" fill="#ff0000" stroke="#000"/>
+      <rect x="18" y="7" width="8" height="8" fill="#0000ff" stroke="#000"/>
+      <rect x="6" y="17" width="8" height="8" fill="#008000" stroke="#000"/>
+      <rect x="18" y="17" width="8" height="8" fill="#ffff00" stroke="#000"/>
+    </svg>`,
+    dos: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <rect x="2" y="4" width="28" height="24" fill="#000000" stroke="#808080" stroke-width="2"/>
+      <rect x="3" y="5" width="26" height="4" fill="#000080"/>
+      <text x="5" y="19" fill="#ffffff" font-family="monospace" font-weight="bold" font-size="11">MS-DOS</text>
+      <rect x="5" y="22" width="8" height="2" fill="#ffff00"/>
+    </svg>`,
+    notepad: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <rect x="6" y="3" width="20" height="26" fill="#00ffff" stroke="#000" stroke-width="2"/>
+      <rect x="8" y="7" width="16" height="20" fill="#ffffff"/>
+      <line x1="10" y1="11" x2="22" y2="11" stroke="#000" stroke-width="1.5"/>
+      <line x1="10" y1="15" x2="22" y2="15" stroke="#000" stroke-width="1.5"/>
+      <line x1="10" y1="19" x2="18" y2="19" stroke="#000" stroke-width="1.5"/>
+      <rect x="8" y="2" width="2" height="3" fill="#000"/>
+      <rect x="14" y="2" width="2" height="3" fill="#000"/>
+      <rect x="20" y="2" width="2" height="3" fill="#000"/>
+    </svg>`,
+    pbrush: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <ellipse cx="16" cy="18" rx="13" ry="10" fill="#ffff00" stroke="#000" stroke-width="2"/>
+      <circle cx="10" cy="15" r="2.5" fill="#ff0000"/>
+      <circle cx="16" cy="13" r="2.5" fill="#0000ff"/>
+      <circle cx="22" cy="16" r="2.5" fill="#008000"/>
+      <circle cx="13" cy="22" r="2" fill="#000000"/>
+      <line x1="20" y1="22" x2="29" y2="4" stroke="#800000" stroke-width="3"/>
+    </svg>`,
+    winmine: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <circle cx="16" cy="17" r="9" fill="#000000"/>
+      <line x1="16" y1="4" x2="16" y2="30" stroke="#000" stroke-width="3"/>
+      <line x1="3" y1="17" x2="29" y2="17" stroke="#000" stroke-width="3"/>
+      <line x1="7" y1="8" x2="25" y2="26" stroke="#000" stroke-width="2.5"/>
+      <line x1="25" y1="8" x2="7" y2="26" stroke="#000" stroke-width="2.5"/>
+      <rect x="12" y="13" width="3" height="3" fill="#ffffff"/>
+    </svg>`,
+    sol: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <rect x="4" y="4" width="16" height="22" rx="2" fill="#ffffff" stroke="#000" stroke-width="2"/>
+      <rect x="12" y="7" width="16" height="22" rx="2" fill="#ffffff" stroke="#000" stroke-width="2"/>
+      <path d="M20 14 L24 19 L20 24 L16 19 Z" fill="#ff0000"/>
+      <text x="14" y="13" fill="#ff0000" font-size="7" font-weight="bold">A</text>
+    </svg>`,
+    calc: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <rect x="6" y="2" width="20" height="28" fill="#c0c0c0" stroke="#000" stroke-width="2"/>
+      <rect x="9" y="5" width="14" height="5" fill="#008080" stroke="#000"/>
+      <rect x="9" y="13" width="3" height="3" fill="#0000ff"/>
+      <rect x="14" y="13" width="3" height="3" fill="#0000ff"/>
+      <rect x="19" y="13" width="3" height="3" fill="#ff0000"/>
+      <rect x="9" y="18" width="3" height="3" fill="#0000ff"/>
+      <rect x="14" y="18" width="3" height="3" fill="#0000ff"/>
+      <rect x="19" y="18" width="3" height="3" fill="#ff0000"/>
+      <rect x="9" y="23" width="8" height="3" fill="#0000ff"/>
+      <rect x="19" y="23" width="3" height="3" fill="#ff0000"/>
+    </svg>`,
+    clock: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="13" fill="#00ffff" stroke="#000" stroke-width="2"/>
+      <circle cx="16" cy="16" r="10" fill="#ffffff"/>
+      <line x1="16" y1="16" x2="16" y2="8" stroke="#000" stroke-width="2"/>
+      <line x1="16" y1="16" x2="22" y2="16" stroke="#ff0000" stroke-width="2"/>
+    </svg>`,
+    write: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <rect x="5" y="3" width="18" height="25" fill="#ffffff" stroke="#000" stroke-width="2"/>
+      <text x="8" y="16" font-family="serif" font-weight="bold" font-size="13" fill="#000080">A</text>
+      <polygon points="18,26 28,12 31,15 21,29" fill="#ffff00" stroke="#000"/>
+    </svg>`,
+    winpopup: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <rect x="3" y="6" width="24" height="17" fill="#ffff00" stroke="#000" stroke-width="2"/>
+      <polygon points="8,23 8,29 15,23" fill="#ffff00" stroke="#000" stroke-width="1.5"/>
+      <line x1="7" y1="11" x2="23" y2="11" stroke="#000" stroke-width="2"/>
+      <line x1="7" y1="16" x2="19" y2="16" stroke="#000" stroke-width="2"/>
+    </svg>`,
+    network: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <rect x="3" y="4" width="11" height="9" fill="#c0c0c0" stroke="#000" stroke-width="1.5"/>
+      <rect x="5" y="6" width="7" height="5" fill="#008080"/>
+      <rect x="18" y="4" width="11" height="9" fill="#c0c0c0" stroke="#000" stroke-width="1.5"/>
+      <rect x="20" y="6" width="7" height="5" fill="#008080"/>
+      <line x1="8" y1="13" x2="8" y2="23" stroke="#000" stroke-width="2"/>
+      <line x1="23" y1="13" x2="23" y2="23" stroke="#000" stroke-width="2"/>
+      <line x1="4" y1="23" x2="28" y2="23" stroke="#008000" stroke-width="3"/>
+    </svg>`,
+    readme: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <rect x="6" y="3" width="20" height="26" fill="#ffffff" stroke="#000" stroke-width="2"/>
+      <rect x="6" y="3" width="20" height="6" fill="#008000"/>
+      <line x1="9" y1="13" x2="23" y2="13" stroke="#000" stroke-width="1.5"/>
+      <line x1="9" y1="17" x2="23" y2="17" stroke="#000" stroke-width="1.5"/>
+      <line x1="9" y1="21" x2="19" y2="21" stroke="#000" stroke-width="1.5"/>
+    </svg>`,
+    generic: `<svg width="${size}" height="${size}" viewBox="0 0 32 32">
+      <rect x="4" y="4" width="24" height="24" fill="#c0c0c0" stroke="#000" stroke-width="2"/>
+      <rect x="5" y="5" width="22" height="5" fill="#000080"/>
+      <rect x="9" y="14" width="14" height="9" fill="#ffffff" stroke="#000"/>
+    </svg>`
+  };
+  return icons[name] || icons.generic;
+}
+
+/* ============================================================================
+   3. VIRTUAL FILE SYSTEM (Shared between File Manager, Notepad, and MS-DOS)
+   ============================================================================ */
+const virtualFS = {
+  'C:\\': {
+    type: 'dir',
+    files: [
+      { name: 'AUTOEXEC.BAT', size: 248, date: '11-01-93', attr: 'A', content: '@ECHO OFF\r\nPROMPT $P$G\r\nPATH C:\\WINDOWS;C:\\DOS\r\nSET TEMP=C:\\DOS\r\nLH C:\\WINDOWS\\SMARTDRV.EXE\r\nC:\\WINDOWS\\NET START\r\nWIN\r\n' },
+      { name: 'CONFIG.SYS', size: 192, date: '11-01-93', attr: 'A', content: 'DEVICE=C:\\DOS\\HIMEM.SYS\r\nDEVICE=C:\\DOS\\EMM386.EXE NOEMS\r\nDOS=HIGH,UMB\r\nFILES=40\r\nBUFFERS=20\r\nDEVICE=C:\\WINDOWS\\IFSHLP.SYS\r\n' },
+      { name: 'COMMAND.COM', size: 54619, date: '09-30-93', attr: 'R', app: 'dos' }
+    ]
+  },
+  'C:\\DOS': {
+    type: 'dir',
+    files: [
+      { name: 'EDIT.COM', size: 413, date: '09-30-93', attr: 'A', app: 'notepad' },
+      { name: 'FORMAT.COM', size: 22717, date: '09-30-93', attr: 'A' },
+      { name: 'HIMEM.SYS', size: 29136, date: '09-30-93', attr: 'A' },
+      { name: 'EMM386.EXE', size: 120926, date: '09-30-93', attr: 'A' },
+      { name: 'README.TXT', size: 512, date: '09-30-93', attr: 'A', content: 'MS-DOS 6.22 README\r\n==================\r\nWelcome to MS-DOS 6.22 running beneath Microsoft Windows for Workgroups 3.11.\r\n386 Enhanced Mode Memory Manager is active.\r\n' }
+    ]
+  },
+  'C:\\WINDOWS': {
+    type: 'dir',
+    files: [
+      { name: 'WIN.INI', size: 1420, date: '11-01-93', attr: 'A', content: '[windows]\r\nload=\r\nrun=\r\nBeep=yes\r\nSpooler=yes\r\nNullPort=None\r\nBorderWidth=3\r\nCursorBlinkRate=530\r\nDoubleClickSpeed=452\r\nPrograms=com exe bat pif\r\nDocuments=\r\n\r\n[Desktop]\r\nPattern=(None)\r\nWallpaper=(None)\r\nGridGranularity=0\r\n\r\n[Extensions]\r\ncal=calendar.exe ^.cal\r\ncrd=cardfile.exe ^.crd\r\ntxt=notepad.exe ^.txt\r\nini=notepad.exe ^.ini\r\nbmp=pbrush.exe ^.bmp\r\nwri=write.exe ^.wri\r\n' },
+      { name: 'SYSTEM.INI', size: 980, date: '11-01-93', attr: 'A', content: '[boot]\r\nshell=progman.exe\r\nnetwork.drv=wfwnet.drv\r\nmouse.drv=mouse.drv\r\ndisplay.drv=vga.drv\r\n\r\n[386Enh]\r\n32BitDiskAccess=ON\r\n32BitFileAccess=ON\r\nPaging=ON\r\n' },
+      { name: 'README.WRI', size: 840, date: '11-01-93', attr: 'R', content: 'MICROSOFT WINDOWS FOR WORKGROUPS 3.11\r\n\r\nThank you for choosing Windows for Workgroups 3.11!\r\nKey features in this release:\r\n- 32-Bit File Access and VFAT high-speed disk caching\r\n- Integrated peer-to-peer Workgroup networking (WinPopup, Net Watcher)\r\n- Classic Program Manager, File Manager, Paintbrush, Minesweeper, and Solitaire.\r\n' },
+      { name: 'PROGMAN.EXE', size: 115312, date: '11-01-93', attr: 'R', app: 'progman' },
+      { name: 'WINFILE.EXE', size: 146864, date: '11-01-93', attr: 'R', app: 'winfile' },
+      { name: 'CONTROL.EXE', size: 15872, date: '11-01-93', attr: 'R', app: 'control' },
+      { name: 'NOTEPAD.EXE', size: 32736, date: '11-01-93', attr: 'R', app: 'notepad' },
+      { name: 'PBRUSH.EXE', size: 183168, date: '11-01-93', attr: 'R', app: 'pbrush' },
+      { name: 'WINMINE.EXE', size: 27776, date: '11-01-93', attr: 'R', app: 'winmine' },
+      { name: 'SOL.EXE', size: 180688, date: '11-01-93', attr: 'R', app: 'sol' },
+      { name: 'CALC.EXE', size: 43072, date: '11-01-93', attr: 'R', app: 'calc' },
+      { name: 'CLOCK.EXE', size: 16416, date: '11-01-93', attr: 'R', app: 'clock' },
+      { name: 'WRITE.EXE', size: 244976, date: '11-01-93', attr: 'R', app: 'write' },
+      { name: 'WINPOPUP.EXE', size: 28912, date: '11-01-93', attr: 'R', app: 'winpopup' }
+    ]
+  },
+  'C:\\WINDOWS\\SYSTEM': {
+    type: 'dir',
+    files: [
+      { name: 'USER.EXE', size: 264016, date: '11-01-93', attr: 'R' },
+      { name: 'GDI.EXE', size: 220800, date: '11-01-93', attr: 'R' },
+      { name: 'KRNL386.EXE', size: 75490, date: '11-01-93', attr: 'R' },
+      { name: 'WFWNET.DRV', size: 48128, date: '11-01-93', attr: 'R' },
+      { name: 'VFAT.386', size: 42190, date: '11-01-93', attr: 'R' }
+    ]
+  },
+  'C:\\WORK': {
+    type: 'dir',
+    files: [
+      { name: 'NOTES.TXT', size: 310, date: '11-15-93', attr: 'A', content: 'Project Status - Workgroup Node: WFW-PC01\r\n-----------------------------------------\r\n1. Configure TCP/IP-32 and NetBEUI protocols.\r\n2. Share C:\\WORK folder on WORKGROUP.\r\n3. Beat Expert Minesweeper under 120 seconds!\r\n' },
+      { name: 'MEMO.WRI', size: 410, date: '11-18-93', attr: 'A', content: 'MEMORANDUM\r\nTO: All Workgroup Users\r\nFROM: Systems Administrator\r\nSUBJECT: Windows for Workgroups 3.11 Upgrade\r\n\r\nPlease use WinPopup for instant inter-office messages.\r\n' }
+    ]
+  }
+};
+
+/* ============================================================================
+   4. BOOT SEQUENCE & STARTUP CONTROLLER
+   ============================================================================ */
+let bootSkipped = false;
+let bootTimers = [];
+
+function startBootSequence() {
+  const bootTextEl = document.getElementById('boot-text');
+  const lines = [
+    "Starting MS-DOS...",
+    "",
+    "HIMEM is testing extended memory...done.",
+    "Microsoft(R) MS-DOS(R) Version 6.22",
+    "             (C)Copyright Microsoft Corp 1981-1994.",
+    "",
+    "C:\\>LH C:\\WINDOWS\\SMARTDRV.EXE",
+    "C:\\>C:\\WINDOWS\\NET START",
+    "The command completed successfully.",
+    "",
+    "C:\\>win"
+  ];
+
+  let idx = 0;
+  function nextLine() {
+    if (bootSkipped) return;
+    if (idx < lines.length) {
+      bootTextEl.innerHTML = lines.slice(0, idx + 1).join('\n') + '<span class="cursor-blink"></span>';
+      idx++;
+      const delay = idx === lines.length ? 450 : 140;
+      bootTimers.push(setTimeout(nextLine, delay));
+    } else {
+      bootTimers.push(setTimeout(showSplashScreen, 300));
+    }
+  }
+  nextLine();
+}
+
+function showSplashScreen() {
+  if (bootSkipped) return;
+  document.getElementById('boot-screen').style.display = 'none';
+  document.getElementById('splash-screen').style.display = 'flex';
+  playRetroSound('startup');
+  bootTimers.push(setTimeout(finishBoot, 1600));
+}
+
+function skipBoot() {
+  bootSkipped = true;
+  bootTimers.forEach(t => clearTimeout(t));
+  document.getElementById('boot-screen').style.display = 'none';
+  document.getElementById('splash-screen').style.display = 'none';
+  initDesktop();
+}
+
+function finishBoot() {
+  document.getElementById('splash-screen').style.display = 'none';
+  initDesktop();
+}
+
+function restartSystem() {
+  document.getElementById('shutdown-screen').style.display = 'none';
+  bootSkipped = false;
+  document.getElementById('boot-text').innerHTML = '';
+  document.getElementById('boot-screen').style.display = 'flex';
+  startBootSequence();
+}
+
+/* ============================================================================
+   5. WINDOW MANAGER (Drag, Resize, Minimize, Maximize, Restore, Z-Index, Menus)
+   ============================================================================ */
+let windows = [];
+let zIndexCounter = 100;
+let activeWindowId = null;
+
+function createWindow(opts) {
+  // Singleton check if requested
+  if (opts.singletonId) {
+    const existing = windows.find(w => w.singletonId === opts.singletonId);
+    if (existing) {
+      if (existing.minimized) restoreWindow(existing.id);
+      focusWindow(existing.id);
+      return existing;
+    }
+  }
+
+  const id = 'win_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const width = Math.min(opts.width || 460, vw - 24);
+  const height = Math.min(opts.height || 340, vh - 48);
+  const offset = (windows.length % 7) * 22;
+  const x = opts.x !== undefined ? opts.x : Math.max(12, Math.min(40 + offset, vw - width - 12));
+  const y = opts.y !== undefined ? opts.y : Math.max(28, Math.min(36 + offset, vh - height - 40));
+
+  const winObj = {
+    id,
+    singletonId: opts.singletonId || null,
+    title: opts.title || 'Application',
+    icon: opts.icon || 'generic',
+    x, y, width, height,
+    prevBounds: null,
+    minimized: false,
+    maximized: false,
+    resizable: opts.resizable !== false,
+    menus: opts.menus || [],
+    onClose: opts.onClose || null
+  };
+
+  const el = document.createElement('div');
+  el.className = 'w31-window';
+  el.id = id;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  el.style.width = width + 'px';
+  el.style.height = height + 'px';
+
+  // Resize handles
+  let resizersHTML = '';
+  if (winObj.resizable) {
+    ['n','s','e','w','nw','ne','sw','se'].forEach(dir => {
+      resizersHTML += `<div class="resizer ${dir}" data-dir="${dir}"></div>`;
+    });
+  }
+
+  // Menu bar HTML
+  let menuHTML = '';
+  if (winObj.menus && winObj.menus.length > 0) {
+    menuHTML = `<div class="w31-menubar">` +
+      winObj.menus.map((m, idx) => `
+        <div class="w31-menu-item" data-menu-idx="${idx}" onclick="toggleMenuDropdown('${id}', ${idx}, event)">
+          ${formatAccessKey(m.label)}
+          <div class="w31-submenu" id="${id}_menu_${idx}" style="display:none;">
+            ${m.items.map((it, sIdx) => {
+              if (it.sep) return `<div class="sys-dropdown-sep"></div>`;
+              return `<div class="w31-submenu-item ${it.disabled ? 'disabled' : ''}" onclick="execMenuAction('${id}', ${idx}, ${sIdx}, event)">
+                <span>${it.checked ? '✓ ' : ''}${it.label}</span>
+                ${it.shortcut ? `<span style="color:#666;">${it.shortcut}</span>` : ''}
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      `).join('') +
+    `</div>`;
+  }
+
+  el.innerHTML = `
+    ${resizersHTML}
+    <div class="w31-titlebar" onmousedown="startWindowDrag(event, '${id}')" ondblclick="toggleMaximizeWindow('${id}')">
+      <div class="w31-sysbtn" title="System Menu (Double-click to Close)"
+           onclick="toggleSysMenu(event, '${id}')"
+           ondblclick="event.stopPropagation(); closeWindow('${id}')">
+        <div class="sys-bar-icon"></div>
+      </div>
+      <div class="w31-title-text" id="${id}_title">${winObj.title}</div>
+      <div class="w31-win-controls" onmousedown="event.stopPropagation()">
+        <div class="w31-ctrl-btn" title="Minimize" onclick="minimizeWindow('${id}')">
+          <svg width="9" height="9" viewBox="0 0 9 9"><polygon points="1,3 8,3 4.5,7" fill="#000"/></svg>
+        </div>
+        ${winObj.resizable ? `
+        <div class="w31-ctrl-btn" id="${id}_maxbtn" title="Maximize" onclick="toggleMaximizeWindow('${id}')">
+          <svg width="9" height="9" viewBox="0 0 9 9"><polygon points="4.5,2 8,6 1,6" fill="#000"/></svg>
+        </div>` : ''}
+      </div>
+      <div class="sys-dropdown" id="${id}_sysmenu" style="display:none;" onmousedown="event.stopPropagation()">
+        <div class="sys-dropdown-item" onclick="restoreWindow('${id}'); closeAllMenus();">Restore</div>
+        <div class="sys-dropdown-item" onclick="minimizeWindow('${id}'); closeAllMenus();">Minimize</div>
+        <div class="sys-dropdown-item ${winObj.resizable ? '' : 'disabled'}" onclick="${winObj.resizable ? `toggleMaximizeWindow('${id}'); closeAllMenus();` : ''}">Maximize</div>
+        <div class="sys-dropdown-sep"></div>
+        <div class="sys-dropdown-item" onclick="closeWindow('${id}')"><span>Close</span><span>Alt+F4</span></div>
+        <div class="sys-dropdown-sep"></div>
+        <div class="sys-dropdown-item" onclick="closeAllMenus(); openTaskList();"><span>Switch To...</span><span>Ctrl+Esc</span></div>
+      </div>
+    </div>
+    ${menuHTML}
+    <div class="w31-content" id="${id}_content"></div>
+  `;
+
+  el.addEventListener('mousedown', () => focusWindow(id));
+
+  // Attach resize listeners
+  el.querySelectorAll('.resizer').forEach(r => {
+    r.addEventListener('mousedown', (e) => startWindowResize(e, id, r.dataset.dir));
+  });
+
+  document.getElementById('crt-wrapper').appendChild(el);
+  windows.push(winObj);
+
+  if (opts.render) {
+    opts.render(document.getElementById(id + '_content'), winObj);
+  }
+
+  focusWindow(id);
+  return winObj;
+}
+
+function formatAccessKey(label) {
+  return label.replace(/&([A-Za-z])/, '<u>$1</u>');
+}
+
+function focusWindow(id) {
+  activeWindowId = id;
+  zIndexCounter++;
+  windows.forEach(w => {
+    const el = document.getElementById(w.id);
+    if (!el) return;
+    if (w.id === id) {
+      el.classList.add('active');
+      el.style.zIndex = zIndexCounter;
+    } else {
+      el.classList.remove('active');
+    }
+  });
+}
+
+function closeWindow(id) {
+  const idx = windows.findIndex(w => w.id === id);
+  if (idx === -1) return;
+  const winObj = windows[idx];
+  if (winObj.singletonId === 'progman') {
+    showExitWindowsDialog();
+    return;
+  }
+  if (winObj.onClose) winObj.onClose();
+  const el = document.getElementById(id);
+  if (el) el.remove();
+  windows.splice(idx, 1);
+  renderMinimizedDock();
+
+  // Focus next topmost window
+  const visible = windows.filter(w => !w.minimized);
+  if (visible.length > 0) {
+    visible.sort((a, b) => (parseInt(document.getElementById(b.id).style.zIndex || 0) - parseInt(document.getElementById(a.id).style.zIndex || 0)));
+    focusWindow(visible[0].id);
+  } else {
+    activeWindowId = null;
+  }
+}
+
+function minimizeWindow(id) {
+  const winObj = windows.find(w => w.id === id);
+  if (!winObj) return;
+  winObj.minimized = true;
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'none';
+  renderMinimizedDock();
+}
+
+function restoreWindow(id) {
+  const winObj = windows.find(w => w.id === id);
+  if (!winObj) return;
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  if (winObj.minimized) {
+    winObj.minimized = false;
+    el.style.display = 'flex';
+    renderMinimizedDock();
+  }
+  if (winObj.maximized && winObj.prevBounds) {
+    winObj.maximized = false;
+    winObj.x = winObj.prevBounds.x;
+    winObj.y = winObj.prevBounds.y;
+    winObj.width = winObj.prevBounds.width;
+    winObj.height = winObj.prevBounds.height;
+    el.style.left = winObj.x + 'px';
+    el.style.top = winObj.y + 'px';
+    el.style.width = winObj.width + 'px';
+    el.style.height = winObj.height + 'px';
+    const maxBtn = document.getElementById(id + '_maxbtn');
+    if (maxBtn) maxBtn.innerHTML = `<svg width="9" height="9" viewBox="0 0 9 9"><polygon points="4.5,2 8,6 1,6" fill="#000"/></svg>`;
+  }
+  focusWindow(id);
+}
+
+function toggleMaximizeWindow(id) {
+  const winObj = windows.find(w => w.id === id);
+  if (!winObj || !winObj.resizable) return;
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  if (!winObj.maximized) {
+    winObj.prevBounds = { x: winObj.x, y: winObj.y, width: winObj.width, height: winObj.height };
+    winObj.maximized = true;
+    winObj.x = 0;
+    winObj.y = 0;
+    winObj.width = window.innerWidth;
+    winObj.height = window.innerHeight - 44; // Leave space for minimized desktop icons
+    el.style.left = '0px';
+    el.style.top = '0px';
+    el.style.width = winObj.width + 'px';
+    el.style.height = winObj.height + 'px';
+    const maxBtn = document.getElementById(id + '_maxbtn');
+    if (maxBtn) {
+      maxBtn.title = 'Restore';
+      maxBtn.innerHTML = `<svg width="9" height="9" viewBox="0 0 9 9"><polygon points="4.5,1 7.5,4 1.5,4" fill="#000"/><polygon points="1.5,5 7.5,5 4.5,8" fill="#000"/></svg>`;
+    }
+  } else {
+    restoreWindow(id);
+  }
+  focusWindow(id);
+  window.dispatchEvent(new Event('resize'));
+}
+
+function renderMinimizedDock() {
+  const dock = document.getElementById('desktop-minimized-dock');
+  const minimized = windows.filter(w => w.minimized);
+  dock.innerHTML = minimized.map(w => `
+    <div class="desktop-min-icon" ondblclick="restoreWindow('${w.id}')" onclick="this.classList.toggle('selected')">
+      ${getIconSVG(w.icon, 32)}
+      <span>${w.title}</span>
+    </div>
+  `).join('');
+}
+
+/* Dragging & Resizing Windows */
+function startWindowDrag(e, id) {
+  if (e.button !== 0) return;
+  if (e.target.closest('.w31-sysbtn') || e.target.closest('.w31-ctrl-btn') || e.target.closest('.sys-dropdown')) return;
+  const winObj = windows.find(w => w.id === id);
+  if (!winObj || winObj.maximized) return;
+  focusWindow(id);
+  const el = document.getElementById(id);
+  const startX = e.clientX;
+  const startY = e.clientY;
+  const origX = winObj.x;
+  const origY = winObj.y;
+
+  function onMove(ev) {
+    winObj.x = Math.max(-winObj.width + 60, Math.min(window.innerWidth - 60, origX + (ev.clientX - startX)));
+    winObj.y = Math.max(0, Math.min(window.innerHeight - 30, origY + (ev.clientY - startY)));
+    el.style.left = winObj.x + 'px';
+    el.style.top = winObj.y + 'px';
+  }
+  function onUp() {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function startWindowResize(e, id, dir) {
+  e.stopPropagation();
+  const winObj = windows.find(w => w.id === id);
+  if (!winObj || winObj.maximized) return;
+  focusWindow(id);
+  const el = document.getElementById(id);
+  const startX = e.clientX;
+  const startY = e.clientY;
+  const origX = winObj.x, origY = winObj.y, origW = winObj.width, origH = winObj.height;
+
+  function onMove(ev) {
+    const dx = ev.clientX - startX;
+    const dy = ev.clientY - startY;
+    if (dir.includes('e')) winObj.width = Math.max(190, origW + dx);
+    if (dir.includes('s')) winObj.height = Math.max(120, origH + dy);
+    if (dir.includes('w')) {
+      const newW = Math.max(190, origW - dx);
+      winObj.x = origX + (origW - newW);
+      winObj.width = newW;
+    }
+    if (dir.includes('n')) {
+      const newH = Math.max(120, origH - dy);
+      winObj.y = Math.max(0, origY + (origH - newH));
+      winObj.height = newH;
+    }
+    el.style.left = winObj.x + 'px';
+    el.style.top = winObj.y + 'px';
+    el.style.width = winObj.width + 'px';
+    el.style.height = winObj.height + 'px';
+  }
+  function onUp() {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    window.dispatchEvent(new Event('resize'));
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+/* Menus & Dropdowns */
+function closeAllMenus() {
+  document.querySelectorAll('.sys-dropdown, .w31-submenu').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.w31-menu-item').forEach(el => el.classList.remove('open'));
+}
+
+function toggleSysMenu(e, id) {
+  e.stopPropagation();
+  const menu = document.getElementById(id + '_sysmenu');
+  const isOpen = menu.style.display === 'block';
+  closeAllMenus();
+  if (!isOpen) menu.style.display = 'block';
+}
+
+function toggleMenuDropdown(winId, idx, e) {
+  e.stopPropagation();
+  const sub = document.getElementById(`${winId}_menu_${idx}`);
+  const isOpen = sub.style.display === 'block';
+  closeAllMenus();
+  if (!isOpen) {
+    sub.style.display = 'block';
+    e.currentTarget.classList.add('open');
+  }
+}
+
+function execMenuAction(winId, menuIdx, itemIdx, e) {
+  e.stopPropagation();
+  const winObj = windows.find(w => w.id === winId);
+  if (!winObj) return;
+  const item = winObj.menus[menuIdx].items[itemIdx];
+  if (item.disabled) return;
+  closeAllMenus();
+  if (item.action) item.action(winObj);
+}
+
+function handleDesktopClick(e) {
+  if (!e.target.closest('.w31-menu-item') && !e.target.closest('.w31-sysbtn')) {
+    closeAllMenus();
+  }
+}
+
+/* ============================================================================
+   6. DIALOGS (MessageBox, Run..., About, Exit Windows, Task List)
+   ============================================================================ */
+function showModal(title, bodyHTML, buttons = [{ label: 'OK', primary: true, action: () => {} }]) {
+  const layer = document.getElementById('modal-layer');
+  const backdrop = document.createElement('div');
+  backdrop.className = 'w31-modal-backdrop';
+  const modalId = 'modal_' + Date.now();
+
+  backdrop.innerHTML = `
+    <div class="w31-dialog" id="${modalId}">
+      <div class="w31-titlebar" style="background:var(--title-active-bg); color:var(--title-active-text);">
+        <div class="w31-sysbtn" onclick="document.getElementById('${modalId}').parentElement.remove()">
+          <div class="sys-bar-icon"></div>
+        </div>
+        <div class="w31-title-text">${title}</div>
+        <div style="width:20px;"></div>
+      </div>
+      <div style="padding: 16px 20px; font-size: 12px; color: #000;">
+        ${bodyHTML}
+        <div style="margin-top: 18px; display: flex; justify-content: center; gap: 12px;" id="${modalId}_btns"></div>
+      </div>
+    </div>
+  `;
+  layer.appendChild(backdrop);
+
+  const btnContainer = document.getElementById(modalId + '_btns');
+  buttons.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'win-btn' + (b.primary ? ' default-btn' : '');
+    btn.textContent = b.label;
+    btn.style.minWidth = '74px';
+    btn.onclick = () => {
+      const keepOpen = b.action ? b.action(backdrop) : false;
+      if (!keepOpen) backdrop.remove();
+    };
+    btnContainer.appendChild(btn);
+  });
+  return backdrop;
+}
+
+function showRunDialog() {
+  const modal = showModal('Run', `
+    <div style="display:flex; gap:14px; align-items:flex-start;">
+      ${getIconSVG('progman', 32)}
+      <div style="flex:1;">
+        <div style="margin-bottom:6px;">Command Line:</div>
+        <input type="text" id="run-cmd-input" class="bevel-in" style="width:100%; padding:3px 5px; font-family:var(--sys-font); font-size:12px;" placeholder="e.g. winfile, notepad, calc, winmine, sol">
+        <div style="margin-top:8px; font-size:11px; color:#444;">
+          Available: winfile, notepad, calc, pbrush, winmine, sol, command, control, clock, write, winpopup, winver
+        </div>
+      </div>
+    </div>
+  `, [
+    { label: 'OK', primary: true, action: () => {
+      const val = document.getElementById('run-cmd-input').value.trim();
+      if (val) runCommandLine(val);
+    }},
+    { label: 'Cancel' }
+  ]);
+  setTimeout(() => {
+    const inp = document.getElementById('run-cmd-input');
+    if (inp) {
+      inp.focus();
+      inp.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          const val = inp.value.trim();
+          modal.remove();
+          if (val) runCommandLine(val);
+        }
+      };
+    }
+  }, 30);
+}
+
+function runCommandLine(raw) {
+  const cmd = raw.toLowerCase().replace(/\.exe$|\.com$/, '').trim();
+  const map = {
+    'winfile': () => openFileManager(),
+    'notepad': () => openNotepad(),
+    'calc': () => openCalculator(),
+    'pbrush': () => openPaintbrush(),
+    'winmine': () => openMinesweeper(),
+    'sol': () => openSolitaire(),
+    'command': () => openDosPrompt(),
+    'dos': () => openDosPrompt(),
+    'control': () => openControlPanel(),
+    'clock': () => openClock(),
+    'write': () => openWrite(),
+    'winpopup': () => openWinPopup(),
+    'winver': () => showAboutDialog('Windows')
+  };
+  if (map[cmd]) {
+    map[cmd]();
+  } else {
+    playRetroSound('chord');
+    showModal('Application Execution Error', `
+      <div style="display:flex; gap:12px; align-items:center;">
+        <div style="width:28px; height:28px; border-radius:50%; background:#ff0000; color:#fff; font-weight:bold; display:flex; align-items:center; justify-content:center; font-size:18px;">!</div>
+        <div>Cannot find file '${raw}' (or one of its components). Check to ensure the path and filename are correct.</div>
+      </div>
+    `);
+  }
+}
+
+function showAboutDialog(appName = 'Program Manager') {
+  showModal(`About ${appName}`, `
+    <div style="display:flex; gap:16px; align-items:flex-start; min-width: 310px;">
+      ${getIconSVG('progman', 36)}
+      <div style="line-height:1.45;">
+        <div style="font-weight:bold;">Microsoft Windows for Workgroups</div>
+        <div>Version 3.11</div>
+        <div style="margin-bottom:8px;">Copyright &copy; 1985-1993 Microsoft Corp.</div>
+        <div style="border-top:1px solid #808080; padding-top:6px;">
+          <div>386 Enhanced Mode</div>
+          <div>Memory: 16,384 KB Free</div>
+          <div>System Resources: 84% Free</div>
+        </div>
+      </div>
+    </div>
+  `);
+}
+
+function showExitWindowsDialog() {
+  playRetroSound('ding');
+  showModal('Exit Windows', `
+    <div style="display:flex; gap:14px; align-items:center;">
+      <div style="width:30px; height:30px; border-radius:50%; background:#000080; color:#fff; font-weight:bold; display:flex; align-items:center; justify-content:center; font-size:18px;">i</div>
+      <div>This will end your Windows session.</div>
+    </div>
+  `, [
+    { label: 'OK', primary: true, action: () => {
+      document.getElementById('shutdown-screen').style.display = 'flex';
+    }},
+    { label: 'Cancel' }
+  ]);
+}
+
+function openTaskList() {
+  const listHTML = windows.map((w, i) => `
+    <option value="${w.id}" ${i === windows.length - 1 ? 'selected' : ''}>${w.title}${w.minimized ? ' (Minimized)' : ''}</option>
+  `).join('');
+
+  showModal('Task List', `
+    <div style="min-width: 270px;">
+      <select id="tasklist-select" size="6" class="bevel-in" style="width:100%; font-family:var(--sys-font); font-size:12px; padding:2px;">
+        ${listHTML}
+      </select>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; justify-content:center;">
+        <button class="win-btn" onclick="taskAction('switch')">Switch To</button>
+        <button class="win-btn" onclick="taskAction('end')">End Task</button>
+        <button class="win-btn" onclick="taskAction('cascade')">Cascade</button>
+        <button class="win-btn" onclick="taskAction('tile')">Tile</button>
+        <button class="win-btn" onclick="taskAction('arrange')">Arrange Icons</button>
+      </div>
+    </div>
+  `, [{ label: 'Cancel' }]);
+}
+
+function taskAction(act) {
+  const sel = document.getElementById('tasklist-select');
+  const targetId = sel ? sel.value : null;
+  document.getElementById('modal-layer').innerHTML = '';
+
+  if (act === 'switch' && targetId) {
+    restoreWindow(targetId);
+  } else if (act === 'end' && targetId) {
+    closeWindow(targetId);
+  } else if (act === 'cascade') {
+    const vis = windows.filter(w => !w.minimized);
+    vis.forEach((w, i) => {
+      if (w.maximized) restoreWindow(w.id);
+      const el = document.getElementById(w.id);
+      w.x = 24 + i * 24;
+      w.y = 24 + i * 24;
+      el.style.left = w.x + 'px';
+      el.style.top = w.y + 'px';
+      focusWindow(w.id);
+    });
+  } else if (act === 'tile') {
+    const vis = windows.filter(w => !w.minimized);
+    if (!vis.length) return;
+    const cols = Math.ceil(Math.sqrt(vis.length));
+    const rows = Math.ceil(vis.length / cols);
+    const tileW = Math.floor((window.innerWidth - 16) / cols);
+    const tileH = Math.floor((window.innerHeight - 54) / rows);
+    vis.forEach((w, i) => {
+      if (w.maximized) restoreWindow(w.id);
+      const r = Math.floor(i / cols);
+      const c = i % cols;
+      const el = document.getElementById(w.id);
+      w.x = 8 + c * tileW;
+      w.y = 8 + r * tileH;
+      w.width = tileW - 4;
+      w.height = tileH - 4;
+      el.style.left = w.x + 'px';
+      el.style.top = w.y + 'px';
+      el.style.width = w.width + 'px';
+      el.style.height = w.height + 'px';
+    });
+  } else if (act === 'arrange') {
+    renderMinimizedDock();
+  }
+}
+
+/* ============================================================================
+   7. PROGRAM MANAGER (Central Shell + MDI Child Group Windows)
+   ============================================================================ */
+const progGroups = [
+  {
+    id: 'grp_main',
+    title: 'Main',
+    x: 12, y: 12, w: 390, h: 215,
+    minimized: false,
+    items: [
+      { label: 'File Manager', icon: 'winfile', action: () => openFileManager() },
+      { label: 'Control Panel', icon: 'control', action: () => openControlPanel() },
+      { label: 'Print Manager', icon: 'generic', action: () => showModal('Print Manager', 'No printers are currently installed on LPT1:.') },
+      { label: 'Clipboard Viewer', icon: 'notepad', action: () => showModal('ClipBook Viewer', 'Local Clipboard is currently empty.') },
+      { label: 'MS-DOS Prompt', icon: 'dos', action: () => openDosPrompt() },
+      { label: 'Windows Setup', icon: 'control', action: () => showModal('Windows Setup', 'Display: VGA (640x480 16 colors)<br>Keyboard: Enhanced 101/102 key<br>Mouse: Microsoft, or IBM PS/2<br>Network: Microsoft Windows Network (v3.11)') },
+      { label: 'Read Me', icon: 'readme', action: () => openNotepad('C:\\WINDOWS\\README.WRI') }
+    ]
+  },
+  {
+    id: 'grp_acc',
+    title: 'Accessories',
+    x: 42, y: 38, w: 420, h: 230,
+    minimized: false,
+    items: [
+      { label: 'Write', icon: 'write', action: () => openWrite() },
+      { label: 'Paintbrush', icon: 'pbrush', action: () => openPaintbrush() },
+      { label: 'Terminal', icon: 'dos', action: () => openDosPrompt() },
+      { label: 'Notepad', icon: 'notepad', action: () => openNotepad() },
+      { label: 'Recorder', icon: 'generic', action: () => showModal('Recorder', 'Macro Recorder ready. Press Ctrl+Break to stop playback.') },
+      { label: 'Cardfile', icon: 'notepad', action: () => openNotepad('C:\\WORK\\NOTES.TXT') },
+      { label: 'Calendar', icon: 'clock', action: () => showModal('Calendar', `Today's Date: ${new Date().toDateString()}`) },
+      { label: 'Calculator', icon: 'calc', action: () => openCalculator() },
+      { label: 'Clock', icon: 'clock', action: () => openClock() },
+      { label: 'Character Map', icon: 'generic', action: () => showModal('Character Map', '<div style="font-size:18px; letter-spacing:6px;">© ® ™ § ¶ † ‡ • ° ± ÷ × ½ ¼ ¾</div>') }
+    ]
+  },
+  {
+    id: 'grp_games',
+    title: 'Games',
+    x: 78, y: 74, w: 280, h: 165,
+    minimized: false,
+    items: [
+      { label: 'Solitaire', icon: 'sol', action: () => openSolitaire() },
+      { label: 'Minesweeper', icon: 'winmine', action: () => openMinesweeper() }
+    ]
+  },
+  {
+    id: 'grp_net',
+    title: 'Network',
+    x: 112, y: 105, w: 290, h: 165,
+    minimized: true,
+    items: [
+      { label: 'WinPopup', icon: 'winpopup', action: () => openWinPopup() },
+      { label: 'Net Watcher', icon: 'network', action: () => showModal('Net Watcher', 'Connected Workgroup: <b>WORKGROUP</b><br>Local Node: <b>WFW-PC01</b><br>Active Shares: <b>C:\\WORK</b> (Read/Write)') },
+      { label: 'Chat', icon: 'winpopup', action: () => openWinPopup() }
+    ]
+  },
+  {
+    id: 'grp_startup',
+    title: 'StartUp',
+    x: 145, y: 130, w: 250, h: 140,
+    minimized: true,
+    items: []
+  }
+];
+
+let activeMdiId = 'grp_games';
+let mdiZ = 10;
+
+function openProgramManager() {
+  createWindow({
+    singletonId: 'progman',
+    title: 'Program Manager',
+    icon: 'progman',
+    x: 24,
+    y: 22,
+    width: Math.min(620, window.innerWidth - 48),
+    height: Math.min(440, window.innerHeight - 65),
+    menus: [
+      {
+        label: '&File',
+        items: [
+          { label: 'New...', action: () => showModal('New Program Object', 'Program Group / Program Item creation requires administrator disk.') },
+          { label: 'Open', shortcut: 'Enter', action: () => {} },
+          { sep: true },
+          { label: 'Run...', action: () => showRunDialog() },
+          { sep: true },
+          { label: 'Exit Windows...', action: () => showExitWindowsDialog() }
+        ]
+      },
+      {
+        label: '&Options',
+        items: [
+          { label: 'Auto Arrange', checked: true, action: () => renderMdiWorkspace() },
+          { label: 'Minimize on Use', checked: false, action: () => {} },
+          { label: 'Save Settings on Exit', checked: true, action: () => {} }
+        ]
+      },
+      {
+        label: '&Window',
+        items: [
+          { label: 'Cascade', shortcut: 'Shift+F5', action: () => cascadeMdiGroups() },
+          { label: 'Tile', shortcut: 'Shift+F4', action: () => tileMdiGroups() },
+          { label: 'Arrange Icons', action: () => renderMdiWorkspace() },
+          { sep: true },
+          ...progGroups.map((g, i) => ({
+            label: `${i + 1} ${g.title}`,
+            action: () => {
+              g.minimized = false;
+              activeMdiId = g.id;
+              renderMdiWorkspace();
+            }
+          }))
+        ]
+      },
+      {
+        label: '&Help',
+        items: [
+          { label: 'Contents', action: () => openNotepad('C:\\WINDOWS\\README.WRI') },
+          { label: 'About Program Manager...', action: () => showAboutDialog('Program Manager') }
+        ]
+      }
+    ],
+    render: (container) => {
+      container.innerHTML = `
+        <div class="mdi-workspace" id="mdi-workspace"></div>
+      `;
+      renderMdiWorkspace();
+    }
+  });
+}
+
+function renderMdiWorkspace() {
+  const ws = document.getElementById('mdi-workspace');
+  if (!ws) return;
+  ws.innerHTML = '';
+
+  // Render open MDI child windows
+  progGroups.filter(g => !g.minimized).forEach(g => {
+    const mWin = document.createElement('div');
+    mWin.className = 'mdi-window' + (g.id === activeMdiId ? ' active' : '');
+    mWin.id = g.id;
+    mWin.style.left = g.x + 'px';
+    mWin.style.top = g.y + 'px';
+    mWin.style.width = g.w + 'px';
+    mWin.style.height = g.h + 'px';
+    if (g.id === activeMdiId) mWin.style.zIndex = ++mdiZ;
+
+    mWin.innerHTML = `
+      <div class="w31-titlebar" onmousedown="startMdiDrag(event, '${g.id}')">
+        <div class="w31-sysbtn" ondblclick="minimizeMdiGroup('${g.id}')"><div class="sys-bar-icon"></div></div>
+        <div class="w31-title-text">${g.title}</div>
+        <div class="w31-win-controls" onmousedown="event.stopPropagation()">
+          <div class="w31-ctrl-btn" title="Minimize" onclick="minimizeMdiGroup('${g.id}')">
+            <svg width="9" height="9" viewBox="0 0 9 9"><polygon points="1,3 8,3 4.5,7" fill="#000"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="mdi-icons-grid">
+        ${g.items.map((item, idx) => `
+          <div class="prog-icon-item" onclick="selectProgIcon(this)" ondblclick="launchProgItem('${g.id}', ${idx})">
+            ${getIconSVG(item.icon, 32)}
+            <div class="prog-icon-label">${item.label}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    mWin.addEventListener('mousedown', () => {
+      activeMdiId = g.id;
+      document.querySelectorAll('.mdi-window').forEach(w => w.classList.remove('active'));
+      mWin.classList.add('active');
+      mWin.style.zIndex = ++mdiZ;
+    });
+
+    ws.appendChild(mWin);
+  });
+
+  // Render minimized group icons inside Program Manager bottom
+  const dock = document.createElement('div');
+  dock.className = 'mdi-minimized-dock';
+  progGroups.filter(g => g.minimized).forEach(g => {
+    const ic = document.createElement('div');
+    ic.className = 'mdi-min-icon';
+    ic.innerHTML = `${getIconSVG('group', 30)}<span>${g.title}</span>`;
+    ic.onclick = () => {
+      document.querySelectorAll('.mdi-min-icon').forEach(x => x.classList.remove('selected'));
+      ic.classList.add('selected');
+    };
+    ic.ondblclick = () => {
+      g.minimized = false;
+      activeMdiId = g.id;
+      renderMdiWorkspace();
+    };
+    dock.appendChild(ic);
+  });
+  ws.appendChild(dock);
+}
+
+function selectProgIcon(el) {
+  document.querySelectorAll('.prog-icon-item').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function launchProgItem(grpId, idx) {
+  const g = progGroups.find(x => x.id === grpId);
+  if (g && g.items[idx]) g.items[idx].action();
+}
+
+function minimizeMdiGroup(grpId) {
+  const g = progGroups.find(x => x.id === grpId);
+  if (g) {
+    g.minimized = true;
+    renderMdiWorkspace();
+  }
+}
+
+function startMdiDrag(e, grpId) {
+  if (e.target.closest('.w31-sysbtn') || e.target.closest('.w31-ctrl-btn')) return;
+  const g = progGroups.find(x => x.id === grpId);
+  const el = document.getElementById(grpId);
+  const ws = document.getElementById('mdi-workspace');
+  if (!g || !el || !ws) return;
+
+  activeMdiId = grpId;
+  el.style.zIndex = ++mdiZ;
+  const startX = e.clientX;
+  const startY = e.clientY;
+  const origX = g.x;
+  const origY = g.y;
+
+  function onMove(ev) {
+    g.x = Math.max(0, Math.min(ws.clientWidth - 80, origX + (ev.clientX - startX)));
+    g.y = Math.max(0, Math.min(ws.clientHeight - 40, origY + (ev.clientY - startY)));
+    el.style.left = g.x + 'px';
+    el.style.top = g.y + 'px';
+  }
+  function onUp() {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function cascadeMdiGroups() {
+  const open = progGroups.filter(g => !g.minimized);
+  open.forEach((g, i) => {
+    g.x = 12 + i * 26;
+    g.y = 12 + i * 24;
+    g.w = 360;
+    g.h = 200;
+  });
+  renderMdiWorkspace();
+}
+
+function tileMdiGroups() {
+  const ws = document.getElementById('mdi-workspace');
+  const open = progGroups.filter(g => !g.minimized);
+  if (!ws || !open.length) return;
+  const w = Math.floor((ws.clientWidth - 16) / open.length);
+  const h = Math.max(150, ws.clientHeight - 55);
+  open.forEach((g, i) => {
+    g.x = 6 + i * w;
+    g.y = 6;
+    g.w = w - 4;
+    g.h = h;
+  });
+  renderMdiWorkspace();
+}
+
+/* ============================================================================
+   8. FILE MANAGER (WINFILE.EXE)
+   ============================================================================ */
+function openFileManager() {
+  let currentPath = 'C:\\WINDOWS';
+
+  createWindow({
+    singletonId: 'winfile',
+    title: `File Manager - [${currentPath}\\*.*]`,
+    icon: 'winfile',
+    width: 560,
+    height: 360,
+    menus: [
+      {
+        label: '&File',
+        items: [
+          { label: 'Open', shortcut: 'Enter', action: () => {} },
+          { label: 'Run...', action: () => showRunDialog() },
+          { sep: true },
+          { label: 'Exit', action: (w) => closeWindow(w.id) }
+        ]
+      },
+      {
+        label: '&Disk',
+        items: [
+          { label: 'Format Disk...', action: () => showModal('Format Disk', 'Cannot format system drive C:.') },
+          { label: 'Select Drive...', action: () => {} }
+        ]
+      },
+      {
+        label: '&Tree',
+        items: [
+          { label: 'Expand All', action: () => {} }
+        ]
+      },
+      {
+        label: '&Help',
+        items: [
+          { label: 'About File Manager...', action: () => showAboutDialog('File Manager') }
+        ]
+      }
+    ],
+    render: (container, winObj) => {
+      function renderFM() {
+        document.getElementById(winObj.id + '_title').textContent = `File Manager - [${currentPath}\\*.*]`;
+        const dirs = Object.keys(virtualFS);
+        const dirData = virtualFS[currentPath] || { files: [] };
+
+        container.innerHTML = `
+          <div style="background:#c0c0c0; padding:3px 6px; border-bottom:1px solid #000; display:flex; align-items:center; gap:6px;">
+            <button class="win-btn" style="padding:1px 6px; font-size:11px;" onclick="selectFMDrive('A:')">[A:]</button>
+            <button class="win-btn pressed" style="padding:1px 6px; font-size:11px;" onclick="selectFMDrive('C:')">[C:]</button>
+            <button class="win-btn" style="padding:1px 6px; font-size:11px;" onclick="selectFMDrive('D:')">[D:]</button>
+            <span style="margin-left:8px; font-size:11px;">C: [MS-DOS_6]</span>
+          </div>
+          <div style="flex:1; display:flex; overflow:hidden; background:#fff;">
+            <!-- Left Tree Pane -->
+            <div style="width:40%; border-right:2px solid #808080; overflow-y:auto; padding:6px; font-size:12px;">
+              ${dirs.map(d => {
+                const depth = (d.match(/\\/g) || []).length - 1;
+                const label = d === 'C:\\' ? 'C:\\' : d.split('\\').pop();
+                const isSel = d === currentPath;
+                return `
+                  <div style="padding:2px 4px; padding-left:${depth * 14 + 4}px; cursor:pointer; display:flex; align-items:center; gap:5px; ${isSel ? 'background:#000080; color:#fff;' : ''}"
+                       data-path="${d}" class="fm-dir-node">
+                    <span style="color:${isSel ? '#ffff00' : '#808000'};">📁</span>
+                    <span>${label}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+            <!-- Right File List Pane -->
+            <div style="flex:1; overflow-y:auto; padding:4px; font-family:monospace; font-size:12px;">
+              ${dirData.files.map((f, idx) => {
+                const isExe = f.name.endsWith('.EXE') || f.name.endsWith('.COM');
+                return `
+                  <div class="fm-file-row" data-idx="${idx}" style="padding:2px 6px; display:flex; justify-content:space-between; cursor:pointer;">
+                    <span>${isExe ? '🗔' : '📄'} ${f.name}</span>
+                    <span style="color:#555;">${f.size.toLocaleString()} &nbsp; ${f.date} &nbsp; ${f.attr}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+          <div style="background:#c0c0c0; border-top:1px solid #000; padding:2px 8px; font-size:11px; display:flex; justify-content:space-between;">
+            <span>C: 124,518KB free</span>
+            <span>Total ${dirData.files.length} file(s)</span>
+          </div>
+        `;
+
+        container.querySelectorAll('.fm-dir-node').forEach(el => {
+          el.onclick = () => {
+            currentPath = el.dataset.path;
+            renderFM();
+          };
+        });
+
+        container.querySelectorAll('.fm-file-row').forEach(el => {
+          el.onclick = () => {
+            container.querySelectorAll('.fm-file-row').forEach(r => { r.style.background = ''; r.style.color = ''; });
+            el.style.background = '#000080';
+            el.style.color = '#ffffff';
+          };
+          el.ondblclick = () => {
+            const f = dirData.files[parseInt(el.dataset.idx)];
+            if (f.app) {
+              runCommandLine(f.app);
+            } else if (f.content !== undefined) {
+              openNotepad(`${currentPath === 'C:\\' ? 'C:' : currentPath}\\${f.name}`);
+            } else {
+              showModal('File Manager', `Cannot directly execute system binary <b>${f.name}</b>.`);
+            }
+          };
+        });
+      }
+
+      window.selectFMDrive = (drv) => {
+        if (drv !== 'C:') {
+          playRetroSound('chord');
+          showModal('File Manager', `Drive ${drv} is not ready.<br>Please insert a diskette into drive ${drv}.`);
+        }
+      };
+
+      renderFM();
+    }
+  });
+}
+
+/* ============================================================================
+   9. NOTEPAD (NOTEPAD.EXE)
+   ============================================================================ */
+function openNotepad(filePath = null) {
+  let currentFile = filePath;
+  let initialText = '';
+
+  function getFileObj(path) {
+    if (!path) return null;
+    const lastSlash = path.lastIndexOf('\\');
+    const dir = lastSlash === 2 ? 'C:\\' : path.substring(0, lastSlash);
+    const fname = path.substring(lastSlash + 1);
+    const dObj = virtualFS[dir];
+    if (!dObj) return null;
+    return dObj.files.find(f => f.name.toUpperCase() === fname.toUpperCase());
+  }
+
+  if (currentFile) {
+    const fObj = getFileObj(currentFile);
+    if (fObj) initialText = fObj.content || '';
+  }
+
+  let textareaEl = null;
+
+  createWindow({
+    title: `Notepad - ${currentFile ? currentFile.split('\\').pop() : '(Untitled)'}`,
+    icon: 'notepad',
+    width: 440,
+    height: 310,
+    menus: [
+      {
+        label: '&File',
+        items: [
+          { label: 'New', action: (w) => {
+            currentFile = null;
+            if (textareaEl) textareaEl.value = '';
+            document.getElementById(w.id + '_title').textContent = 'Notepad - (Untitled)';
+          }},
+          { label: 'Open WIN.INI', action: (w) => {
+            currentFile = 'C:\\WINDOWS\\WIN.INI';
+            const f = getFileObj(currentFile);
+            if (textareaEl && f) textareaEl.value = f.content;
+            document.getElementById(w.id + '_title').textContent = 'Notepad - WIN.INI';
+          }},
+          { label: 'Open AUTOEXEC.BAT', action: (w) => {
+            currentFile = 'C:\\AUTOEXEC.BAT';
+            const f = getFileObj(currentFile);
+            if (textareaEl && f) textareaEl.value = f.content;
+            document.getElementById(w.id + '_title').textContent = 'Notepad - AUTOEXEC.BAT';
+          }},
+          { label: 'Save', action: (w) => {
+            if (!textareaEl) return;
+            if (!currentFile) {
+              currentFile = 'C:\\WORK\\UNTITLED.TXT';
+              virtualFS['C:\\WORK'].files.push({
+                name: 'UNTITLED.TXT',
+                size: textareaEl.value.length,
+                date: '11-19-93',
+                attr: 'A',
+                content: textareaEl.value
+              });
+            } else {
+              const f = getFileObj(currentFile);
+              if (f) {
+                f.content = textareaEl.value;
+                f.size = textareaEl.value.length;
+              }
+            }
+            document.getElementById(w.id + '_title').textContent = `Notepad - ${currentFile.split('\\').pop()}`;
+            playRetroSound('ding');
+          }},
+          { sep: true },
+          { label: 'Exit', action: (w) => closeWindow(w.id) }
+        ]
+      },
+      {
+        label: '&Edit',
+        items: [
+          { label: 'Select All', action: () => { if (textareaEl) textareaEl.select(); } },
+          { label: 'Time/Date', shortcut: 'F5', action: () => {
+            if (textareaEl) {
+              const nowStr = new Date().toLocaleTimeString() + ' ' + new Date().toLocaleDateString();
+              textareaEl.value += nowStr;
+            }
+          }}
+        ]
+      },
+      {
+        label: '&Help',
+        items: [
+          { label: 'About Notepad...', action: () => showAboutDialog('Notepad') }
+        ]
+      }
+    ],
+    render: (container) => {
+      container.innerHTML = `<textarea style="width:100%; height:100%; border:none; outline:none; resize:none; padding:6px; font-family:monospace; font-size:13px; user-select:text; -webkit-user-select:text;"></textarea>`;
+      textareaEl = container.querySelector('textarea');
+      textareaEl.value = initialText;
+    }
+  });
+}
+
+/* ============================================================================
+   10. PAINTBRUSH (PBRUSH.EXE)
+   ============================================================================ */
+function openPaintbrush() {
+  const vgaPalette = [
+    '#000000','#808080','#800000','#808000','#008000','#008080','#000080','#800080','#808040','#004040','#0080ff','#004080','#8000ff','#804000',
+    '#ffffff','#c0c0c0','#ff0000','#ffff00','#00ff00','#00ffff','#0000ff','#ff00ff','#ffff80','#00ff80','#80ffff','#8080ff','#ff0080','#ff8040'
+  ];
+
+  let fgColor = '#000000';
+  let bgColor = '#ffffff';
+  let currentTool = 'brush';
+  let lineWidth = 2;
+  let canvasEl = null;
+  let ctx = null;
+
+  createWindow({
+    singletonId: 'pbrush',
+    title: 'Paintbrush - (Untitled)',
+    icon: 'pbrush',
+    width: 580,
+    height: 410,
+    menus: [
+      {
+        label: '&File',
+        items: [
+          { label: 'New', action: () => {
+            if (ctx && canvasEl) {
+              ctx.fillStyle = bgColor;
+              ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
+            }
+          }},
+          { label: 'Save As PNG...', action: () => {
+            if (!canvasEl) return;
+            const link = document.createElement('a');
+            link.download = 'PBRUSH.PNG';
+            link.href = canvasEl.toDataURL('image/png');
+            link.click();
+          }},
+          { sep: true },
+          { label: 'Exit', action: (w) => closeWindow(w.id) }
+        ]
+      },
+      {
+        label: '&Edit',
+        items: [
+          { label: 'Clear Canvas', action: () => {
+            if (ctx && canvasEl) {
+              ctx.fillStyle = '#ffffff';
+              ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
+            }
+          }}
+        ]
+      },
+      {
+        label: '&Help',
+        items: [
+          { label: 'About Paintbrush...', action: () => showAboutDialog('Paintbrush') }
+        ]
+      }
+    ],
+    render: (container) => {
+      const tools = [
+        { id: 'brush', label: '🖌️', title: 'Brush' },
+        { id: 'pencil', label: '✏️', title: 'Pencil' },
+        { id: 'eraser', label: '🧽', title: 'Eraser' },
+        { id: 'fill', label: '🪣', title: 'Paint Roller / Fill' },
+        { id: 'spray', label: '💨', title: 'Airbrush' },
+        { id: 'line', label: '╱', title: 'Line' },
+        { id: 'rect', label: '▭', title: 'Box' },
+        { id: 'fillrect', label: '▬', title: 'Filled Box' },
+        { id: 'circle', label: '◯', title: 'Circle/Ellipse' },
+        { id: 'picker', label: '💧', title: 'Color Pick' }
+      ];
+
+      container.innerHTML = `
+        <div style="flex:1; display:flex; background:#c0c0c0; overflow:hidden;">
+          <!-- Left Toolbox -->
+          <div style="width:58px; padding:4px; border-right:1px solid #000; display:flex; flex-direction:column; gap:6px; align-items:center;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2px;" id="pb-tools-grid">
+              ${tools.map(t => `<div class="pb-tool ${t.id === 'brush' ? 'active' : ''}" data-tool="${t.id}" title="${t.title}">${t.label}</div>`).join('')}
+            </div>
+            <!-- Line size selector -->
+            <div class="bevel-in" style="width:48px; padding:4px; display:flex; flex-direction:column; gap:4px; align-items:center;" id="pb-sizes">
+              ${[1, 3, 5, 8].map(sz => `
+                <div data-sz="${sz}" style="width:36px; height:${sz + 4}px; display:flex; align-items:center; cursor:pointer; padding:0 2px; ${sz === 2 ? 'background:#000080;' : ''}">
+                  <div style="width:100%; height:${sz}px; background:#000;"></div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <!-- Drawing Canvas Area -->
+          <div style="flex:1; background:#808080; padding:6px; overflow:auto;">
+            <canvas id="pb-canvas" width="480" height="290" style="background:#ffffff; border:1px solid #000; cursor:crosshair; display:block;"></canvas>
+          </div>
+        </div>
+        <!-- Bottom 28-Color VGA Palette -->
+        <div style="height:38px; background:#c0c0c0; border-top:1px solid #000; padding:3px 6px; display:flex; align-items:center; gap:8px;">
+          <div class="bevel-in" style="width:30px; height:28px; position:relative; background:#c0c0c0;" title="Left-click palette for Foreground, Right-click for Background">
+            <div id="pb-bg-swatch" style="width:14px; height:14px; background:${bgColor}; border:1px solid #000; position:absolute; right:3px; bottom:3px;"></div>
+            <div id="pb-fg-swatch" style="width:14px; height:14px; background:${fgColor}; border:1px solid #000; position:absolute; left:3px; top:3px;"></div>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(14, 18px); grid-template-rows:repeat(2, 14px); gap:1px;" id="pb-palette">
+            ${vgaPalette.map(c => `<div data-col="${c}" style="background:${c}; border:1px solid #444; cursor:pointer;"></div>`).join('')}
+          </div>
+        </div>
+      `;
+
+      canvasEl = container.querySelector('#pb-canvas');
+      ctx = canvasEl.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
+
+      // Tool switching
+      container.querySelectorAll('.pb-tool').forEach(btn => {
+        btn.onclick = () => {
+          container.querySelectorAll('.pb-tool').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentTool = btn.dataset.tool;
+        };
+      });
+
+      // Size switching
+      container.querySelectorAll('#pb-sizes > div').forEach(s => {
+        s.onclick = () => {
+          container.querySelectorAll('#pb-sizes > div').forEach(x => x.style.background = '');
+          s.style.background = '#000080';
+          lineWidth = parseInt(s.dataset.sz);
+        };
+      });
+
+      // Palette switching (Left = FG, Right = BG)
+      container.querySelectorAll('#pb-palette > div').forEach(sw => {
+        sw.onclick = () => {
+          fgColor = sw.dataset.col;
+          container.querySelector('#pb-fg-swatch').style.background = fgColor;
+        };
+        sw.oncontextmenu = (e) => {
+          e.preventDefault();
+          bgColor = sw.dataset.col;
+          container.querySelector('#pb-bg-swatch').style.background = bgColor;
+        };
+      });
+
+      // Drawing logic
+      let drawing = false;
+      let startX = 0, startY = 0;
+      let snapshot = null;
+
+      function getPos(e) {
+        const rect = canvasEl.getBoundingClientRect();
+        return {
+          x: Math.floor(e.clientX - rect.left),
+          y: Math.floor(e.clientY - rect.top)
+        };
+      }
+
+      canvasEl.onmousedown = (e) => {
+        drawing = true;
+        const pos = getPos(e);
+        startX = pos.x;
+        startY = pos.y;
+        snapshot = ctx.getImageData(0, 0, canvasEl.width, canvasEl.height);
+
+        if (currentTool === 'fill') {
+          floodFillCanvas(startX, startY, fgColor);
+          drawing = false;
+        } else if (currentTool === 'picker') {
+          const p = ctx.getImageData(startX, startY, 1, 1).data;
+          fgColor = `rgb(${p[0]},${p[1]},${p[2]})`;
+          container.querySelector('#pb-fg-swatch').style.background = fgColor;
+          drawing = false;
+        } else if (currentTool === 'brush' || currentTool === 'pencil' || currentTool === 'eraser') {
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.lineCap = 'round';
+          ctx.strokeStyle = currentTool === 'eraser' ? bgColor : fgColor;
+          ctx.lineWidth = currentTool === 'pencil' ? 1 : (currentTool === 'eraser' ? lineWidth * 3 : lineWidth);
+        }
+      };
+
+      canvasEl.onmousemove = (e) => {
+        if (!drawing) return;
+        const pos = getPos(e);
+
+        if (currentTool === 'brush' || currentTool === 'pencil' || currentTool === 'eraser') {
+          ctx.lineTo(pos.x, pos.y);
+          ctx.stroke();
+        } else if (currentTool === 'spray') {
+          ctx.fillStyle = fgColor;
+          for (let i = 0; i < 18; i++) {
+            const ox = (Math.random() - 0.5) * lineWidth * 5;
+            const oy = (Math.random() - 0.5) * lineWidth * 5;
+            ctx.fillRect(pos.x + ox, pos.y + oy, 1, 1);
+          }
+        } else if (['line', 'rect', 'fillrect', 'circle'].includes(currentTool)) {
+          ctx.putImageData(snapshot, 0, 0);
+          ctx.strokeStyle = fgColor;
+          ctx.fillStyle = fgColor;
+          ctx.lineWidth = lineWidth;
+
+          if (currentTool === 'line') {
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+          } else if (currentTool === 'rect') {
+            ctx.strokeRect(startX, startY, pos.x - startX, pos.y - startY);
+          } else if (currentTool === 'fillrect') {
+            ctx.fillRect(startX, startY, pos.x - startX, pos.y - startY);
+          } else if (currentTool === 'circle') {
+            const rx = Math.abs(pos.x - startX) / 2;
+            const ry = Math.abs(pos.y - startY) / 2;
+            const cx = Math.min(startX, pos.x) + rx;
+            const cy = Math.min(startY, pos.y) + ry;
+            ctx.beginPath();
+            ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+        }
+      };
+
+      window.addEventListener('mouseup', () => { drawing = false; });
+
+      function floodFillCanvas(x, y, hex) {
+        const img = ctx.getImageData(0, 0, canvasEl.width, canvasEl.height);
+        const data = img.data;
+        const w = canvasEl.width, h = canvasEl.height;
+        const idx = (y * w + x) * 4;
+        const tr = data[idx], tg = data[idx+1], tb = data[idx+2];
+
+        const tmp = document.createElement('canvas').getContext('2d');
+        tmp.fillStyle = hex;
+        tmp.fillRect(0, 0, 1, 1);
+        const fc = tmp.getImageData(0, 0, 1, 1).data;
+        if (tr === fc[0] && tg === fc[1] && tb === fc[2]) return;
+
+        const stack = [[x, y]];
+        while (stack.length) {
+          const [cx, cy] = stack.pop();
+          if (cx < 0 || cy < 0 || cx >= w || cy >= h) continue;
+          const p = (cy * w + cx) * 4;
+          if (data[p] === tr && data[p+1] === tg && data[p+2] === tb) {
+            data[p] = fc[0]; data[p+1] = fc[1]; data[p+2] = fc[2]; data[p+3] = 255;
+            stack.push([cx+1, cy], [cx-1, cy], [cx, cy+1], [cx, cy-1]);
+          }
+        }
+        ctx.putImageData(img, 0, 0);
+      }
+    }
+  });
+}
+
+/* ============================================================================
+   11. MINESWEEPER (WINMINE.EXE)
+   ============================================================================ */
+function openMinesweeper() {
+  let rows = 9, cols = 9, totalMines = 10;
+  let grid = [];
+  let gameOver = false;
+  let firstClick = true;
+  let flagsPlaced = 0;
+  let seconds = 0;
+  let timerInterval = null;
+
+  const winObj = createWindow({
+    singletonId: 'winmine',
+    title: 'Minesweeper',
+    icon: 'winmine',
+    width: 225,
+    height: 295,
+    resizable: false,
+    onClose: () => { if (timerInterval) clearInterval(timerInterval); },
+    menus: [
+      {
+        label: '&Game',
+        items: [
+          { label: 'New', shortcut: 'F2', action: () => resetMineGame() },
+          { sep: true },
+          { label: 'Beginner', action: () => { rows = 9; cols = 9; totalMines = 10; resizeMineWin(225, 295); resetMineGame(); } },
+          { label: 'Intermediate', action: () => { rows = 16; cols = 16; totalMines = 40; resizeMineWin(365, 435); resetMineGame(); } },
+          { label: 'Expert', action: () => { rows = 16; cols = 30; totalMines = 99; resizeMineWin(645, 435); resetMineGame(); } },
+          { sep: true },
+          { label: 'Exit', action: (w) => closeWindow(w.id) }
+        ]
+      },
+      {
+        label: '&Help',
+        items: [
+          { label: 'About Minesweeper...', action: () => showAboutDialog('Minesweeper') }
+        ]
+      }
+    ],
+    render: (container) => {
+      window.resizeMineWin = (w, h) => {
+        const el = document.getElementById(winObj.id);
+        if (el) {
+          el.style.width = w + 'px';
+          el.style.height = h + 'px';
+        }
+      };
+
+      window.resetMineGame = () => {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = null;
+        seconds = 0;
+        flagsPlaced = 0;
+        gameOver = false;
+        firstClick = true;
+        grid = Array.from({ length: rows }, () =>
+          Array.from({ length: cols }, () => ({ mine: false, revealed: false, flagged: false, count: 0, exploded: false }))
+        );
+        renderBoard('🙂');
+      };
+
+      function placeMines(excludeR, excludeC) {
+        let placed = 0;
+        while (placed < totalMines) {
+          const r = Math.floor(Math.random() * rows);
+          const c = Math.floor(Math.random() * cols);
+          if (!grid[r][c].mine && !(Math.abs(r - excludeR) <= 1 && Math.abs(c - excludeC) <= 1)) {
+            grid[r][c].mine = true;
+            placed++;
+          }
+        }
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            if (grid[r][c].mine) continue;
+            let cnt = 0;
+            for (let dr = -1; dr <= 1; dr++) {
+              for (let dc = -1; dc <= 1; dc++) {
+                const nr = r + dr, nc = c + dc;
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc].mine) cnt++;
+              }
+            }
+            grid[r][c].count = cnt;
+          }
+        }
+      }
+
+      function revealCell(r, c) {
+        if (gameOver || r < 0 || r >= rows || c < 0 || c >= cols) return;
+        const cell = grid[r][c];
+        if (cell.revealed || cell.flagged) return;
+
+        if (firstClick) {
+          firstClick = false;
+          placeMines(r, c);
+          timerInterval = setInterval(() => {
+            if (!gameOver && seconds < 999) {
+              seconds++;
+              const tEl = container.querySelector('#mine-timer');
+              if (tEl) tEl.textContent = String(seconds).padStart(3, '0');
+            }
+          }, 1000);
+        }
+
+        cell.revealed = true;
+        if (cell.mine) {
+          cell.exploded = true;
+          gameOver = true;
+          clearInterval(timerInterval);
+          playRetroSound('chord');
+          for (let rr = 0; rr < rows; rr++) {
+            for (let cc = 0; cc < cols; cc++) {
+              if (grid[rr][cc].mine) grid[rr][cc].revealed = true;
+            }
+          }
+          renderBoard('😵');
+          return;
+        }
+
+        if (cell.count === 0) {
+          for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+              revealCell(r + dr, c + dc);
+            }
+          }
+        }
+
+        checkMineWin();
+      }
+
+      function checkMineWin() {
+        let unrevealedSafe = 0;
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            if (!grid[r][c].mine && !grid[r][c].revealed) unrevealedSafe++;
+          }
+        }
+        if (unrevealedSafe === 0 && !gameOver) {
+          gameOver = true;
+          clearInterval(timerInterval);
+          playRetroSound('tada');
+          renderBoard('😎');
+        }
+      }
+
+      function renderBoard(face = '🙂') {
+        const rem = Math.max(-99, totalMines - flagsPlaced);
+        const remStr = rem < 0 ? '-' + String(Math.abs(rem)).padStart(2, '0') : String(rem).padStart(3, '0');
+
+        container.innerHTML = `
+          <div style="background:#c0c0c0; padding:8px; flex:1; display:flex; flex-direction:column; gap:8px; align-items:center;">
+            <!-- Top LCD Header -->
+            <div class="bevel-in" style="width:100%; background:#c0c0c0; padding:4px 6px; display:flex; justify-content:space-between; align-items:center;">
+              <div class="mine-lcd">${remStr}</div>
+              <button class="win-btn" id="mine-face" style="width:28px; height:28px; padding:0; font-size:16px;" onclick="resetMineGame()">${face}</button>
+              <div class="mine-lcd" id="mine-timer">${String(seconds).padStart(3, '0')}</div>
+            </div>
+            <!-- Grid -->
+            <div class="bevel-in" style="display:grid; grid-template-columns:repeat(${cols}, 20px); background:#808080;">
+              ${grid.map((row, r) => row.map((cell, c) => {
+                let inner = '';
+                let cls = 'mine-cell';
+                if (cell.revealed) {
+                  cls += ' revealed';
+                  if (cell.exploded) cls += ' exploded';
+                  if (cell.mine) inner = '💣';
+                  else if (cell.count > 0) {
+                    cls += ` mine-c${cell.count}`;
+                    inner = cell.count;
+                  }
+                } else if (cell.flagged) {
+                  inner = '🚩';
+                }
+                return `<div class="${cls}" data-r="${r}" data-c="${c}">${inner}</div>`;
+              }).join('')).join('')}
+            </div>
+          </div>
+        `;
+
+        container.querySelectorAll('.mine-cell').forEach(el => {
+          const r = parseInt(el.dataset.r);
+          const c = parseInt(el.dataset.c);
+
+          el.onmousedown = (e) => {
+            if (gameOver) return;
+            const fBtn = container.querySelector('#mine-face');
+            if (fBtn && e.button === 0) fBtn.textContent = '😮';
+          };
+
+          el.onclick = () => {
+            if (gameOver) return;
+            const cell = grid[r][c];
+            if (cell.revealed && cell.count > 0) {
+              // Chording
+              let adjFlags = 0;
+              for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                  const nr = r + dr, nc = c + dc;
+                  if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc].flagged) adjFlags++;
+                }
+              }
+              if (adjFlags === cell.count) {
+                for (let dr = -1; dr <= 1; dr++) {
+                  for (let dc = -1; dc <= 1; dc++) {
+                    revealCell(r + dr, c + dc);
+                  }
+                }
+              }
+            } else {
+              revealCell(r, c);
+            }
+            if (!gameOver) renderBoard('🙂');
+          };
+
+          el.oncontextmenu = (e) => {
+            e.preventDefault();
+            if (gameOver || grid[r][c].revealed) return;
+            grid[r][c].flagged = !grid[r][c].flagged;
+            flagsPlaced += grid[r][c].flagged ? 1 : -1;
+            renderBoard('🙂');
+          };
+        });
+      }
+
+      resetMineGame();
+    }
+  });
+}
+
+/* ============================================================================
+   12. SOLITAIRE (SOL.EXE)
+   ============================================================================ */
+function openSolitaire() {
+  const suits = [
+    { name: 'hearts', sym: '♥', color: '#ff0000' },
+    { name: 'diamonds', sym: '♦', color: '#ff0000' },
+    { name: 'clubs', sym: '♣', color: '#000000' },
+    { name: 'spades', sym: '♠', color: '#000000' }
+  ];
+  const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+
+  let stock = [], waste = [], foundations = [[],[],[],[]], tableau = [[],[],[],[],[],[],[]];
+  let selected = null; // { source: 'waste'|'tab', col?: number, index?: number }
+  let cardBack = 'back-castle';
+  let score = 0;
+
+  function dealSolitaire() {
+    let deck = [];
+    suits.forEach((s, sIdx) => {
+      ranks.forEach((r, rIdx) => {
+        deck.push({ suit: s, rank: r, val: rIdx + 1, isRed: sIdx < 2, faceUp: false });
+      });
+    });
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+    tableau = [[],[],[],[],[],[],[]];
+    for (let c = 0; c < 7; c++) {
+      for (let r = 0; r <= c; r++) {
+        const card = deck.pop();
+        if (r === c) card.faceUp = true;
+        tableau[c].push(card);
+      }
+    }
+    stock = deck;
+    waste = [];
+    foundations = [[],[],[],[]];
+    selected = null;
+    score = 0;
+  }
+
+  createWindow({
+    singletonId: 'sol',
+    title: 'Solitaire',
+    icon: 'sol',
+    width: 550,
+    height: 430,
+    menus: [
+      {
+        label: '&Game',
+        items: [
+          { label: 'Deal', shortcut: 'F2', action: () => { dealSolitaire(); renderSol(); } },
+          { label: 'Deck Back: Castle', action: () => { cardBack = 'back-castle'; renderSol(); } },
+          { label: 'Deck Back: Roses', action: () => { cardBack = 'back-roses'; renderSol(); } },
+          { label: 'Deck Back: Robot', action: () => { cardBack = 'back-robot'; renderSol(); } },
+          { label: 'Deck Back: Fish', action: () => { cardBack = 'back-fish'; renderSol(); } },
+          { sep: true },
+          { label: 'Exit', action: (w) => closeWindow(w.id) }
+        ]
+      },
+      {
+        label: '&Help',
+        items: [
+          { label: 'About Solitaire...', action: () => showAboutDialog('Solitaire') }
+        ]
+      }
+    ],
+    render: (container) => {
+      dealSolitaire();
+
+      window.renderSol = () => {
+        const winCheck = foundations.every(f => f.length === 13);
+
+        container.innerHTML = `
+          <div class="sol-table">
+            <!-- Top Row: Stock, Waste & 4 Foundations -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div style="display:flex; gap:12px;">
+                <!-- Stock -->
+                <div class="sol-slot" id="sol-stock" style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#00ff00; font-size:20px;">
+                  ${stock.length > 0 ? `<div class="sol-card ${cardBack}" style="top:0;"></div>` : '↻'}
+                </div>
+                <!-- Waste -->
+                <div class="sol-slot" id="sol-waste">
+                  ${waste.length > 0 ? renderCardHTML(waste[waste.length - 1], 0, selected && selected.source === 'waste') : ''}
+                </div>
+              </div>
+              <!-- 4 Foundations -->
+              <div style="display:flex; gap:10px;">
+                ${foundations.map((f, fIdx) => `
+                  <div class="sol-slot sol-found" data-fidx="${fIdx}" style="display:flex; align-items:center; justify-content:center; color:#004000; font-size:22px;">
+                    ${f.length > 0 ? renderCardHTML(f[f.length - 1], 0, false) : suits[fIdx].sym}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- 7 Tableau Columns -->
+            <div style="display:flex; justify-content:space-between; gap:8px; flex:1; margin-top:6px;">
+              ${tableau.map((col, cIdx) => `
+                <div class="sol-slot sol-tab-col" data-col="${cIdx}" style="min-height:220px; border-color:transparent; background:rgba(0,0,0,0.12);">
+                  ${col.map((card, idx) => {
+                    const isSel = selected && selected.source === 'tab' && selected.col === cIdx && idx >= selected.index;
+                    return renderCardHTML(card, idx * 18, isSel, cIdx, idx);
+                  }).join('')}
+                </div>
+              `).join('')}
+            </div>
+
+            ${winCheck ? `
+              <div style="position:absolute; inset:0; background:rgba(0,0,0,0.65); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#ffff00; font-size:24px; font-weight:bold; gap:14px; z-index:99;">
+                <div>🎉 YOU WIN! Score: ${score} 🎉</div>
+                <button class="win-btn" onclick="dealSolitaire(); renderSol();">Play Again</button>
+              </div>
+            ` : ''}
+          </div>
+          <div style="background:#fff; border-top:1px solid #000; padding:2px 8px; font-size:11px; display:flex; justify-content:space-between;">
+            <span>Click card to select, click destination to move (Double-click to auto-send to Ace pile)</span>
+            <span>Score: ${score}</span>
+          </div>
+        `;
+
+        // Stock click
+        container.querySelector('#sol-stock').onclick = () => {
+          selected = null;
+          if (stock.length > 0) {
+            const c = stock.pop();
+            c.faceUp = true;
+            waste.push(c);
+          } else {
+            stock = waste.reverse().map(c => ({ ...c, faceUp: false }));
+            waste = [];
+            score = Math.max(0, score - 20);
+          }
+          renderSol();
+        };
+
+        // Waste click & double-click
+        const wasteEl = container.querySelector('#sol-waste .sol-card');
+        if (wasteEl) {
+          wasteEl.onclick = (e) => {
+            e.stopPropagation();
+            selected = (selected && selected.source === 'waste') ? null : { source: 'waste' };
+            renderSol();
+          };
+          wasteEl.ondblclick = (e) => {
+            e.stopPropagation();
+            autoMoveToFoundation(waste[waste.length - 1], () => waste.pop());
+          };
+        }
+
+        // Foundation clicks
+        container.querySelectorAll('.sol-found').forEach(fEl => {
+          fEl.onclick = () => {
+            if (!selected) return;
+            const fIdx = parseInt(fEl.dataset.fidx);
+            const card = getSelectedTopCard();
+            if (!card) return;
+            // Only single top cards can go to foundation
+            if (selected.source === 'tab' && selected.index !== tableau[selected.col].length - 1) return;
+
+            const pile = foundations[fIdx];
+            const valid = pile.length === 0
+              ? card.val === 1
+              : (pile[pile.length - 1].suit.name === card.suit.name && card.val === pile[pile.length - 1].val + 1);
+
+            if (valid) {
+              removeSelectedCards();
+              pile.push(card);
+              score += 10;
+              selected = null;
+              playRetroSound('ding');
+              if (foundations.every(f => f.length === 13)) playRetroSound('tada');
+              renderSol();
+            }
+          };
+        });
+
+        // Tableau column & card clicks
+        container.querySelectorAll('.sol-tab-col').forEach(colEl => {
+          const cIdx = parseInt(colEl.dataset.col);
+
+          colEl.onclick = () => {
+            if (!selected) return;
+            const movingCards = getSelectedCards();
+            if (!movingCards.length) return;
+            const lead = movingCards[0];
+            const destCol = tableau[cIdx];
+
+            const valid = destCol.length === 0
+              ? lead.val === 13
+              : (destCol[destCol.length - 1].faceUp && destCol[destCol.length - 1].isRed !== lead.isRed && lead.val === destCol[destCol.length - 1].val - 1);
+
+            if (valid) {
+              removeSelectedCards();
+              tableau[cIdx].push(...movingCards);
+              score += 5;
+              selected = null;
+              renderSol();
+            }
+          };
+
+          colEl.querySelectorAll('.sol-card').forEach(cardEl => {
+            const idx = parseInt(cardEl.dataset.idx);
+            const card = tableau[cIdx][idx];
+
+            cardEl.onclick = (e) => {
+              e.stopPropagation();
+              if (!card.faceUp) {
+                if (idx === tableau[cIdx].length - 1) {
+                  card.faceUp = true;
+                  score += 5;
+                  renderSol();
+                }
+                return;
+              }
+              if (selected) {
+                // Attempt drop onto this column
+                const movingCards = getSelectedCards();
+                const lead = movingCards[0];
+                const destTop = tableau[cIdx][tableau[cIdx].length - 1];
+                if (destTop && destTop.isRed !== lead.isRed && lead.val === destTop.val - 1) {
+                  removeSelectedCards();
+                  tableau[cIdx].push(...movingCards);
+                  score += 5;
+                  selected = null;
+                  renderSol();
+                  return;
+                }
+              }
+              selected = (selected && selected.source === 'tab' && selected.col === cIdx && selected.index === idx)
+                ? null
+                : { source: 'tab', col: cIdx, index: idx };
+              renderSol();
+            };
+
+            cardEl.ondblclick = (e) => {
+              e.stopPropagation();
+              if (card.faceUp && idx === tableau[cIdx].length - 1) {
+                autoMoveToFoundation(card, () => {
+                  tableau[cIdx].pop();
+                  if (tableau[cIdx].length > 0 && !tableau[cIdx][tableau[cIdx].length - 1].faceUp) {
+                    tableau[cIdx][tableau[cIdx].length - 1].faceUp = true;
+                    score += 5;
+                  }
+                });
+              }
+            };
+          });
+        });
+      };
+
+      function getSelectedTopCard() {
+        if (!selected) return null;
+        if (selected.source === 'waste') return waste[waste.length - 1];
+        return tableau[selected.col][selected.index];
+      }
+
+      function getSelectedCards() {
+        if (!selected) return [];
+        if (selected.source === 'waste') return [waste[waste.length - 1]];
+        return tableau[selected.col].slice(selected.index);
+      }
+
+      function removeSelectedCards() {
+        if (!selected) return;
+        if (selected.source === 'waste') {
+          waste.pop();
+        } else {
+          tableau[selected.col].splice(selected.index);
+          const col = tableau[selected.col];
+          if (col.length > 0 && !col[col.length - 1].faceUp) {
+            col[col.length - 1].faceUp = true;
+            score += 5;
+          }
+        }
+      }
+
+      function autoMoveToFoundation(card, popFn) {
+        if (!card) return;
+        for (let i = 0; i < 4; i++) {
+          const pile = foundations[i];
+          const ok = pile.length === 0
+            ? card.val === 1
+            : (pile[pile.length - 1].suit.name === card.suit.name && card.val === pile[pile.length - 1].val + 1);
+          if (ok) {
+            popFn();
+            pile.push(card);
+            score += 10;
+            selected = null;
+            playRetroSound('ding');
+            if (foundations.every(f => f.length === 13)) playRetroSound('tada');
+            renderSol();
+            return;
+          }
+        }
+      }
+
+      function renderCardHTML(card, topPx, isSel, col = -1, idx = -1) {
+        if (!card.faceUp) {
+          return `<div class="sol-card ${cardBack}" data-col="${col}" data-idx="${idx}" style="top:${topPx}px;"></div>`;
+        }
+        return `
+          <div class="sol-card ${isSel ? 'selected' : ''}" data-col="${col}" data-idx="${idx}" style="top:${topPx}px; color:${card.suit.color};">
+            <div style="line-height:1;">${card.rank}${card.suit.sym}</div>
+            <div style="font-size:24px; text-align:center; line-height:1;">${card.suit.sym}</div>
+            <div style="line-height:1; text-align:right; transform:rotate(180deg);">${card.rank}${card.suit.sym}</div>
+          </div>
+        `;
+      }
+
+      renderSol();
+    }
+  });
+}
+
+/* ============================================================================
+   13. CALCULATOR (CALC.EXE)
+   ============================================================================ */
+function openCalculator() {
+  let display = '0';
+  let prevVal = null;
+  let op = null;
+  let resetNext = false;
+  let memory = 0;
+
+  createWindow({
+    singletonId: 'calc',
+    title: 'Calculator',
+    icon: 'calc',
+    width: 260,
+    height: 270,
+    resizable: false,
+    menus: [
+      {
+        label: '&Edit',
+        items: [
+          { label: 'Copy', shortcut: 'Ctrl+C', action: () => {} }
+        ]
+      },
+      {
+        label: '&Help',
+        items: [
+          { label: 'About Calculator...', action: () => showAboutDialog('Calculator') }
+        ]
+      }
+    ],
+    render: (container) => {
+      function updateDisp() {
+        const dEl = container.querySelector('#calc-disp');
+        if (dEl) dEl.textContent = display;
+        const mEl = container.querySelector('#calc-mem-ind');
+        if (mEl) mEl.textContent = memory !== 0 ? 'M' : '';
+      }
+
+      function pressKey(k) {
+        if (/^[0-9]$/.test(k)) {
+          if (display === '0' || resetNext) {
+            display = k;
+            resetNext = false;
+          } else if (display.length < 14) {
+            display += k;
+          }
+        } else if (k === '.') {
+          if (resetNext) { display = '0.'; resetNext = false; }
+          else if (!display.includes('.')) display += '.';
+        } else if (k === 'C') {
+          display = '0'; prevVal = null; op = null; resetNext = false;
+        } else if (k === 'CE') {
+          display = '0';
+        } else if (k === 'Back') {
+          display = display.length > 1 ? display.slice(0, -1) : '0';
+        } else if (k === '+/-') {
+          display = String(-parseFloat(display));
+        } else if (k === 'sqrt') {
+          const v = parseFloat(display);
+          display = v < 0 ? 'Error' : String(Math.sqrt(v));
+          resetNext = true;
+        } else if (k === '1/x') {
+          const v = parseFloat(display);
+          display = v === 0 ? 'Cannot divide by zero' : String(1 / v);
+          resetNext = true;
+        } else if (k === '%') {
+          if (prevVal !== null) {
+            display = String((prevVal * parseFloat(display)) / 100);
+          }
+        } else if (['+', '-', '*', '/'].includes(k)) {
+          if (op && !resetNext) calculate();
+          prevVal = parseFloat(display);
+          op = k;
+          resetNext = true;
+        } else if (k === '=') {
+          calculate();
+          op = null;
+          resetNext = true;
+        } else if (k === 'MC') { memory = 0; }
+        else if (k === 'MR') { display = String(memory); resetNext = true; }
+        else if (k === 'MS') { memory = parseFloat(display) || 0; resetNext = true; }
+        else if (k === 'M+') { memory += parseFloat(display) || 0; resetNext = true; }
+
+        updateDisp();
+      }
+
+      function calculate() {
+        if (prevVal === null || !op) return;
+        const cur = parseFloat(display);
+        let res = 0;
+        if (op === '+') res = prevVal + cur;
+        if (op === '-') res = prevVal - cur;
+        if (op === '*') res = prevVal * cur;
+        if (op === '/') res = cur === 0 ? 'Cannot divide by zero' : prevVal / cur;
+        display = typeof res === 'number' ? String(Number(res.toPrecision(12))) : res;
+        prevVal = typeof res === 'number' ? res : null;
+      }
+
+      container.innerHTML = `
+        <div style="background:#c0c0c0; padding:8px; flex:1; display:flex; flex-direction:column; gap:8px;">
+          <div class="bevel-in" style="padding:4px 8px; text-align:right; font-family:monospace; font-size:15px; font-weight:bold; background:#fff;" id="calc-disp">0</div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <div class="bevel-in" style="width:28px; height:24px; background:#c0c0c0; display:flex; align-items:center; justify-content:center; font-weight:bold;" id="calc-mem-ind"></div>
+            <button class="calc-btn" style="flex:1; color:#800000;" data-k="Back">Back</button>
+            <button class="calc-btn" style="flex:1; color:#800000;" data-k="CE">CE</button>
+            <button class="calc-btn" style="flex:1; color:#800000;" data-k="C">C</button>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:4px;">
+            <button class="calc-btn" style="color:#ff0000;" data-k="MC">MC</button>
+            <button class="calc-btn" style="color:#0000ff;" data-k="7">7</button>
+            <button class="calc-btn" style="color:#0000ff;" data-k="8">8</button>
+            <button class="calc-btn" style="color:#0000ff;" data-k="9">9</button>
+            <button class="calc-btn" style="color:#ff0000;" data-k="/">/</button>
+            <button class="calc-btn" style="color:#000080;" data-k="sqrt">sqrt</button>
+
+            <button class="calc-btn" style="color:#ff0000;" data-k="MR">MR</button>
+            <button class="calc-btn" style="color:#0000ff;" data-k="4">4</button>
+            <button class="calc-btn" style="color:#0000ff;" data-k="5">5</button>
+            <button class="calc-btn" style="color:#0000ff;" data-k="6">6</button>
+            <button class="calc-btn" style="color:#ff0000;" data-k="*">*</button>
+            <button class="calc-btn" style="color:#000080;" data-k="%">%</button>
+
+            <button class="calc-btn" style="color:#ff0000;" data-k="MS">MS</button>
+            <button class="calc-btn" style="color:#0000ff;" data-k="1">1</button>
+            <button class="calc-btn" style="color:#0000ff;" data-k="2">2</button>
+            <button class="calc-btn" style="color:#0000ff;" data-k="3">3</button>
+            <button class="calc-btn" style="color:#ff0000;" data-k="-">-</button>
+            <button class="calc-btn" style="color:#000080;" data-k="1/x">1/x</button>
+
+            <button class="calc-btn" style="color:#ff0000;" data-k="M+">M+</button>
+            <button class="calc-btn" style="color:#0000ff;" data-k="0">0</button>
+            <button class="calc-btn" style="color:#0000ff;" data-k="+/-">+/-</button>
+            <button class="calc-btn" style="color:#0000ff;" data-k=".">.</button>
+            <button class="calc-btn" style="color:#ff0000;" data-k="+">+</button>
+            <button class="calc-btn" style="color:#ff0000;" data-k="=">=</button>
+          </div>
+        </div>
+      `;
+
+      container.querySelectorAll('.calc-btn').forEach(b => {
+        b.onclick = () => pressKey(b.dataset.k);
+      });
+    }
+  });
+}
+
+/* ============================================================================
+   14. MS-DOS PROMPT (COMMAND.COM)
+   ============================================================================ */
+function openDosPrompt() {
+  let cwd = 'C:\\WINDOWS';
+
+  createWindow({
+    title: 'MS-DOS Prompt',
+    icon: 'dos',
+    width: 500,
+    height: 320,
+    render: (container, winObj) => {
+      container.innerHTML = `
+        <div id="${winObj.id}_term" style="flex:1; background:#000000; color:#c0c0c0; font-family:var(--mono-font); font-size:17px; padding:8px; overflow-y:auto; display:flex; flex-direction:column; cursor:text;">
+          <div id="${winObj.id}_out" style="white-space:pre-wrap; line-height:1.2;">Microsoft(R) Windows for Workgroups 3.11\n   (C)Copyright Microsoft Corp 1985-1993.\n\nType HELP for available MS-DOS commands.\n\n</div>
+          <div style="display:flex; align-items:center;">
+            <span id="${winObj.id}_prompt">${cwd}&gt;</span>
+            <input type="text" id="${winObj.id}_in" autocomplete="off" spellcheck="false"
+                   style="flex:1; background:transparent; border:none; outline:none; color:#c0c0c0; font-family:var(--mono-font); font-size:17px; user-select:text; -webkit-user-select:text;">
+          </div>
+        </div>
+      `;
+
+      const term = document.getElementById(winObj.id + '_term');
+      const out = document.getElementById(winObj.id + '_out');
+      const promptSpan = document.getElementById(winObj.id + '_prompt');
+      const inp = document.getElementById(winObj.id + '_in');
+
+      term.onclick = () => inp.focus();
+      setTimeout(() => inp.focus(), 40);
+
+      function printLine(txt) {
+        out.textContent += txt + '\n';
+        term.scrollTop = term.scrollHeight;
+      }
+
+      inp.onkeydown = (e) => {
+        if (e.key !== 'Enter') return;
+        const raw = inp.value;
+        inp.value = '';
+        printLine(`${cwd}>${raw}`);
+        const parts = raw.trim().split(/\s+/);
+        const cmd = (parts[0] || '').toUpperCase();
+        const arg = parts.slice(1).join(' ');
+
+        if (!cmd) return;
+
+        if (cmd === 'HELP') {
+          printLine('Supported MS-DOS 6.22 Commands:\n  DIR      Displays a list of files and subdirectories.\n  CD       Displays the name of or changes the current directory.\n  TYPE     Displays the contents of a text file.\n  CLS      Clears the screen.\n  VER      Displays the MS-DOS version.\n  MEM      Displays the amount of used and free memory.\n  DATE     Displays current date.\n  TIME     Displays current system time.\n  TREE     Graphically displays the directory structure.\n  ECHO     Displays messages.\n  WIN      Switches to Windows Program Manager.\n  EXIT     Quits the MS-DOS command interpreter.');
+        } else if (cmd === 'CLS') {
+          out.textContent = '';
+        } else if (cmd === 'VER') {
+          printLine('\nMS-DOS Version 6.22\n');
+        } else if (cmd === 'DATE') {
+          printLine('Current date is ' + new Date().toDateString());
+        } else if (cmd === 'TIME') {
+          printLine('Current time is ' + new Date().toLocaleTimeString());
+        } else if (cmd === 'ECHO') {
+          printLine(arg);
+        } else if (cmd === 'MEM') {
+          printLine('\nMemory Type        Total  =   Used  +   Free\n----------------  -------   -------   -------\nConventional         640K       48K      592K\nUpper                128K       84K       44K\nExtended (XMS)    15,616K    2,048K   13,568K\n----------------  -------   -------   -------\nTotal memory      16,384K    2,180K   14,204K\n');
+        } else if (cmd === 'TREE') {
+          printLine('Directory PATH listing for Volume MS-DOS_6\nC:\\\n├───DOS\n├───WINDOWS\n│   └───SYSTEM\n└───WORK\n');
+        } else if (cmd === 'DIR') {
+          const dirObj = virtualFS[cwd];
+          printLine(`\n Volume in drive C is MS-DOS_6\n Directory of ${cwd}\n`);
+          if (cwd !== 'C:\\') printLine('.            <DIR>         11-01-93  3:11a\n..           <DIR>         11-01-93  3:11a');
+          Object.keys(virtualFS).forEach(d => {
+            if (d !== cwd && d.startsWith(cwd === 'C:\\' ? 'C:\\' : cwd + '\\')) {
+              const sub = d.substring(cwd === 'C:\\' ? 3 : cwd.length + 1);
+              if (!sub.includes('\\')) {
+                printLine(`${sub.padEnd(12)} <DIR>         11-01-93  3:11a`);
+              }
+            }
+          });
+          if (dirObj) {
+            dirObj.files.forEach(f => {
+              printLine(`${f.name.padEnd(13)} ${String(f.size).padStart(10)} ${f.date}`);
+            });
+            printLine(`        ${dirObj.files.length} file(s)    124,518,400 bytes free\n`);
+          }
+        } else if (cmd === 'CD' || cmd === 'CHDIR') {
+          if (!arg) {
+            printLine(cwd);
+          } else if (arg === '\\' || arg === '/') {
+            cwd = 'C:\\';
+          } else if (arg === '..') {
+            if (cwd !== 'C:\\') {
+              const idx = cwd.lastIndexOf('\\');
+              cwd = idx <= 2 ? 'C:\\' : cwd.substring(0, idx);
+            }
+          } else {
+            const target = arg.toUpperCase().startsWith('C:\\')
+              ? arg.toUpperCase()
+              : (cwd === 'C:\\' ? 'C:\\' + arg.toUpperCase() : cwd + '\\' + arg.toUpperCase());
+            if (virtualFS[target]) {
+              cwd = target;
+            } else {
+              printLine('Invalid directory');
+            }
+          }
+          promptSpan.textContent = `${cwd}>`;
+        } else if (cmd === 'TYPE') {
+          const dirObj = virtualFS[cwd];
+          const f = dirObj ? dirObj.files.find(x => x.name.toUpperCase() === arg.toUpperCase()) : null;
+          if (f && f.content) printLine('\n' + f.content);
+          else printLine('File not found - ' + arg);
+        } else if (cmd === 'WIN') {
+          openProgramManager();
+        } else if (cmd === 'EXIT') {
+          closeWindow(winObj.id);
+        } else {
+          printLine('Bad command or file name');
+        }
+      };
+    }
+  });
+}
+
+/* ============================================================================
+   15. CONTROL PANEL (CONTROL.EXE - Live Color Schemes, Wallpaper & Sounds)
+   ============================================================================ */
+const colorSchemes = {
+  'Windows Default': { desktop: '#008080', activeTitle: '#000080', activeText: '#ffffff', winBg: '#c0c0c0' },
+  'Hotdog Stand': { desktop: '#ffff00', activeTitle: '#000000', activeText: '#ffffff', winBg: '#ff0000' },
+  'Ocean': { desktop: '#008080', activeTitle: '#004080', activeText: '#ffffff', winBg: '#80c0c0' },
+  'Plasma Power Saver': { desktop: '#000000', activeTitle: '#800080', activeText: '#ffffff', winBg: '#c0c0c0' },
+  'Monochrome': { desktop: '#808080', activeTitle: '#000000', activeText: '#ffffff', winBg: '#ffffff' },
+  'Fluorescent': { desktop: '#00ff00', activeTitle: '#ff00ff', activeText: '#ffff00', winBg: '#c0c0c0' }
+};
+
+function applyColorScheme(name) {
+  const s = colorSchemes[name];
+  if (!s) return;
+  const r = document.documentElement.style;
+  r.setProperty('--desktop-bg', s.desktop);
+  r.setProperty('--title-active-bg', s.activeTitle);
+  r.setProperty('--title-active-text', s.activeText);
+  r.setProperty('--win-bg', s.winBg);
+}
+
+function openControlPanel() {
+  createWindow({
+    singletonId: 'control',
+    title: 'Control Panel',
+    icon: 'control',
+    width: 440,
+    height: 270,
+    menus: [
+      {
+        label: '&Settings',
+        items: [
+          { label: 'Color...', action: () => openColorApplet() },
+          { label: 'Desktop...', action: () => openDesktopApplet() },
+          { label: 'Sound...', action: () => openSoundApplet() },
+          { sep: true },
+          { label: 'Exit', action: (w) => closeWindow(w.id) }
+        ]
+      },
+      {
+        label: '&Help',
+        items: [
+          { label: 'About Control Panel...', action: () => showAboutDialog('Control Panel') }
+        ]
+      }
+    ],
+    render: (container) => {
+      const applets = [
+        { label: 'Color', icon: 'pbrush', fn: () => openColorApplet() },
+        { label: 'Fonts', icon: 'write', fn: () => showModal('Fonts', 'Installed TrueType & Raster Fonts:<br>• MS Sans Serif 8,10,12<br>• Fixedsys<br>• Courier New (TrueType)<br>• Times New Roman (TrueType)') },
+        { label: 'Ports', icon: 'generic', fn: () => showModal('Ports', 'COM1: 9600 Baud, 8 Data Bits, No Parity, 1 Stop Bit<br>COM2: 2400 Baud (Modem)') },
+        { label: 'Mouse', icon: 'control', fn: () => showModal('Mouse', 'Microsoft Serial/PS2 Mouse Driver v9.01<br>Double Click Speed: Medium') },
+        { label: 'Desktop', icon: 'progman', fn: () => openDesktopApplet() },
+        { label: 'Date/Time', icon: 'clock', fn: () => showModal('Date/Time', `System Clock: <b>${new Date().toLocaleString()}</b>`) },
+        { label: 'Sound', icon: 'winpopup', fn: () => openSoundApplet() },
+        { label: 'Network', icon: 'network', fn: () => showModal('Network Settings', 'Workgroup: <b>WORKGROUP</b><br>Computer Name: <b>WFW-PC01</b><br>Default Protocol: <b>NetBEUI + TCP/IP-32</b>') }
+      ];
+
+      container.innerHTML = `
+        <div class="mdi-icons-grid" style="padding:14px;">
+          ${applets.map((a, i) => `
+            <div class="prog-icon-item" data-idx="${i}" onclick="selectProgIcon(this)">
+              ${getIconSVG(a.icon, 32)}
+              <div class="prog-icon-label">${a.label}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div style="background:#c0c0c0; border-top:1px solid #000; padding:2px 8px; font-size:11px;">
+          Double-click an icon to configure Windows 3.11 settings
+        </div>
+      `;
+
+      container.querySelectorAll('.prog-icon-item').forEach(el => {
+        el.ondblclick = () => applets[parseInt(el.dataset.idx)].fn();
+      });
+    }
+  });
+}
+
+function openColorApplet() {
+  const opts = Object.keys(colorSchemes).map(k => `<option value="${k}">${k}</option>`).join('');
+  showModal('Color', `
+    <div style="min-width:270px;">
+      <div style="margin-bottom:6px;">Color Schemes:</div>
+      <select id="cp-scheme-sel" class="bevel-in" style="width:100%; padding:3px; font-family:var(--sys-font);">
+        ${opts}
+      </select>
+      <div style="margin-top:10px; font-size:11px; color:#333;">
+        Try selecting <b>Hotdog Stand</b> or <b>Ocean</b> for classic Windows 3.11 nostalgia!
+      </div>
+    </div>
+  `, [
+    { label: 'OK', primary: true, action: () => {
+      const val = document.getElementById('cp-scheme-sel').value;
+      applyColorScheme(val);
+    }},
+    { label: 'Cancel' }
+  ]);
+}
+
+function openDesktopApplet() {
+  const patterns = {
+    '(None)': 'none',
+    '50% Gray': 'radial-gradient(#000 1px, transparent 1px)',
+    'Boxes': 'repeating-linear-gradient(0deg, rgba(0,0,0,0.2) 0 1px, transparent 1px 16px), repeating-linear-gradient(90deg, rgba(0,0,0,0.2) 0 1px, transparent 1px 16px)',
+    'Weave': 'repeating-linear-gradient(45deg, rgba(255,255,255,0.12) 0 4px, transparent 4px 8px)'
+  };
+  showModal('Desktop', `
+    <div style="min-width:260px;">
+      <div style="margin-bottom:6px;">Wallpaper Pattern:</div>
+      <select id="cp-pat-sel" class="bevel-in" style="width:100%; padding:3px; font-family:var(--sys-font);">
+        ${Object.keys(patterns).map(k => `<option value="${k}">${k}</option>`).join('')}
+      </select>
+    </div>
+  `, [
+    { label: 'OK', primary: true, action: () => {
+      const val = document.getElementById('cp-pat-sel').value;
+      const desk = document.getElementById('crt-wrapper');
+      desk.style.backgroundImage = patterns[val];
+      desk.style.backgroundSize = val === '50% Gray' ? '4px 4px' : 'auto';
+    }},
+    { label: 'Cancel' }
+  ]);
+}
+
+function openSoundApplet() {
+  showModal('Sound', `
+    <div style="min-width:260px;">
+      <div style="margin-bottom:8px;">Test Classic Windows 3.11 Events:</div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <button class="win-btn" onclick="playRetroSound('startup')">Windows Start (Startup Chime)</button>
+        <button class="win-btn" onclick="playRetroSound('tada')">Windows Exit / Win (TADA.WAV)</button>
+        <button class="win-btn" onclick="playRetroSound('chimes')">Exclamation (CHIMES.WAV)</button>
+        <button class="win-btn" onclick="playRetroSound('chord')">Critical Stop (CHORD.WAV)</button>
+        <button class="win-btn" onclick="playRetroSound('ding')">Default Beep (DING.WAV)</button>
+      </div>
+    </div>
+  `);
+}
+
+/* ============================================================================
+   16. CLOCK (CLOCK.EXE - Analog & Digital)
+   ============================================================================ */
+function openClock() {
+  let mode = 'analog';
+  let timer = null;
+
+  createWindow({
+    singletonId: 'clock',
+    title: 'Clock',
+    icon: 'clock',
+    width: 210,
+    height: 235,
+    onClose: () => { if (timer) clearInterval(timer); },
+    menus: [
+      {
+        label: '&Settings',
+        items: [
+          { label: 'Analog', action: () => { mode = 'analog'; drawClock(); } },
+          { label: 'Digital', action: () => { mode = 'digital'; drawClock(); } }
+        ]
+      }
+    ],
+    render: (container) => {
+      container.innerHTML = `<div id="clock-body" style="flex:1; background:#c0c0c0; display:flex; align-items:center; justify-content:center; padding:8px;"></div>`;
+      const body = container.querySelector('#clock-body');
+
+      function drawClock() {
+        const now = new Date();
+        if (mode === 'digital') {
+          body.innerHTML = `
+            <div style="text-align:center;">
+              <div style="font-family:var(--mono-font); font-size:34px; font-weight:bold; color:#000080;">${now.toLocaleTimeString()}</div>
+              <div style="font-size:12px; margin-top:4px;">${now.toLocaleDateString()}</div>
+            </div>
+          `;
+        } else {
+          const sec = now.getSeconds() * 6;
+          const min = now.getMinutes() * 6 + now.getSeconds() * 0.1;
+          const hr = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5;
+          body.innerHTML = `
+            <svg width="145" height="145" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="54" fill="#c0c0c0" stroke="#000" stroke-width="2"/>
+              ${Array.from({length:12}, (_, i) => {
+                const a = (i * 30) * Math.PI / 180;
+                const x1 = 60 + Math.sin(a) * 44;
+                const y1 = 60 - Math.cos(a) * 44;
+                return `<rect x="${x1-2}" y="${y1-2}" width="4" height="4" fill="#008080"/>`;
+              }).join('')}
+              <line x1="60" y1="60" x2="${60 + Math.sin(hr*Math.PI/180)*28}" y2="${60 - Math.cos(hr*Math.PI/180)*28}" stroke="#000" stroke-width="3.5"/>
+              <line x1="60" y1="60" x2="${60 + Math.sin(min*Math.PI/180)*40}" y2="${60 - Math.cos(min*Math.PI/180)*40}" stroke="#000" stroke-width="2.5"/>
+              <line x1="60" y1="60" x2="${60 + Math.sin(sec*Math.PI/180)*44}" y2="${60 - Math.cos(sec*Math.PI/180)*44}" stroke="#ff0000" stroke-width="1.2"/>
+              <circle cx="60" cy="60" r="3" fill="#000"/>
+            </svg>
+          `;
+        }
+      }
+
+      drawClock();
+      timer = setInterval(drawClock, 1000);
+    }
+  });
+}
+
+/* ============================================================================
+   17. WRITE (WRITE.EXE - Word Processor)
+   ============================================================================ */
+function openWrite() {
+  createWindow({
+    singletonId: 'write',
+    title: 'Write - (Untitled)',
+    icon: 'write',
+    width: 480,
+    height: 340,
+    menus: [
+      {
+        label: '&File',
+        items: [
+          { label: 'New', action: () => { const ed = document.getElementById('write-editor'); if (ed) ed.innerHTML = ''; } },
+          { sep: true },
+          { label: 'Exit', action: (w) => closeWindow(w.id) }
+        ]
+      },
+      {
+        label: '&Character',
+        items: [
+          { label: 'Bold', shortcut: 'Ctrl+B', action: () => document.execCommand('bold') },
+          { label: 'Italic', shortcut: 'Ctrl+I', action: () => document.execCommand('italic') },
+          { label: 'Underline', shortcut: 'Ctrl+U', action: () => document.execCommand('underline') }
+        ]
+      },
+      {
+        label: '&Help',
+        items: [
+          { label: 'About Write...', action: () => showAboutDialog('Write') }
+        ]
+      }
+    ],
+    render: (container) => {
+      container.innerHTML = `
+        <div style="background:#c0c0c0; border-bottom:1px solid #000; padding:3px 6px; display:flex; gap:4px; align-items:center;">
+          <button class="win-btn" style="font-weight:bold; padding:1px 7px;" onclick="document.execCommand('bold')">B</button>
+          <button class="win-btn" style="font-style:italic; padding:1px 8px;" onclick="document.execCommand('italic')">I</button>
+          <button class="win-btn" style="text-decoration:underline; padding:1px 7px;" onclick="document.execCommand('underline')">U</button>
+          <span style="margin:0 4px;">|</span>
+          <button class="win-btn" style="padding:1px 7px;" onclick="document.execCommand('justifyLeft')">Left</button>
+          <button class="win-btn" style="padding:1px 7px;" onclick="document.execCommand('justifyCenter')">Center</button>
+          <button class="win-btn" style="padding:1px 7px;" onclick="document.execCommand('justifyRight')">Right</button>
+        </div>
+        <!-- Classic Write Ruler -->
+        <div style="height:18px; background:#fff; border-bottom:1px solid #000; font-family:monospace; font-size:10px; padding:2px 8px; color:#444; overflow:hidden; white-space:nowrap;">
+          |....1....|....2....|....3....|....4....|....5....|....6....|
+        </div>
+        <div id="write-editor" contenteditable="true" style="flex:1; padding:12px; background:#fff; outline:none; overflow-y:auto; font-family:'Times New Roman', serif; font-size:15px; user-select:text; -webkit-user-select:text;">
+          <b>Microsoft Windows Write</b><br><br>
+          Welcome to Windows Write for Windows for Workgroups 3.11. Use the toolbar above to format bold, italic, underline, and paragraph alignment.
+        </div>
+      `;
+    }
+  });
+}
+
+/* ============================================================================
+   18. WINPOPUP (WINPOPUP.EXE - Workgroup LAN Messaging)
+   ============================================================================ */
+function openWinPopup() {
+  const messages = [
+    { from: 'ALICETWO', time: '10:14 AM', text: 'Welcome to WORKGROUP! File sharing is active on \\\\ALICETWO\\PUBLIC.' }
+  ];
+
+  createWindow({
+    singletonId: 'winpopup',
+    title: 'WinPopup - WFW-PC01',
+    icon: 'winpopup',
+    width: 390,
+    height: 270,
+    menus: [
+      {
+        label: '&Messages',
+        items: [
+          { label: 'Send...', shortcut: 'Ctrl+S', action: () => promptWinPopupSend() },
+          { label: 'Clear All', action: () => { messages.length = 0; renderPopup(); } },
+          { sep: true },
+          { label: 'Exit', action: (w) => closeWindow(w.id) }
+        ]
+      },
+      {
+        label: '&Help',
+        items: [
+          { label: 'About WinPopup...', action: () => showAboutDialog('WinPopup') }
+        ]
+      }
+    ],
+    render: (container) => {
+      window.renderPopup = () => {
+        const msg = messages[messages.length - 1];
+        container.innerHTML = `
+          <div style="background:#c0c0c0; padding:6px; border-bottom:1px solid #000; display:flex; gap:8px; align-items:center;">
+            <button class="win-btn" onclick="promptWinPopupSend()">✉️ Send Message</button>
+            <span style="font-size:11px;">Messages: ${messages.length}</span>
+          </div>
+          <div style="flex:1; padding:10px; background:#c0c0c0; display:flex; flex-direction:column; gap:6px;">
+            <div style="font-size:11px;">
+              ${msg ? `From <b>${msg.from}</b> to <b>WFW-PC01</b> at ${msg.time}:` : 'No unread messages in queue.'}
+            </div>
+            <div class="bevel-in" style="flex:1; padding:8px; background:#fff; font-family:var(--sys-font); font-size:12px; overflow-y:auto;">
+              ${msg ? msg.text : ''}
+            </div>
+          </div>
+        `;
+      };
+
+      window.promptWinPopupSend = () => {
+        showModal('Send Message', `
+          <div style="min-width:270px; display:flex; flex-direction:column; gap:8px;">
+            <div>
+              <label>To Workgroup / Computer:</label>
+              <select id="wp-to" class="bevel-in" style="width:100%; padding:2px;">
+                <option value="WORKGROUP">WORKGROUP (Broadcast)</option>
+                <option value="ALICETWO">ALICETWO</option>
+                <option value="SHED-PC">SHED-PC</option>
+              </select>
+            </div>
+            <div>
+              <label>Message:</label>
+              <textarea id="wp-msg" rows="3" class="bevel-in" style="width:100%; padding:4px; font-family:var(--sys-font); user-select:text; -webkit-user-select:text;">Hello from Windows for Workgroups 3.11!</textarea>
+            </div>
+          </div>
+        `, [
+          { label: 'OK', primary: true, action: () => {
+            const to = document.getElementById('wp-to').value;
+            const text = document.getElementById('wp-msg').value.trim();
+            if (text) {
+              playRetroSound('ding');
+              setTimeout(() => {
+                playRetroSound('chimes');
+                messages.push({
+                  from: to === 'WORKGROUP' ? 'SHED-PC' : to,
+                  time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                  text: `Reply to "${text}": Loud and clear over NetBEUI!`
+                });
+                renderPopup();
+              }, 700);
+            }
+          }},
+          { label: 'Cancel' }
+        ]);
+      };
+
+      renderPopup();
+    }
+  });
+}
+
+/* ============================================================================
+   19. INITIALIZATION & KEYBOARD SHORTCUTS
+   ============================================================================ */
+function initDesktop() {
+  openProgramManager();
+}
+
+window.addEventListener('keydown', (e) => {
+  // ESC skips boot
+  if (e.key === 'Escape' && document.getElementById('boot-screen').style.display !== 'none') {
+    skipBoot();
+    return;
+  }
+  // Ctrl+Esc opens Task List
+  if (e.ctrlKey && e.key === 'Escape') {
+    e.preventDefault();
+    openTaskList();
+  }
+  // Alt+F4 closes active window
+  if (e.altKey && e.key === 'F4') {
+    e.preventDefault();
+    if (activeWindowId) closeWindow(activeWindowId);
+  }
+});
+
+window.onload = function() {
+  startBootSequence();
+};
+</script>
+</body>
+</html>

@@ -3870,7 +3870,7 @@ function openWarcraft2(initialFaction = null) {
         { label: 'Play as Orcish Horde', action: () => wc2StartSkirmish('orc') },
         { sep: true },
         { label: 'Cheat: Glittering Prizes (+Gold/Lumber)', action: () => wc2Cheat('glittering prizes') },
-        { label: 'Cheat: On Screen (Reveal Map)', action: () => wc2Cheat('on screen') },
+        { label: 'Cheat: On Screen (Full Brightness)', action: () => wc2Cheat('on screen') },
         { sep: true },
         { label: 'Exit to Windows', action: (w) => closeXPWindow(w.id) }
       ]}
@@ -3912,11 +3912,11 @@ function openWarcraft2(initialFaction = null) {
               </div>
             </div>
 
-            <div style="flex:1; position:relative; background:#0b1908;">
+            <div style="flex:1; position:relative; background:#1b3b12;">
               <canvas id="wc2-map-cv" width="546" height="444" style="display:block; cursor:crosshair;"></canvas>
 
-              <div id="wc2-title-overlay" style="position:absolute; inset:0; background:radial-gradient(circle, rgba(28,18,8,0.92) 0%, rgba(10,6,2,0.98) 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:20px; text-align:center;">
-                <div style="border:2px solid #d4a038; padding:14px 26px; background:rgba(42,27,12,0.9); box-shadow:0 0 24px rgba(0,0,0,0.8);">
+              <div id="wc2-title-overlay" style="position:absolute; inset:0; background:radial-gradient(circle, rgba(28,18,8,0.88) 0%, rgba(10,6,2,0.95) 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:20px; text-align:center;">
+                <div style="border:2px solid #d4a038; padding:14px 26px; background:rgba(42,27,12,0.92); box-shadow:0 0 24px rgba(0,0,0,0.8);">
                   <div style="font-size:12px; letter-spacing:3px; color:#d4a038;">BLIZZARD ENTERTAINMENT PRESENTS</div>
                   <div style="font-size:28px; font-weight:bold; color:#ffd766; text-shadow:2px 2px #000; margin:4px 0;">WARCRAFT II</div>
                   <div style="font-size:13px; letter-spacing:2px; color:#9ec8ff;">TIDES OF DARKNESS</div>
@@ -4009,7 +4009,8 @@ function openWarcraft2(initialFaction = null) {
 
       function generateTerrain() {
         mapGrid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-        fogGrid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+        // Start with 1 (explored terrain in fog-of-war) so map is always visible
+        fogGrid = Array.from({ length: ROWS }, () => Array(COLS).fill(1));
 
         const groves = [
           { cx: 9, cy: 4, r: 3 }, { cx: 3, cy: 12, r: 3 }, { cx: 14, cy: 11, r: 3 },
@@ -4099,7 +4100,6 @@ function openWarcraft2(initialFaction = null) {
         spawnEntity({ kind: 'unit', unitType: 'melee', team: 'enemy', fac: enemyFaction, name: UNIT_DEFS.melee[enemyFaction].name, x: 870, y: 675, maxHp: 60, atk: 10, range: 30, speed: 2.2, col: UNIT_DEFS.melee[enemyFaction].col });
         spawnEntity({ kind: 'unit', unitType: 'ranged', team: 'enemy', fac: enemyFaction, name: UNIT_DEFS.ranged[enemyFaction].name, x: 920, y: 665, maxHp: 40, atk: 9, range: 135, speed: 2.3, col: UNIT_DEFS.ranged[enemyFaction].col });
 
-        // Reveal starting base area immediately so frame 1 is never black
         updateFog();
 
         container.querySelector('#wc2-title-overlay').style.display = 'none';
@@ -4244,7 +4244,7 @@ function openWarcraft2(initialFaction = null) {
           playXPSound('gold');
         } else if (c === 'on screen') {
           for (let r = 0; r < ROWS; r++) for (let col = 0; col < COLS; col++) fogGrid[r][col] = 2;
-          setWc2Status('CHEAT ACTIVATED: Map Revealed!');
+          setWc2Status('CHEAT ACTIVATED: Full Vision Enabled!');
           playXPSound('exclamation');
         }
       };
@@ -4410,7 +4410,6 @@ function openWarcraft2(initialFaction = null) {
         if (!gameActive) return;
         aiTick++;
 
-        // Smooth arrow-key camera scrolling when Warcraft II is focused
         if (activeWinId && windows.find(w => w.id === activeWinId)?.singletonId === 'war2' && !document.querySelector('.xp-modal-backdrop')) {
           if (keysDown['ArrowLeft']) camX = Math.max(0, camX - 16);
           if (keysDown['ArrowRight']) camX = Math.min(COLS * TILE - mapCv.width, camX + 16);
@@ -4566,42 +4565,39 @@ function openWarcraft2(initialFaction = null) {
       }, 50);
 
       function render() {
-        ctx.fillStyle = '#0c1c09';
+        ctx.fillStyle = '#1b3b12';
         ctx.fillRect(0, 0, mapCv.width, mapCv.height);
 
-        const startC = Math.floor(camX / TILE);
-        const endC = Math.min(COLS - 1, Math.ceil((camX + mapCv.width) / TILE));
-        const startR = Math.floor(camY / TILE);
-        const endR = Math.min(ROWS - 1, Math.ceil((camY + mapCv.height) / TILE));
+        if (mapGrid.length) {
+          const startC = Math.floor(camX / TILE);
+          const endC = Math.min(COLS - 1, Math.ceil((camX + mapCv.width) / TILE));
+          const startR = Math.floor(camY / TILE);
+          const endR = Math.min(ROWS - 1, Math.ceil((camY + mapCv.height) / TILE));
 
-        for (let r = startR; r <= endR; r++) {
-          for (let c = startC; c <= endC; c++) {
-            const fog = fogGrid[r]?.[c] ?? 0;
-            const sx = c * TILE - camX;
-            const sy = r * TILE - camY;
-            if (fog === 0) {
-              ctx.fillStyle = '#000000';
+          for (let r = startR; r <= endR; r++) {
+            for (let c = startC; c <= endC; c++) {
+              const fog = fogGrid[r]?.[c] ?? 1;
+              const sx = c * TILE - camX;
+              const sy = r * TILE - camY;
+              const t = mapGrid[r][c];
+              ctx.fillStyle = t === 2 ? '#18549c' : ((r + c) % 2 === 0 ? '#2d5c1e' : '#265019');
               ctx.fillRect(sx, sy, TILE, TILE);
-              continue;
-            }
-            const t = mapGrid[r][c];
-            ctx.fillStyle = t === 2 ? '#18549c' : ((r + c) % 2 === 0 ? '#274d1b' : '#234618');
-            ctx.fillRect(sx, sy, TILE, TILE);
 
-            if (t === 1) {
-              ctx.fillStyle = '#13330b';
-              ctx.beginPath();
-              ctx.arc(sx + 16, sy + 16, 12, 0, Math.PI * 2);
-              ctx.fill();
-              ctx.fillStyle = '#2d6e1c';
-              ctx.beginPath();
-              ctx.arc(sx + 14, sy + 14, 8, 0, Math.PI * 2);
-              ctx.fill();
-            }
+              if (t === 1) {
+                ctx.fillStyle = '#13380a';
+                ctx.beginPath();
+                ctx.arc(sx + 16, sy + 16, 12, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#368222';
+                ctx.beginPath();
+                ctx.arc(sx + 14, sy + 14, 8, 0, Math.PI * 2);
+                ctx.fill();
+              }
 
-            if (fog === 1) {
-              ctx.fillStyle = 'rgba(0, 0, 0, 0.48)';
-              ctx.fillRect(sx, sy, TILE, TILE);
+              if (fog === 1) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+                ctx.fillRect(sx, sy, TILE, TILE);
+              }
             }
           }
         }
@@ -4609,24 +4605,26 @@ function openWarcraft2(initialFaction = null) {
         entities.forEach(ent => {
           const r = Math.floor(ent.y / TILE);
           const c = Math.floor(ent.x / TILE);
-          const fog = fogGrid[r]?.[c] ?? 0;
-          if (fog === 0) return;
-          if (ent.kind === 'unit' && fog !== 2) return;
+          const fog = fogGrid[r]?.[c] ?? 1;
+          if (ent.kind === 'unit' && ent.team === 'enemy' && fog !== 2) return;
 
           const sx = ent.x - camX;
           const sy = ent.y - camY;
           const isSel = selectedIds.includes(ent.id);
 
           if (ent.kind === 'mine') {
-            ctx.fillStyle = '#6e5836';
+            ctx.fillStyle = '#7c623b';
             ctx.fillRect(sx - 24, sy - 20, 48, 40);
+            ctx.strokeStyle = '#3b2c16';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(sx - 24, sy - 20, 48, 40);
             ctx.fillStyle = '#ffd700';
             ctx.beginPath();
             ctx.arc(sx, sy, 10, 0, Math.PI * 2);
             ctx.fill();
           } else if (ent.kind === 'bldg') {
             const half = ent.size / 2;
-            ctx.fillStyle = ent.team === 'player' ? '#1f4e9c' : '#8f2419';
+            ctx.fillStyle = ent.team === 'player' ? '#1f54ab' : '#9c261a';
             ctx.fillRect(sx - half, sy - half, ent.size, ent.size);
             ctx.strokeStyle = ent.team === 'player' ? '#66b2ff' : '#ff7766';
             ctx.lineWidth = 2;
@@ -4685,38 +4683,37 @@ function openWarcraft2(initialFaction = null) {
           );
         }
 
-        mCtx.fillStyle = '#000000';
+        // Render Minimap
+        mCtx.fillStyle = '#183610';
         mCtx.fillRect(0, 0, miniCv.width, miniCv.height);
-        const sxRatio = miniCv.width / (COLS * TILE);
-        const syRatio = miniCv.height / (ROWS * TILE);
+        if (mapGrid.length) {
+          const sxRatio = miniCv.width / (COLS * TILE);
+          const syRatio = miniCv.height / (ROWS * TILE);
 
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
-            if (fogGrid[r][c] === 0) continue;
-            mCtx.fillStyle = mapGrid[r][c] === 2 ? '#1c64ba' : (mapGrid[r][c] === 1 ? '#18400e' : '#2c591f');
-            mCtx.fillRect(c * TILE * sxRatio, r * TILE * syRatio, TILE * sxRatio + 1, TILE * syRatio + 1);
+          for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+              mCtx.fillStyle = mapGrid[r][c] === 2 ? '#1c64ba' : (mapGrid[r][c] === 1 ? '#18400e' : '#326623');
+              mCtx.fillRect(c * TILE * sxRatio, r * TILE * syRatio, TILE * sxRatio + 1, TILE * syRatio + 1);
+            }
           }
+          entities.forEach(ent => {
+            mCtx.fillStyle = ent.team === 'player' ? '#00ff00' : (ent.team === 'enemy' ? '#ff3333' : '#ffd700');
+            mCtx.fillRect(ent.x * sxRatio - 2, ent.y * syRatio - 2, 4, 4);
+          });
+          mCtx.strokeStyle = '#ffffff';
+          mCtx.lineWidth = 1;
+          mCtx.strokeRect(camX * sxRatio, camY * syRatio, mapCv.width * sxRatio, mapCv.height * syRatio);
         }
-        entities.forEach(ent => {
-          const r = Math.floor(ent.y / TILE);
-          const c = Math.floor(ent.x / TILE);
-          if ((fogGrid[r]?.[c] ?? 0) === 0) return;
-          mCtx.fillStyle = ent.team === 'player' ? '#00ff00' : (ent.team === 'enemy' ? '#ff3333' : '#ffd700');
-          mCtx.fillRect(ent.x * sxRatio - 2, ent.y * syRatio - 2, 4, 4);
-        });
-        mCtx.strokeStyle = '#ffffff';
-        mCtx.lineWidth = 1;
-        mCtx.strokeRect(camX * sxRatio, camY * syRatio, mapCv.width * sxRatio, mapCv.height * syRatio);
 
         rafId = requestAnimationFrame(render);
       }
 
+      generateTerrain();
       if (initialFaction) wc2StartSkirmish(initialFaction);
       render();
     }
   });
 }
-
 /* ============================================================================
    14. 3D PINBALL - SPACE CADET (Authentic Table Layout, Ranks, Missions, Wormhole)
    ============================================================================ */

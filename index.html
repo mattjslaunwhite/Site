@@ -340,49 +340,12 @@
       font-size: 0.92rem;
       line-height: 1.65;
       max-width: 820px;
-      margin-bottom: 16px;
     }
 
     .welcome-text em {
       color: var(--green);
       font-style: normal;
       font-weight: bold;
-    }
-
-    .welcome-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .btn-hero {
-      display: inline-block;
-      text-decoration: none;
-      padding: 8px 14px;
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      border: 1px solid var(--border-bright);
-      color: var(--text);
-      background: rgba(57, 255, 20, 0.05);
-      transition: background 0.15s, border-color 0.15s, color 0.15s;
-    }
-
-    .btn-hero:hover {
-      background: rgba(57, 255, 20, 0.18);
-      border-color: var(--green);
-      color: var(--green);
-    }
-
-    .btn-hero.green {
-      border-color: var(--green);
-      color: var(--green);
-      background: rgba(57, 255, 20, 0.12);
-      font-weight: bold;
-    }
-
-    .btn-hero.green:hover {
-      background: rgba(57, 255, 20, 0.25);
     }
 
     /* Section Title */
@@ -596,35 +559,6 @@
       font-size: 0.8rem;
     }
 
-    /* Web Serial Console Panel */
-    .serial-panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      padding: 18px;
-      margin-bottom: 32px;
-      box-shadow: 0 0 24px rgba(57, 255, 20, 0.06);
-    }
-
-    .serial-controls {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .serial-status {
-      margin-left: auto;
-      font-size: 0.82rem;
-      color: var(--amber);
-      text-transform: uppercase;
-    }
-
-    .serial-status.connected {
-      color: var(--green);
-      text-shadow: 0 0 8px rgba(57, 255, 20, 0.45);
-    }
-
     select, input[type="text"], input[type="password"], button {
       background: #010502;
       color: var(--text);
@@ -673,42 +607,6 @@
       background: rgba(57, 255, 20, 0.16);
     }
 
-    .serial-terminal {
-      background: #010402;
-      border: 1px solid var(--border-bright);
-      color: var(--green);
-      height: 220px;
-      overflow-y: auto;
-      padding: 12px;
-      font-size: 0.84rem;
-      line-height: 1.4;
-      white-space: pre-wrap;
-      word-break: break-all;
-      margin-bottom: 10px;
-      text-shadow: 0 0 5px rgba(57, 255, 20, 0.35);
-    }
-
-    .serial-tx-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .serial-tx-row input[type="text"] {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .checkbox-label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
-      color: var(--muted);
-      cursor: pointer;
-    }
-
-    /* Footer */
     footer {
       max-width: 1060px;
       width: 100%;
@@ -772,8 +670,8 @@
 
     <div class="topbar-right">
       <a class="admin-top-btn" href="#admin-console" id="top-admin-badge">ADMIN: LOCKED</a>
-      <span class="build-pill" id="top-build">BUILD 20261120.1408</span>
-      <span class="sys-pill" id="clock">2026-11-20 14:08:00</span>
+      <span class="build-pill" id="top-build">BUILD 20261120.1420</span>
+      <span class="sys-pill" id="clock">2026-11-20 14:20:00</span>
     </div>
   </header>
 
@@ -788,7 +686,7 @@
           <ul class="side-list">
             <li><a class="side-link active" href="#welcome"><span>&gt; Overview &amp; Welcome</span></a></li>
             <li><a class="side-link" href="#nodes"><span>&gt; Project Directory</span></a></li>
-            <li><a class="side-link" href="#serial-bench"><span>&gt; USB Serial Terminal</span></a></li>
+            <li><a class="side-link" href="/serial.html"><span>&gt; USB Serial Terminal</span><span class="side-badge">LIVE</span></a></li>
             <li><a class="side-link" href="#admin-console"><span>&gt; Admin Command</span><span class="side-badge amber">KV</span></a></li>
           </ul>
         </div>
@@ -865,7 +763,7 @@
         Host: <span>magicgoat.studio</span><br />
         Region: <span>Canada</span><br />
         Phosphor: <span>P31 Green 520nm</span><br />
-        Build ID: <span id="side-build">20261120.1408</span>
+        Build ID: <span id="side-build">20261120.1420</span>
       </div>
     </aside>
 
@@ -879,25 +777,16 @@
           <div class="bulletin-msg" id="bulletin-display">Loading persistent telemetry feed...</div>
         </div>
 
-        <!-- WELCOME TEXT SPOT -->
+        <!-- WELCOME TEXT SPOT (Clean info header without duplicate buttons) -->
         <section class="welcome-panel" id="welcome">
           <div class="welcome-top-row">
             <div class="welcome-kicker">// VFD PHOSPHOR TERMINAL // WORKBENCH</div>
-            <div class="welcome-build-tag" id="hero-build">REV: BUILD 20261120.1408 // CANADA</div>
+            <div class="welcome-build-tag" id="hero-build">REV: BUILD 20261120.1420 // CANADA</div>
           </div>
           <h1>MAGIC GOAT STUDIO PORTAL</h1>
           <p class="welcome-text">
             Welcome to the digital workshop of <em>Matt-R&eacute;al Slaunwhite</em> in Canada. This portal brings together a WebAssembly x86 hypervisor, interactive retro operating system recreations, an offline ZIM wiki archive reader, AES-256 encrypted live comms, custom 3D-printed UAV airframes, off-grid 24V solar telemetry, and browser-native hardware tools—all running straight from the edge with zero bloat.
           </p>
-          <div class="welcome-actions">
-            <a class="btn-hero green" href="/vm.html">Boot x86 VM &rarr;</a>
-            <a class="btn-hero green" href="/zim.html">ZIM Reader &rarr;</a>
-            <a class="btn-hero green" href="/comms.html">Encrypted Comms &rarr;</a>
-            <a class="btn-hero" href="/winxp.html">Windows XP &rarr;</a>
-            <a class="btn-hero" href="/win95.html">Windows 95 &rarr;</a>
-            <a class="btn-hero" href="/win311.html">Win 3.11 &rarr;</a>
-            <a class="btn-hero" href="/drones.html">Drone Lab &rarr;</a>
-          </div>
         </section>
 
         <!-- PROJECT DIRECTORY -->
@@ -940,7 +829,25 @@
             </div>
           </a>
 
-          <!-- Node 03: Encrypted Comms Relay -->
+          <!-- Node 03: USB Web Serial Terminal -->
+          <a class="card" href="/serial.html">
+            <div>
+              <div class="card-top">
+                <span class="tag live">● Hardware UART</span>
+                <span>/serial.html</span>
+              </div>
+              <h2>USB Serial Terminal</h2>
+              <p>
+                Dedicated Web Serial console for ESP32, Arduino, GPS, and UART adapters with configurable baud rates, line endings, timestamps, and log export.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>OPEN SERIAL BENCH</span>
+              <span>[ &rarr; ]</span>
+            </div>
+          </a>
+
+          <!-- Node 04: Encrypted Comms Relay -->
           <a class="card" href="/comms.html">
             <div>
               <div class="card-top">
@@ -958,7 +865,7 @@
             </div>
           </a>
 
-          <!-- Node 04: Windows XP Professional -->
+          <!-- Node 05: Windows XP Professional -->
           <a class="card" href="/winxp.html">
             <div>
               <div class="card-top">
@@ -976,7 +883,7 @@
             </div>
           </a>
 
-          <!-- Node 05: Windows 95 Simulator -->
+          <!-- Node 06: Windows 95 Simulator -->
           <a class="card" href="/win95.html">
             <div>
               <div class="card-top">
@@ -994,7 +901,7 @@
             </div>
           </a>
 
-          <!-- Node 06: Windows 3.11 Simulator -->
+          <!-- Node 07: Windows 3.11 Simulator -->
           <a class="card" href="/win311.html">
             <div>
               <div class="card-top">
@@ -1012,7 +919,7 @@
             </div>
           </a>
 
-          <!-- Node 07: Custom Drone & UAV Lab -->
+          <!-- Node 08: Custom Drone & UAV Lab -->
           <a class="card" href="/drones.html">
             <div>
               <div class="card-top">
@@ -1030,7 +937,7 @@
             </div>
           </a>
 
-          <!-- Node 08: Custom Drone Kits -->
+          <!-- Node 09: Custom Drone Kits -->
           <a class="card" href="/kits.html">
             <div>
               <div class="card-top">
@@ -1047,78 +954,12 @@
               <span>[ &rarr; ]</span>
             </div>
           </a>
-
-          <!-- Node 09: OMNIos / VFD Utilities -->
-          <a class="card" href="#omnios" onclick="alert('OMNIos web build staged — drop omnios.html into the repo to activate.'); return false;">
-            <div>
-              <div class="card-top">
-                <span class="tag soon">Staged</span>
-                <span>/omnios.html</span>
-              </div>
-              <h2>OMNIos VFD Console</h2>
-              <p>
-                Vacuum Fluorescent Display utility suite featuring RF/unit converters, offline field notes, and telemetry packet decoders.
-              </p>
-            </div>
-            <div class="card-footer">
-              <span>MODULE SLOT 09</span>
-              <span>[ STANDBY ]</span>
-            </div>
-          </a>
         </main>
 
-        <!-- BUILT-IN WEB SERIAL CONSOLE -->
-        <div class="section-title" id="serial-bench">Hardware Bench // USB Web Serial Terminal</div>
-
-        <section class="serial-panel">
-          <div class="serial-controls">
-            <button id="btn-connect" class="btn-connect" onclick="toggleSerial()">Connect Port</button>
-            <select id="baud-rate" title="Baud Rate">
-              <option value="9600">9600 baud</option>
-              <option value="19200">19200 baud</option>
-              <option value="38400">38400 baud</option>
-              <option value="57600">57600 baud</option>
-              <option value="115200" selected>115200 baud</option>
-              <option value="230400">230400 baud</option>
-              <option value="460800">460800 baud</option>
-              <option value="921600">921600 baud</option>
-            </select>
-            <select id="line-ending" title="Line Ending">
-              <option value="\r\n" selected>CRLF (\r\n)</option>
-              <option value="\n">LF (\n)</option>
-              <option value="\r">CR (\r)</option>
-              <option value="">None</option>
-            </select>
-            <button class="btn-action" onclick="clearSerial()">Clear</button>
-            <button class="btn-action" onclick="downloadLog()">Save Log</button>
-            <label class="checkbox-label">
-              <input type="checkbox" id="chk-timestamp" /> Timestamps
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" id="chk-autoscroll" checked /> Auto-scroll
-            </label>
-            <div id="serial-status" class="serial-status">● Disconnected</div>
-          </div>
-
-          <div id="serial-log" class="serial-terminal">[VFD PHOSPHOR SERIAL MONITOR READY — Click "Connect Port" to attach an ESP32, Arduino, GPS, or UART adapter]
-</div>
-
-          <div class="serial-tx-row">
-            <input
-              type="text"
-              id="serial-input"
-              placeholder="Type AT command or serial payload and press Enter..."
-              onkeydown="if (event.key === 'Enter') sendSerial();"
-            />
-            <button class="btn-action" onclick="sendSerial()">Send TX</button>
-          </div>
-        </section>
-
-        <!-- ================= UPGRADED PERSISTENT ADMIN SECTION ================= -->
+        <!-- ================= PERSISTENT ADMIN SECTION ================= -->
         <div class="section-title" id="admin-console">Admin Command // Cloudflare KV &amp; Local Persistent Control</div>
 
         <section class="admin-panel">
-          <!-- Login Bar -->
           <div id="admin-login-view" class="admin-login-box">
             <input
               type="password"
@@ -1132,7 +973,6 @@
             </span>
           </div>
 
-          <!-- Authenticated Workspace -->
           <div id="admin-workspace" style="display:none;">
             <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px;">
               <div style="font-size:0.82rem; color:var(--green);">
@@ -1145,7 +985,6 @@
               </div>
             </div>
 
-            <!-- KPI Telemetry Rollup -->
             <div class="admin-kpi-strip">
               <div class="kpi-card">
                 <div class="kpi-label">Kit Orders</div>
@@ -1165,14 +1004,12 @@
               </div>
             </div>
 
-            <!-- Admin Sub-Tabs -->
             <div class="admin-tabs">
               <button class="admin-tab-btn active" id="tab-btn-bulletins" onclick="switchAdminTab('bulletins')">Portal Bulletins</button>
               <button class="admin-tab-btn" id="tab-btn-orders" onclick="switchAdminTab('orders')">Kit Orders Ledger</button>
               <button class="admin-tab-btn" id="tab-btn-comms" onclick="switchAdminTab('comms')">Comms &amp; KV Tools</button>
             </div>
 
-            <!-- Tab 1: Bulletins -->
             <div id="admin-tab-bulletins" class="admin-subcard">
               <h3>Persistent Portal Bulletins (Displayed in Top Ticker)</h3>
               <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -1182,13 +1019,11 @@
               <div id="admin-bulletin-list" style="display:flex; flex-direction:column; gap:6px; max-height:250px; overflow-y:auto;"></div>
             </div>
 
-            <!-- Tab 2: Orders -->
             <div id="admin-tab-orders" class="admin-subcard" style="display:none;">
               <h3>Drone Kit Orders Ledger (ORDERS_KV)</h3>
               <div id="admin-orders-list" style="display:flex; flex-direction:column; gap:8px; max-height:320px; overflow-y:auto;"></div>
             </div>
 
-            <!-- Tab 3: Comms & KV Maintenance -->
             <div id="admin-tab-comms" class="admin-subcard" style="display:none;">
               <h3>Encrypted Comms &amp; Storage Maintenance</h3>
               <p style="font-size:0.8rem; color:var(--muted); line-height:1.5;">
@@ -1205,7 +1040,7 @@
       </div>
 
       <footer>
-        <div id="footer-build">&copy; 2026 MAGIC GOAT STUDIO // CANADA // BUILD 20261120.1408</div>
+        <div id="footer-build">&copy; 2026 MAGIC GOAT STUDIO // CANADA // BUILD 20261120.1420</div>
         <div>
           <a href="mailto:matt@magicgoat.studio">matt@magicgoat.studio</a> &middot;
           <a href="https://github.com/mattjslaunwhite/Site" target="_blank" rel="noopener">GitHub Repo</a>
@@ -1215,7 +1050,6 @@
   </div>
 
   <script>
-    // Mobile Sidebar Drawer Toggle
     function toggleSidebar() {
       document.getElementById("sidebar").classList.toggle("open");
     }
@@ -1226,7 +1060,6 @@
       });
     });
 
-    // Dynamic Date/Time Build Number System (YYYYMMDD.HHMM + Live Clock)
     function initBuildSystem() {
       const mod = new Date(document.lastModified || Date.now());
       const pad = n => String(n).padStart(2, "0");
@@ -1257,7 +1090,6 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // ================= PUBLIC BULLETINS LOADER (KV + Local Mirror Fallback) =================
     const LOCAL_BULLETINS_KEY = "mgs_local_bulletins";
 
     function getLocalBulletins() {
@@ -1294,7 +1126,6 @@
       }
     }
 
-    // ================= PERSISTENT ADMIN CONSOLE =================
     let adminPass = sessionStorage.getItem("mgs_admin_pass") || "";
     let cachedAdminSnapshot = { orders: [], bulletins: [], commsCount: 0, kvBound: false };
 
@@ -1366,7 +1197,6 @@
           kvBound: Boolean(data.kvBound)
         };
 
-        // Update KPI strip
         const totalRetail = orders.reduce((acc, o) => acc + (Number(o.totalRetailCad) || 0), 0);
         const totalMargin = orders.reduce((acc, o) => acc + (Number(o.grossMarginCad) || 0), 0);
         document.getElementById("kpi-orders").textContent = orders.length;
@@ -1520,159 +1350,6 @@
 
     loadPublicBulletins();
     if (adminPass) refreshAdminData();
-
-    // ================= WEB SERIAL API IMPLEMENTATION =================
-    let port = null;
-    let reader = null;
-    let keepReading = false;
-    let lineBuffer = "";
-
-    const logEl = document.getElementById("serial-log");
-    const statusEl = document.getElementById("serial-status");
-    const connectBtn = document.getElementById("btn-connect");
-
-    function appendLog(text, isSystem = false) {
-      if (document.getElementById("chk-timestamp").checked && !isSystem) {
-        const ts = new Date().toLocaleTimeString([], { hour12: false });
-        text = `[${ts}] ${text}`;
-      }
-      logEl.textContent += text;
-      if (document.getElementById("chk-autoscroll").checked) {
-        logEl.scrollTop = logEl.scrollHeight;
-      }
-    }
-
-    async function toggleSerial() {
-      if (!("serial" in navigator)) {
-        appendLog("\n[ERROR] Web Serial API is not supported in this browser. Use Brave, Chrome, or Edge over HTTPS.\n", true);
-        return;
-      }
-
-      if (port) {
-        await disconnectSerial();
-      } else {
-        await connectSerial();
-      }
-    }
-
-    async function connectSerial() {
-      try {
-        const baudRate = parseInt(document.getElementById("baud-rate").value, 10);
-        port = await navigator.serial.requestPort();
-        await port.open({ baudRate });
-
-        keepReading = true;
-        statusEl.textContent = `● Connected (${baudRate} baud)`;
-        statusEl.classList.add("connected");
-        connectBtn.textContent = "Disconnect";
-        connectBtn.className = "btn-disconnect";
-        appendLog(`\n[PORT OPENED @ ${baudRate} BAUD]\n`, true);
-
-        readLoop();
-      } catch (err) {
-        port = null;
-        appendLog(`\n[CONNECTION FAILED] ${err.message}\n`, true);
-      }
-    }
-
-    async function readLoop() {
-      const decoder = new TextDecoder();
-      while (port && port.readable && keepReading) {
-        reader = port.readable.getReader();
-        try {
-          while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
-            if (value) {
-              const chunk = decoder.decode(value, { stream: true });
-              if (document.getElementById("chk-timestamp").checked) {
-                lineBuffer += chunk;
-                const lines = lineBuffer.split("\n");
-                lineBuffer = lines.pop();
-                for (const line of lines) {
-                  appendLog(line + "\n", false);
-                }
-              } else {
-                appendLog(chunk, true);
-              }
-            }
-          }
-        } catch (err) {
-          if (keepReading) {
-            appendLog(`\n[READ ERROR] ${err.message}\n`, true);
-          }
-        } finally {
-          reader.releaseLock();
-          reader = null;
-        }
-      }
-    }
-
-    async function disconnectSerial() {
-      keepReading = false;
-      try {
-        if (reader) {
-          await reader.cancel();
-        }
-        if (port) {
-          await port.close();
-        }
-      } catch (err) {
-        appendLog(`\n[CLOSE WARNING] ${err.message}\n`, true);
-      } finally {
-        port = null;
-        lineBuffer = "";
-        statusEl.textContent = "● Disconnected";
-        statusEl.classList.remove("connected");
-        connectBtn.textContent = "Connect Port";
-        connectBtn.className = "btn-connect";
-        appendLog("\n[PORT CLOSED]\n", true);
-      }
-    }
-
-    async function sendSerial() {
-      const inputEl = document.getElementById("serial-input");
-      const rawText = inputEl.value;
-      if (!port || !port.writable) {
-        appendLog("\n[TX BLOCKED — Connect a serial port first]\n", true);
-        return;
-      }
-
-      const endingMap = { "\\r\\n": "\r\n", "\\n": "\n", "\\r": "\r", "": "" };
-      const ending = endingMap[document.getElementById("line-ending").value] ?? "\r\n";
-      const encoder = new TextEncoder();
-
-      try {
-        const writer = port.writable.getWriter();
-        await writer.write(encoder.encode(rawText + ending));
-        writer.releaseLock();
-        appendLog(`> ${rawText}\n`, false);
-        inputEl.value = "";
-      } catch (err) {
-        appendLog(`\n[TX ERROR] ${err.message}\n`, true);
-      }
-    }
-
-    function clearSerial() {
-      logEl.textContent = "";
-      lineBuffer = "";
-    }
-
-    function downloadLog() {
-      const blob = new Blob([logEl.textContent], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `magicgoat-serial-${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.log`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    if ("serial" in navigator) {
-      navigator.serial.addEventListener("disconnect", () => {
-        if (port) disconnectSerial();
-      });
-    }
   </script>
 </body>
 </html>

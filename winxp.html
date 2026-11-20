@@ -3517,26 +3517,50 @@ function openExplorer(startPath = 'My Computer') {
 }
 
 /* ============================================================================
-   9. SYSTEM PROPERTIES & DIRECTX DIAGNOSTIC TOOL
+   9. SYSTEM PROPERTIES (All 4 Interactive Tabs) & DIRECTX DIAGNOSTIC TOOL (All Tests)
    ============================================================================ */
-function openSystemProperties() {
+let xpMachineName = 'WXP-P3-800';
+let xpWorkgroupName = 'WORKGROUP';
+
+function openSystemProperties(initialTab = 'general') {
+  let curTab = initialTab;
+
   createXPWindow({
     singletonId: 'sysprop',
     title: 'System Properties',
     icon: 'mycomp',
-    width: 420,
-    height: 430,
+    width: 445,
+    height: 455,
     resizable: false,
     render: (container, winObj) => {
-      container.innerHTML = `
-        <div style="padding:12px; display:flex; flex-direction:column; flex:1; justify-content:space-between;">
-          <div>
-            <div style="display:flex; border-bottom:1px solid #999; margin-bottom:12px;">
-              <div style="background:#fff; border:1px solid #999; border-bottom:none; padding:4px 10px; font-weight:bold;">General</div>
-              <div style="padding:4px 10px; color:#555;">Computer Name</div>
-              <div style="padding:4px 10px; color:#555;">Hardware</div>
-              <div style="padding:4px 10px; color:#555;">Advanced</div>
-            </div>
+      function renderTabs() {
+        const tabs = [
+          { id: 'general', label: 'General' },
+          { id: 'compname', label: 'Computer Name' },
+          { id: 'hardware', label: 'Hardware' },
+          { id: 'advanced', label: 'Advanced' }
+        ];
+
+        const tabStrip = `
+          <div style="display:flex; border-bottom:1px solid #999; margin-bottom:12px;">
+            ${tabs.map(t => `
+              <div onclick="sysPropSetTab('${t.id}')" style="
+                padding:4px 10px;
+                cursor:pointer;
+                border:1px solid ${curTab === t.id ? '#999' : 'transparent'};
+                border-bottom:${curTab === t.id ? '1px solid #fff' : 'none'};
+                background:${curTab === t.id ? '#fff' : 'transparent'};
+                font-weight:${curTab === t.id ? 'bold' : 'normal'};
+                color:${curTab === t.id ? '#000' : '#444'};
+                margin-bottom:-1px;
+              ">${t.label}</div>
+            `).join('')}
+          </div>
+        `;
+
+        let bodyHtml = '';
+        if (curTab === 'general') {
+          bodyHtml = `
             <div style="display:flex; gap:18px; align-items:flex-start; padding:6px;">
               ${getXPSvgIcon('mycomp', 64)}
               <div style="line-height:1.55;">
@@ -3550,7 +3574,7 @@ function openSystemProperties() {
                 <div style="font-weight:bold; margin-top:10px;">Registered to:</div>
                 <div style="padding-left:10px;">
                   Administrator<br>
-                  Workgroup PC<br>
+                  Magic Goat Studio<br>
                   55274-640-2673064-23941
                 </div>
                 <div style="font-weight:bold; margin-top:10px;">Computer:</div>
@@ -3562,34 +3586,190 @@ function openSystemProperties() {
                 </div>
               </div>
             </div>
+          `;
+        } else if (curTab === 'compname') {
+          bodyHtml = `
+            <div style="padding:4px; display:flex; flex-direction:column; gap:12px;">
+              <div style="display:flex; gap:12px; align-items:center;">
+                ${getXPSvgIcon('mynet', 36)}
+                <div>Windows uses the following information to identify your computer on the network.</div>
+              </div>
+              <div class="xp-groupbox">
+                <div class="xp-groupbox-title">Identification</div>
+                <div style="line-height:1.8;">
+                  <div>Computer description: <span style="color:#333;">Pentium III 800MHz Workstation</span></div>
+                  <div>Full computer name: <b id="sp-cname">${xpMachineName}</b></div>
+                  <div>Workgroup: <b id="sp-wgroup">${xpWorkgroupName}</b></div>
+                </div>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                <span style="max-width:260px; color:#444;">To rename this computer or join a domain, click Change.</span>
+                <button class="xp-btn" onclick="openRenameComputerModal()">Change...</button>
+              </div>
+            </div>
+          `;
+        } else if (curTab === 'hardware') {
+          bodyHtml = `
+            <div style="padding:2px; display:flex; flex-direction:column; gap:10px;">
+              <div class="xp-groupbox">
+                <div class="xp-groupbox-title">Device Manager</div>
+                <div style="margin-bottom:8px;">The Device Manager lists all the hardware devices installed on your computer.</div>
+                <div style="background:#fff; border:1px solid #7f9db9; padding:6px; height:135px; overflow-y:auto; font-size:11px; line-height:1.55;">
+                  <div><b>🖥️ ${xpMachineName}</b></div>
+                  <div style="padding-left:14px;">├─ 🖴 Disk drives: Maxtor 4D040H2 (40 GB)</div>
+                  <div style="padding-left:14px;">├─ 🎮 Display adapters: NVIDIA GeForce2 MX 400 (64 MB)</div>
+                  <div style="padding-left:14px;">├─ 💿 DVD/CD-ROM drives: LITE-ON LTR-52327S CD-RW</div>
+                  <div style="padding-left:14px;">├─ 🌐 Network adapters: Intel(R) PRO/100 VE Network Connection</div>
+                  <div style="padding-left:14px;">├─ ⚙️ Processors: Intel(R) Pentium(R) III 800MHz</div>
+                  <div style="padding-left:14px;">└─ 🔊 Sound, video and game controllers: Creative SB Live! Value</div>
+                </div>
+              </div>
+              <div class="xp-groupbox">
+                <div class="xp-groupbox-title">Driver Signing &amp; Profiles</div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span>Verify digital signatures on system drivers.</span>
+                  <button class="xp-btn" onclick="showXPMessage('Driver Signing Options', 'Current Policy: <b>Warn</b> - Prompt me each time to choose an action.', 'info')">Driver Signing</button>
+                </div>
+              </div>
+            </div>
+          `;
+        } else if (curTab === 'advanced') {
+          bodyHtml = `
+            <div style="padding:2px; display:flex; flex-direction:column; gap:10px;">
+              <div>You must be logged on as an Administrator to make most of these changes.</div>
+              <div class="xp-groupbox">
+                <div class="xp-groupbox-title">Performance</div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="max-width:270px;">Visual effects, processor scheduling, memory usage, and virtual memory (4694 MB paging file).</span>
+                  <button class="xp-btn" onclick="showXPMessage('Performance Options', '<b>Processor Scheduling:</b> Programs<br><b>Memory Usage:</b> Programs<br><b>Total Paging File Size:</b> 4694 MB (C:\\\\pagefile.sys)', 'info')">Settings</button>
+                </div>
+              </div>
+              <div class="xp-groupbox">
+                <div class="xp-groupbox-title">Startup and Recovery</div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="max-width:270px;">System startup, system failure, and debugging information.</span>
+                  <button class="xp-btn" onclick="showXPMessage('Startup and Recovery', '<b>Default OS:</b> Microsoft Windows XP Professional<br><b>Time to display list:</b> 30 seconds<br><b>Write debugging info:</b> Small memory dump (64 KB)', 'info')">Settings</button>
+                </div>
+              </div>
+              <div style="text-align:right; margin-top:4px;">
+                <button class="xp-btn" onclick="showXPMessage('Environment Variables', '<b>System Variables:</b><br>OS = Windows_NT<br>PROCESSOR_ARCHITECTURE = x86<br>NUMBER_OF_PROCESSORS = 1<br>PATH = C:\\\\WINDOWS\\\\system32;C:\\\\WINDOWS;C:\\\\WAR2', 'info')">Environment Variables</button>
+              </div>
+            </div>
+          `;
+        }
+
+        container.innerHTML = `
+          <div style="padding:12px; display:flex; flex-direction:column; flex:1; justify-content:space-between;">
+            <div>
+              ${tabStrip}
+              ${bodyHtml}
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+              <button class="xp-btn default" style="min-width:75px;" onclick="closeXPWindow('${winObj.id}')">OK</button>
+              <button class="xp-btn" style="min-width:75px;" onclick="closeXPWindow('${winObj.id}')">Cancel</button>
+            </div>
           </div>
-          <div style="text-align:right;">
-            <button class="xp-btn default" style="min-width:75px;" onclick="closeXPWindow('${winObj.id}')">OK</button>
+        `;
+      }
+
+      window.sysPropSetTab = (t) => {
+        curTab = t;
+        renderTabs();
+      };
+
+      window.openRenameComputerModal = () => {
+        const bd = showXPMessage('Computer Name Changes', `
+          <div style="min-width:260px; display:flex; flex-direction:column; gap:8px;">
+            <div>
+              <label style="display:block; margin-bottom:2px;">Computer name:</label>
+              <input type="text" id="xp-new-cname" class="xp-input" style="width:100%;" value="${xpMachineName}">
+            </div>
+            <div>
+              <label style="display:block; margin-bottom:2px;">Workgroup:</label>
+              <input type="text" id="xp-new-wgroup" class="xp-input" style="width:100%;" value="${xpWorkgroupName}">
+            </div>
           </div>
-        </div>
-      `;
+        `, 'info', [
+          {
+            label: 'OK',
+            primary: true,
+            action: () => {
+              const cn = document.getElementById('xp-new-cname').value.trim().toUpperCase();
+              const wg = document.getElementById('xp-new-wgroup').value.trim().toUpperCase();
+              if (cn) xpMachineName = cn;
+              if (wg) xpWorkgroupName = wg;
+              renderTabs();
+              showXPMessage('Computer Name Changes', `Welcome to the ${xpWorkgroupName} workgroup.<br>Computer name updated to <b>${xpMachineName}</b>.`, 'info');
+            }
+          },
+          { label: 'Cancel' }
+        ]);
+        return bd;
+      };
+
+      renderTabs();
     }
   });
 }
 
 function openDxDiag() {
+  let curTab = 'system';
+  let hwAccelLevel = 3; // 0=None, 1=Basic, 2=Standard, 3=Full
+  let ddrawEnabled = true;
+  let d3dEnabled = true;
+  let agpEnabled = true;
+  let testAnimId = null;
+
   createXPWindow({
     singletonId: 'dxdiag',
     title: 'DirectX Diagnostic Tool',
     icon: 'cp',
-    width: 470,
-    height: 390,
+    width: 560,
+    height: 465,
     resizable: false,
+    onClose: () => {
+      if (testAnimId) cancelAnimationFrame(testAnimId);
+    },
     render: (container, winObj) => {
-      container.innerHTML = `
-        <div style="padding:12px; display:flex; flex-direction:column; flex:1; justify-content:space-between;">
-          <div>
-            <div style="margin-bottom:8px;">This tool reports detailed information about the DirectX components and drivers installed on your system.</div>
+      const tabs = [
+        { id: 'system', label: 'System' },
+        { id: 'files', label: 'DirectX Files' },
+        { id: 'display', label: 'Display' },
+        { id: 'sound', label: 'Sound' },
+        { id: 'music', label: 'Music' },
+        { id: 'input', label: 'Input' },
+        { id: 'network', label: 'Network' }
+      ];
+
+      function renderDxDiag() {
+        const tabHeader = `
+          <div style="display:flex; border-bottom:1px solid #999; margin-bottom:10px; flex-wrap:wrap;">
+            ${tabs.map(t => `
+              <div onclick="dxSetTab('${t.id}')" style="
+                padding:4px 9px;
+                cursor:pointer;
+                border:1px solid ${curTab === t.id ? '#999' : 'transparent'};
+                border-bottom:${curTab === t.id ? '1px solid #fff' : 'none'};
+                background:${curTab === t.id ? '#fff' : 'transparent'};
+                font-weight:${curTab === t.id ? 'bold' : 'normal'};
+                color:${curTab === t.id ? '#000' : '#444'};
+                margin-bottom:-1px;
+              ">${t.label}</div>
+            `).join('')}
+          </div>
+        `;
+
+        let panelHtml = '';
+        let notesText = 'No problems found.';
+
+        if (curTab === 'system') {
+          panelHtml = `
+            <div style="margin-bottom:6px;">This tool reports detailed information about the DirectX components and drivers installed on your system.</div>
             <div class="xp-groupbox">
               <div class="xp-groupbox-title">System Information</div>
-              <div style="line-height:1.6; font-family:var(--font-ui);">
+              <div style="line-height:1.58;">
                 <div>Current Date/Time: ${new Date().toLocaleString()}</div>
-                <div>Computer Name: WXP-P3-800</div>
+                <div>Computer Name: ${xpMachineName}</div>
                 <div>Operating System: Microsoft Windows XP Professional (5.1, Build 2600)</div>
                 <div>Language: English (Regional Setting: English)</div>
                 <div>System Manufacturer: ASUSTeK Computer INC.</div>
@@ -3598,19 +3778,518 @@ function openDxDiag() {
                 <div>Processor: Intel(R) Pentium(R) III processor, ~800MHz</div>
                 <div>Memory: 3072MB RAM</div>
                 <div>Page File: 248MB used, 4694MB available</div>
-                <div>DirectX Version: DirectX 9.0c (4.09.0000.0904)</div>
+                <div>DirectX Version: <b>DirectX 9.0c (4.09.0000.0904)</b></div>
+              </div>
+            </div>
+          `;
+        } else if (curTab === 'files') {
+          const dxFiles = [
+            ['ddraw.dll', '5.03.2600.5512', 'Final Retail', '4/14/2008'],
+            ['d3d8.dll', '5.03.2600.5512', 'Final Retail', '4/14/2008'],
+            ['d3d9.dll', '5.03.2600.5512', 'Final Retail', '4/14/2008'],
+            ['dsound.dll', '5.03.2600.5512', 'Final Retail', '4/14/2008'],
+            ['dmusic.dll', '5.03.2600.5512', 'Final Retail', '4/14/2008'],
+            ['dinput8.dll', '5.03.2600.5512', 'Final Retail', '4/14/2008'],
+            ['dplayx.dll', '5.03.2600.5512', 'Final Retail', '4/14/2008'],
+            ['quartz.dll', '6.05.2600.5512', 'Final Retail', '4/14/2008']
+          ];
+          panelHtml = `
+            <div style="background:#fff; border:1px solid #7f9db9; height:240px; overflow-y:auto;">
+              <table style="width:100%; border-collapse:collapse; font-size:11px;">
+                <tr style="background:#ece9d8; border-bottom:1px solid #aca899; text-align:left;">
+                  <th style="padding:4px 6px;">Name</th>
+                  <th style="padding:4px 6px;">Version</th>
+                  <th style="padding:4px 6px;">Attributes</th>
+                  <th style="padding:4px 6px;">Date</th>
+                </tr>
+                ${dxFiles.map(f => `
+                  <tr style="border-bottom:1px solid #f0f0f0;">
+                    <td style="padding:3px 6px;">${f[0]}</td>
+                    <td style="padding:3px 6px;">${f[1]}</td>
+                    <td style="padding:3px 6px;">${f[2]}</td>
+                    <td style="padding:3px 6px;">${f[3]}</td>
+                  </tr>
+                `).join('')}
+              </table>
+            </div>
+          `;
+        } else if (curTab === 'display') {
+          notesText = 'The file nv4_disp.dll is digitally signed.\nDirectDraw test results: All tests were successful.\nDirect3D 9 test results: All tests were successful.';
+          panelHtml = `
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div class="xp-groupbox">
+                <div class="xp-groupbox-title">Device</div>
+                <div style="line-height:1.45;">
+                  Name: NVIDIA GeForce2 MX 400<br>
+                  Manufacturer: NVIDIA<br>
+                  Chip Type: GeForce2 MX/MX 400<br>
+                  DAC Type: Integrated RAMDAC<br>
+                  Approx. Total Memory: 64.0 MB<br>
+                  Current Display Mode: 1024 x 768 (32 bit) (75Hz)
+                </div>
+              </div>
+              <div class="xp-groupbox">
+                <div class="xp-groupbox-title">Drivers</div>
+                <div style="line-height:1.45;">
+                  Main Driver: nv4_disp.dll<br>
+                  Version: 6.14.0010.5672 (English)<br>
+                  Date: 3/24/2004<br>
+                  WHQL Logo'd: Yes<br>
+                  Mini VDD: nv4_mini.sys<br>
+                  DDI Version: 9 (or higher)
+                </div>
+              </div>
+            </div>
+
+            <div class="xp-groupbox" style="margin-top:10px;">
+              <div class="xp-groupbox-title">DirectX Features</div>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span>DirectDraw Acceleration: <b>${ddrawEnabled ? 'Enabled' : 'Disabled'}</b></span>
+                  <div style="display:flex; gap:6px;">
+                    <button class="xp-btn" onclick="dxToggleFeature('ddraw')">${ddrawEnabled ? 'Disable' : 'Enable'}</button>
+                    <button class="xp-btn default" style="min-width:118px;" ${!ddrawEnabled ? 'disabled' : ''} onclick="runDirectDrawTest()">Test DirectDraw</button>
+                  </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span>Direct3D Acceleration: <b>${d3dEnabled ? 'Enabled' : 'Disabled'}</b></span>
+                  <div style="display:flex; gap:6px;">
+                    <button class="xp-btn" onclick="dxToggleFeature('d3d')">${d3dEnabled ? 'Disable' : 'Enable'}</button>
+                    <button class="xp-btn default" style="min-width:118px;" ${!d3dEnabled ? 'disabled' : ''} onclick="runDirect3DTest()">Test Direct3D</button>
+                  </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span>AGP Texture Acceleration: <b>${agpEnabled ? 'Enabled' : 'Disabled'}</b></span>
+                  <button class="xp-btn" onclick="dxToggleFeature('agp')">${agpEnabled ? 'Disable' : 'Enable'}</button>
+                </div>
+              </div>
+            </div>
+          `;
+        } else if (curTab === 'sound') {
+          const accelLabels = ['No Acceleration', 'Basic Acceleration', 'Standard Acceleration', 'Full Acceleration'];
+          notesText = 'The file emu10k1m.sys is digitally signed.\nDirectSound test results: All tests were successful.';
+          panelHtml = `
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div class="xp-groupbox">
+                <div class="xp-groupbox-title">Device</div>
+                <div style="line-height:1.48;">
+                  Name: Creative SB Live! Value<br>
+                  Device ID: PCI\\VEN_1102&amp;DEV_0002<br>
+                  Manufacturer ID: 1<br>
+                  Product ID: 100<br>
+                  Type: WDM<br>
+                  Default Sound Playback: Yes
+                </div>
+              </div>
+              <div class="xp-groupbox">
+                <div class="xp-groupbox-title">Drivers</div>
+                <div style="line-height:1.48;">
+                  Name: emu10k1m.sys<br>
+                  Version: 5.12.0001.0296 (English)<br>
+                  Date: 8/17/2001<br>
+                  WHQL Logo'd: Yes<br>
+                  Other Files: ksuser.dll, wdmaud.drv<br>
+                  Provider: Creative Technology Ltd.
+                </div>
+              </div>
+            </div>
+
+            <div class="xp-groupbox" style="margin-top:10px;">
+              <div class="xp-groupbox-title">DirectX Features</div>
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                <div style="flex:1;">
+                  <div>Hardware Sound Acceleration Level: <b>${accelLabels[hwAccelLevel]}</b></div>
+                  <input type="range" min="0" max="3" step="1" value="${hwAccelLevel}" style="width:100%; margin-top:4px;" oninput="dxSetSoundAccel(this.value)">
+                </div>
+                <button class="xp-btn default" style="min-width:125px;" onclick="runDirectSoundTest()">Test DirectSound</button>
+              </div>
+            </div>
+          `;
+        } else if (curTab === 'music') {
+          notesText = 'DirectMusic test results: All tests were successful.';
+          panelHtml = `
+            <div class="xp-groupbox">
+              <div class="xp-groupbox-title">DirectMusic Ports</div>
+              <div style="background:#fff; border:1px solid #7f9db9; height:125px; overflow-y:auto;">
+                <table style="width:100%; border-collapse:collapse; font-size:11px;">
+                  <tr style="background:#ece9d8; border-bottom:1px solid #aca899; text-align:left;">
+                    <th style="padding:4px 6px;">Description</th>
+                    <th style="padding:4px 6px;">Type</th>
+                    <th style="padding:4px 6px;">Default</th>
+                  </tr>
+                  <tr style="background:#d8e8ff;">
+                    <td style="padding:3px 6px;">Microsoft Synthesizer</td>
+                    <td style="padding:3px 6px;">Software (DLS)</td>
+                    <td style="padding:3px 6px;">Yes</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:3px 6px;">SB Live! Synth A [E400]</td>
+                    <td style="padding:3px 6px;">Hardware</td>
+                    <td style="padding:3px 6px;">No</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:3px 6px;">SB Live! MIDI Out [E400]</td>
+                    <td style="padding:3px 6px;">Hardware Port</td>
+                    <td style="padding:3px 6px;">No</td>
+                  </tr>
+                </table>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                <span>Default Port Acceleration: <b>Enabled</b></span>
+                <button class="xp-btn default" style="min-width:125px;" onclick="runDirectMusicTest()">Test DirectMusic</button>
+              </div>
+            </div>
+          `;
+        } else if (curTab === 'input') {
+          panelHtml = `
+            <div class="xp-groupbox">
+              <div class="xp-groupbox-title">DirectInput Devices</div>
+              <div style="background:#fff; border:1px solid #7f9db9; height:115px; overflow-y:auto; padding:4px;">
+                <div>⌨️ <b>Standard 101/102-Key or Microsoft Natural PS/2 Keyboard</b> — Attached (Status: OK)</div>
+                <div style="margin-top:4px;">🖱️ <b>PS/2 Compatible Mouse</b> — Attached (Status: OK)</div>
+                <div style="margin-top:4px;">🕹️ <b>Standard Game Port (Creative SB Live!)</b> — Attached (Status: OK)</div>
+              </div>
+            </div>
+            <div class="xp-groupbox" style="margin-top:10px;">
+              <div class="xp-groupbox-title">Live Input Poll Test</div>
+              <div id="dx-input-readout" style="background:#000; color:#00ff00; font-family:var(--font-mono); padding:6px 8px;">
+                Press any key or move/click mouse inside this window to verify DirectInput...
+              </div>
+            </div>
+          `;
+        } else if (curTab === 'network') {
+          panelHtml = `
+            <div class="xp-groupbox">
+              <div class="xp-groupbox-title">Registered DirectPlay Service Providers</div>
+              <div style="background:#fff; border:1px solid #7f9db9; height:160px; overflow-y:auto; padding:6px; line-height:1.6;">
+                <div>🌐 <b>DirectPlay8 TCP/IP Service Provider</b> — Registry: OK, File: dpnet.dll (5.03.2600.5512)</div>
+                <div>🔌 <b>DirectPlay8 IPX Service Provider</b> — Registry: OK, File: dpnet.dll (5.03.2600.5512)</div>
+                <div>📞 <b>DirectPlay8 Modem Service Provider</b> — Registry: OK, File: dpnet.dll (5.03.2600.5512)</div>
+                <div>🔗 <b>DirectPlay8 Serial Service Provider</b> — Registry: OK, File: dpnet.dll (5.03.2600.5512)</div>
+              </div>
+            </div>
+          `;
+        }
+
+        container.innerHTML = `
+          <div style="padding:10px 12px; display:flex; flex-direction:column; flex:1; justify-content:space-between;">
+            <div>
+              ${tabHeader}
+              ${panelHtml}
+            </div>
+            <div>
+              <div class="xp-groupbox" style="margin-bottom:10px;">
+                <div class="xp-groupbox-title">Notes</div>
+                <textarea readonly style="width:100%; height:48px; border:1px solid #7f9db9; background:#fff; font-family:var(--font-ui); font-size:11px; resize:none; padding:4px;">${notesText}</textarea>
+              </div>
+              <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button class="xp-btn" onclick="dxSaveReport()">Save All Information...</button>
+                <button class="xp-btn default" style="min-width:74px;" onclick="closeXPWindow('${winObj.id}')">Exit</button>
               </div>
             </div>
           </div>
-          <div style="text-align:right; margin-top:10px;">
-            <button class="xp-btn default" onclick="closeXPWindow('${winObj.id}')">Exit</button>
-          </div>
-        </div>
-      `;
+        `;
+
+        if (curTab === 'input') {
+          const inpBox = container.querySelector('#dx-input-readout');
+          container.onmousemove = (e) => {
+            if (inpBox) inpBox.textContent = `DirectInput Mouse Axis: X=${e.clientX}, Y=${e.clientY} | Buttons=${e.buttons}`;
+          };
+          window.addEventListener('keydown', function dxKeyPoll(ev) {
+            if (curTab !== 'input' || !document.getElementById('dx-input-readout')) {
+              window.removeEventListener('keydown', dxKeyPoll);
+              return;
+            }
+            inpBox.textContent = `DirectInput Keyboard Scan: Key="${ev.key}" Code="${ev.code}" (DIK_OK)`;
+          });
+        }
+      }
+
+      window.dxSetTab = (t) => {
+        curTab = t;
+        renderDxDiag();
+      };
+
+      window.dxToggleFeature = (feat) => {
+        if (feat === 'ddraw') ddrawEnabled = !ddrawEnabled;
+        if (feat === 'd3d') d3dEnabled = !d3dEnabled;
+        if (feat === 'agp') agpEnabled = !agpEnabled;
+        renderDxDiag();
+      };
+
+      window.dxSetSoundAccel = (val) => {
+        hwAccelLevel = parseInt(val, 10);
+        renderDxDiag();
+      };
+
+      window.dxSaveReport = () => {
+        const report = [
+          '------------------',
+          'System Information',
+          '------------------',
+          `Time of this report: ${new Date().toLocaleString()}`,
+          `       Machine name: ${xpMachineName}`,
+          '   Operating System: Windows XP Professional (5.1, Build 2600) Service Pack 3',
+          'System Manufacturer: ASUSTeK Computer INC.',
+          '       System Model: CUSL2-C',
+          '               BIOS: Award Modular BIOS v6.00PG',
+          '          Processor: Intel(R) Pentium(R) III processor, ~800MHz',
+          '             Memory: 3072MB RAM',
+          '    DirectX Version: DirectX 9.0c (4.09.0000.0904)',
+          '',
+          '---------------',
+          'Display Devices',
+          '---------------',
+          '        Card name: NVIDIA GeForce2 MX 400',
+          '     Manufacturer: NVIDIA',
+          '   Display Memory: 64.0 MB',
+          '     Current Mode: 1024 x 768 (32 bit) (75Hz)',
+          '',
+          '-------------',
+          'Sound Devices',
+          '-------------',
+          '      Description: Creative SB Live! Value',
+          '   Driver Version: 5.12.0001.0296'
+        ].join('\r\n');
+        const blob = new Blob([report], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'DxDiag.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+
+      // 1. Classic DirectDraw Test (Bouncing White Square across Primary & Fullscreen Surfaces)
+      window.runDirectDrawTest = () => {
+        showXPMessage(
+          'DirectDraw Test',
+          'This test will display a bouncing white square on a black background to verify DirectDraw Primary Surface, Flipping, and Fullscreen modes.<br><br>Click OK to start.',
+          'info',
+          [
+            {
+              label: 'OK',
+              primary: true,
+              action: () => {
+                const overlay = document.createElement('div');
+                overlay.style.cssText = 'position:fixed; inset:0; background:#000; z-index:99995; display:flex; flex-direction:column; align-items:center; justify-content:center;';
+                overlay.innerHTML = `
+                  <canvas id="dx-ddraw-cv" width="640" height="480" style="border:2px solid #444; background:#000; max-width:95vw; max-height:82vh;"></canvas>
+                  <div id="dx-ddraw-lbl" style="color:#fff; font-family:Tahoma; font-size:13px; margin-top:10px;">Test 1 of 3: DirectDraw Primary Surface (640x480x16) — Click or wait 4s</div>
+                `;
+                document.body.appendChild(overlay);
+                const cv = overlay.querySelector('#dx-ddraw-cv');
+                const ctx = cv.getContext('2d');
+                let bx = 60, by = 60, vx = 5.5, vy = 4.2, stage = 1;
+                const startT = Date.now();
+
+                function tickDD() {
+                  const elapsed = (Date.now() - startT) / 1000;
+                  if (elapsed > 1.5 && stage === 1) {
+                    stage = 2;
+                    overlay.querySelector('#dx-ddraw-lbl').textContent = 'Test 2 of 3: DirectDraw Offscreen Flipping Surface — Click or wait...';
+                  } else if (elapsed > 3.0 && stage === 2) {
+                    stage = 3;
+                    overlay.querySelector('#dx-ddraw-lbl').textContent = 'Test 3 of 3: DirectDraw Fullscreen Hardware Overlay — Finishing...';
+                  } else if (elapsed > 4.5) {
+                    cancelAnimationFrame(testAnimId);
+                    overlay.remove();
+                    showXPMessage('DirectDraw Test', 'Did you see the white square bouncing across the black screen?', 'info', [
+                      { label: 'Yes', primary: true, action: () => playXPSound('ding') },
+                      { label: 'No' }
+                    ]);
+                    return;
+                  }
+
+                  ctx.fillStyle = stage === 3 ? '#000022' : '#000000';
+                  ctx.fillRect(0, 0, cv.width, cv.height);
+                  bx += vx; by += vy;
+                  if (bx < 0 || bx + 48 > cv.width) vx = -vx;
+                  if (by < 0 || by + 48 > cv.height) vy = -vy;
+
+                  ctx.fillStyle = '#ffffff';
+                  ctx.fillRect(bx, by, 48, 48);
+                  ctx.fillStyle = '#000000';
+                  ctx.font = 'bold 11px Tahoma';
+                  ctx.fillText(`DDRAW ${stage}`, bx + 4, by + 28);
+
+                  testAnimId = requestAnimationFrame(tickDD);
+                }
+
+                overlay.onclick = () => {
+                  cancelAnimationFrame(testAnimId);
+                  overlay.remove();
+                  showXPMessage('DirectDraw Test', 'DirectDraw test completed successfully.', 'info');
+                };
+
+                tickDD();
+              }
+            },
+            { label: 'Cancel' }
+          ]
+        );
+      };
+
+      // 2. Classic Direct3D Spinning DirectX Cube Test
+      window.runDirect3DTest = () => {
+        showXPMessage(
+          'Direct3D Test',
+          'This test will display a spinning 3D cube using Hardware-Accelerated Direct3D 9 (NVIDIA GeForce2 MX 400).<br><br>Click OK to begin.',
+          'info',
+          [
+            {
+              label: 'OK',
+              primary: true,
+              action: () => {
+                const overlay = document.createElement('div');
+                overlay.style.cssText = 'position:fixed; inset:0; background:#000; z-index:99995; display:flex; flex-direction:column; align-items:center; justify-content:center;';
+                overlay.innerHTML = `
+                  <canvas id="dx-d3d-cv" width="520" height="400" style="border:2px solid #2255aa; background:#000014;"></canvas>
+                  <div style="color:#55ffff; font-family:Tahoma; font-size:13px; margin-top:10px;">Direct3D 9 Hardware HAL Spinning Cube — Click anywhere or wait 4.5s</div>
+                `;
+                document.body.appendChild(overlay);
+                const cv = overlay.querySelector('#dx-d3d-cv');
+                const ctx = cv.getContext('2d');
+
+                const verts = [
+                  [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
+                  [-1, -1,  1], [1, -1,  1], [1, 1,  1], [-1, 1,  1]
+                ];
+                const edges = [
+                  [0,1],[1,2],[2,3],[3,0],
+                  [4,5],[5,6],[6,7],[7,4],
+                  [0,4],[1,5],[2,6],[3,7]
+                ];
+                let angle = 0;
+                const startT = Date.now();
+
+                function tickD3D() {
+                  if ((Date.now() - startT) / 1000 > 4.5) {
+                    cancelAnimationFrame(testAnimId);
+                    overlay.remove();
+                    showXPMessage('Direct3D Test', 'Did you see the spinning 3D DirectX cube?', 'info', [
+                      { label: 'Yes', primary: true, action: () => playXPSound('ding') },
+                      { label: 'No' }
+                    ]);
+                    return;
+                  }
+
+                  angle += 0.04;
+                  ctx.fillStyle = '#000014';
+                  ctx.fillRect(0, 0, cv.width, cv.height);
+
+                  const proj = verts.map(([x, y, z]) => {
+                    const cosY = Math.cos(angle), sinY = Math.sin(angle);
+                    const cosX = Math.cos(angle * 0.6), sinX = Math.sin(angle * 0.6);
+                    const x1 = x * cosY - z * sinY;
+                    const z1 = z * cosY + x * sinY;
+                    const y2 = y * cosX - z1 * sinX;
+                    const z2 = z1 * cosX + y * sinX + 3.6;
+                    const scale = 260 / z2;
+                    return [cv.width / 2 + x1 * scale, cv.height / 2 + y2 * scale];
+                  });
+
+                  ctx.strokeStyle = '#00ff66';
+                  ctx.lineWidth = 3;
+                  edges.forEach(([a, b]) => {
+                    ctx.beginPath();
+                    ctx.moveTo(proj[a][0], proj[a][1]);
+                    ctx.lineTo(proj[b][0], proj[b][1]);
+                    ctx.stroke();
+                  });
+
+                  ctx.fillStyle = '#ffcc00';
+                  ctx.font = 'bold 16px Tahoma';
+                  ctx.textAlign = 'center';
+                  ctx.fillText('DirectX 9.0c', cv.width / 2, cv.height / 2 + 6);
+
+                  testAnimId = requestAnimationFrame(tickD3D);
+                }
+
+                overlay.onclick = () => {
+                  cancelAnimationFrame(testAnimId);
+                  overlay.remove();
+                  showXPMessage('Direct3D Test', 'Direct3D 9 test completed successfully.', 'info');
+                };
+
+                tickD3D();
+              }
+            },
+            { label: 'Cancel' }
+          ]
+        );
+      };
+
+      // 3. Classic DirectSound Hardware/Software Buffer Tone Test
+      window.runDirectSoundTest = () => {
+        if (!audioEnabled) {
+          showXPMessage('DirectSound Test', 'System volume is muted in the taskbar tray. Unmute audio first.', 'warning');
+          return;
+        }
+        try {
+          const ctx = ensureAudio();
+          const t = ctx.currentTime;
+          const freqs = [220, 440, 880, 1760];
+          freqs.forEach((f, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+            osc.frequency.setValueAtTime(f, t + idx * 0.35);
+            gain.gain.setValueAtTime(0.08, t + idx * 0.35);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + idx * 0.35 + 0.3);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t + idx * 0.35);
+            osc.stop(t + idx * 0.35 + 0.32);
+          });
+          setTimeout(() => {
+            showXPMessage('DirectSound Test', 'Did you hear the 4 DirectSound PCM buffer tones (220Hz – 1760Hz)?', 'info', [
+              { label: 'Yes', primary: true },
+              { label: 'No' }
+            ]);
+          }, 1450);
+        } catch (e) {
+          showXPMessage('DirectSound Test', 'Audio device initialization error: ' + e.message, 'error');
+        }
+      };
+
+      // 4. Classic DirectMusic DLS Synthesizer Test
+      window.runDirectMusicTest = () => {
+        if (!audioEnabled) {
+          showXPMessage('DirectMusic Test', 'System volume is muted in the taskbar tray. Unmute audio first.', 'warning');
+          return;
+        }
+        try {
+          const ctx = ensureAudio();
+          const t = ctx.currentTime;
+          const melody = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
+          melody.forEach((f, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(f, t + i * 0.16);
+            gain.gain.setValueAtTime(0.05, t + i * 0.16);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.16 + 0.22);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t + i * 0.16);
+            osc.stop(t + i * 0.16 + 0.24);
+          });
+          setTimeout(() => {
+            showXPMessage('DirectMusic Test', 'Did you hear the Microsoft Synthesizer MIDI sequence?', 'info', [
+              { label: 'Yes', primary: true },
+              { label: 'No' }
+            ]);
+          }, 1250);
+        } catch (e) {
+          showXPMessage('DirectMusic Test', 'DirectMusic synthesizer error: ' + e.message, 'error');
+        }
+      };
+
+      renderDxDiag();
     }
   });
 }
-
 /* ============================================================================
    10. INTERNET EXPLORER 6
    ============================================================================ */

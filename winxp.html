@@ -1637,14 +1637,13 @@ function playXPSound(type) {
     const t = ctx.currentTime;
 
     if (type === 'startup') {
-      // Lush Windows XP Startup Harp/Pad Chord (Eb major 9 arpeggio)
       const notes = [
-        { f: 311.13, start: 0.00, dur: 1.4 }, // Eb4
-        { f: 466.16, start: 0.14, dur: 1.3 }, // Bb4
-        { f: 622.25, start: 0.28, dur: 1.2 }, // Eb5
-        { f: 783.99, start: 0.42, dur: 1.2 }, // G5
-        { f: 932.33, start: 0.56, dur: 1.3 }, // Bb5
-        { f: 698.46, start: 0.72, dur: 1.4 }  // F5
+        { f: 311.13, start: 0.00, dur: 1.4 },
+        { f: 466.16, start: 0.14, dur: 1.3 },
+        { f: 622.25, start: 0.28, dur: 1.2 },
+        { f: 783.99, start: 0.42, dur: 1.2 },
+        { f: 932.33, start: 0.56, dur: 1.3 },
+        { f: 698.46, start: 0.72, dur: 1.4 }
       ];
       notes.forEach(n => {
         const osc = ctx.createOscillator();
@@ -1674,7 +1673,6 @@ function playXPSound(type) {
         osc.stop(t + i * 0.22 + 0.52);
       });
     } else if (type === 'error') {
-      // XP Critical Stop Chord
       [220, 277.18, 329.63].forEach(f => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -1712,6 +1710,30 @@ function playXPSound(type) {
       gain.connect(ctx.destination);
       osc.start(t);
       osc.stop(t + 0.13);
+    } else if (type === 'bumper') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(420, t);
+      osc.frequency.exponentialRampToValueAtTime(160, t + 0.09);
+      gain.gain.setValueAtTime(0.07, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.10);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.11);
+    } else if (type === 'wormhole') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(220, t);
+      osc.frequency.exponentialRampToValueAtTime(1320, t + 0.35);
+      gain.gain.setValueAtTime(0.07, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.36);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.38);
     } else {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -1740,7 +1762,6 @@ function getChessAvatarSVG() {
     </defs>
     <rect width="48" height="48" fill="url(#avBg)"/>
     <rect x="4" y="34" width="40" height="10" fill="#222" opacity="0.35"/>
-    <!-- Classic XP Chess Knight Silhouette -->
     <path d="M16 38 L34 38 L32 32 C30 27 33 21 31 15 C29 10 24 8 20 9 L18 6 L16 10 C13 12 11 16 12 20 L17 21 C18 19 20 18 22 19 C21 23 17 27 16 38 Z" fill="#ffffff" stroke="#331100" stroke-width="1.5"/>
   </svg>`;
 }
@@ -1860,7 +1881,6 @@ function getXPSvgIcon(name, size = 32) {
   return map[name] || map.generic;
 }
 
-/* Crisp SVG Data-URI Wallpapers (Bliss, Azul, Autumn, Ascent, Red Moon Desert) */
 const xpWallpapers = {
   'Bliss': `url("data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 800' preserveAspectRatio='none'>
     <defs>
@@ -1880,7 +1900,6 @@ const xpWallpapers = {
       </linearGradient>
     </defs>
     <rect width='1280' height='800' fill='url(#sky)'/>
-    <!-- Fluffy Cumulus Clouds -->
     <g fill='#ffffff' opacity='0.88'>
       <ellipse cx='260' cy='165' rx='115' ry='32'/>
       <ellipse cx='220' cy='150' rx='65' ry='28'/>
@@ -1890,9 +1909,7 @@ const xpWallpapers = {
       <ellipse cx='890' cy='115' rx='95' ry='28'/>
       <ellipse cx='1090' cy='210' rx='95' ry='22' opacity='0.7'/>
     </g>
-    <!-- Distant Hill -->
     <path d='M0 535 Q360 445 780 515 Q1060 560 1280 480 L1280 800 L0 800 Z' fill='url(#hillBack)'/>
-    <!-- Iconic Foreground Rolling Green Hill -->
     <path d='M-40 585 Q340 435 760 555 Q1050 635 1320 535 L1320 800 L-40 800 Z' fill='url(#hillFront)'/>
   </svg>`)}")`,
   'Azul': `url("data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 800' preserveAspectRatio='none'>
@@ -1948,7 +1965,7 @@ function setTheme(themeKey) {
 }
 
 /* ============================================================================
-   3. VIRTUAL FILESYSTEM (Shared by Explorer, Notepad, WordPad, Paint, CMD)
+   3. VIRTUAL FILESYSTEM
    ============================================================================ */
 const vfs = {
   'C:\\': [
@@ -2059,7 +2076,6 @@ function startBiosPost() {
   function tick() {
     if (biosHaltedForSetup) return;
     if (step === 1) {
-      // Animate fast RAM count up to 3145728K (3GB)
       let ram = 0;
       const ramTimer = setInterval(() => {
         if (biosHaltedForSetup) { clearInterval(ramTimer); return; }
@@ -2826,7 +2842,7 @@ function execPowerAction(mode, el) {
     document.getElementById('modal-layer').innerHTML = `
       <div style="position:fixed;inset:0;background:#000;color:#ff8c00;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:99999;pointer-events:auto;">
         <div style="font-size:22px;font-weight:bold;">It is now safe to turn off your computer.</div>
-        <button class="xp-btn" onclick="document.getElementById('modal-layer').innerHTML=''; document.getElementById('bios-screen').style.display='flex'; startBiosPost();">Power On PC</button>
+        <button class="xp-btn default" style="padding:6px 18px; font-size:12px;" onclick="window.location.href='/'">Back to Portal</button>
       </div>
     `;
   }
@@ -2922,7 +2938,7 @@ function openDateTimeDialog() {
 }
 
 /* ============================================================================
-   8. MY COMPUTER & WINDOWS EXPLORER (With XP Left Task Pane)
+   8. MY COMPUTER & WINDOWS EXPLORER
    ============================================================================ */
 function openExplorer(startPath = 'My Computer') {
   let history = [startPath];
@@ -3002,7 +3018,6 @@ function openExplorer(startPath = 'My Computer') {
         }
 
         container.innerHTML = `
-          <!-- Navigation Toolbar -->
           <div style="background:var(--win-face); border-bottom:1px solid #aca899; padding:3px 6px; display:flex; align-items:center; gap:6px;">
             <button class="xp-btn" id="exp-back" ${histIdx === 0 ? 'disabled' : ''}>◀ Back</button>
             <button class="xp-btn" id="exp-fwd" ${histIdx >= history.length - 1 ? 'disabled' : ''}>▶</button>
@@ -3011,7 +3026,6 @@ function openExplorer(startPath = 'My Computer') {
             <input type="text" class="xp-input" id="exp-addr" style="flex:1;" value="${cur}">
             <button class="xp-btn" id="exp-go">Go</button>
           </div>
-          <!-- Split Body -->
           <div style="flex:1; display:flex; overflow:hidden; background:#ffffff;">
             <div class="exp-left-pane">
               <div class="exp-card">
@@ -3087,7 +3101,7 @@ function openExplorer(startPath = 'My Computer') {
 }
 
 /* ============================================================================
-   9. SYSTEM PROPERTIES & DIRECTX DIAGNOSTIC TOOL (P3-800MHz, 3.00GB RAM)
+   9. SYSTEM PROPERTIES & DIRECTX DIAGNOSTIC TOOL
    ============================================================================ */
 function openSystemProperties() {
   createXPWindow({
@@ -3182,7 +3196,7 @@ function openDxDiag() {
 }
 
 /* ============================================================================
-   10. INTERNET EXPLORER 6 (Built-in Retro Pages: MSN 2003, Google 2003, Space Jam)
+   10. INTERNET EXPLORER 6
    ============================================================================ */
 function openIE6() {
   const sites = {
@@ -3309,7 +3323,7 @@ function openIE6() {
 }
 
 /* ============================================================================
-   11. WINAMP 2.91 (Classic Metallic Skin + Web Audio Chiptune Synthesizer)
+   11. WINAMP 2.91
    ============================================================================ */
 function openWinamp() {
   const playlist = [
@@ -3358,7 +3372,6 @@ function openWinamp() {
             </div>
           </div>
 
-          <!-- Transport Controls -->
           <div style="display:flex; justify-content:space-between; align-items:center; padding:2px 4px;">
             <div style="display:flex; gap:3px;">
               <button class="winamp-btn" onclick="waPrev()">|◀</button>
@@ -3370,7 +3383,6 @@ function openWinamp() {
             <span style="font-size:10px; color:#aaa;">EQ: ON</span>
           </div>
 
-          <!-- Playlist Editor -->
           <div style="background:#000; border:2px inset #383a4a; flex:1; padding:4px; overflow-y:auto; font-size:11px;" id="wa-playlist"></div>
         </div>
       `;
@@ -3504,7 +3516,7 @@ function openWMP9() {
 }
 
 /* ============================================================================
-   13. 3D PINBALL - SPACE CADET (Playable Canvas Arcade Mini-Game)
+   13. 3D PINBALL - SPACE CADET (Authentic Table Layout, Ranks, Missions, Wormhole)
    ============================================================================ */
 function openPinball() {
   let animId = null;
@@ -3513,34 +3525,71 @@ function openPinball() {
     singletonId: 'pinball',
     title: '3D Pinball for Windows - Space Cadet',
     icon: 'pinball',
-    width: 460,
-    height: 510,
+    width: 540,
+    height: 555,
     resizable: false,
+    menus: [
+      { label: 'Game', items: [
+        { label: 'New Game', shortcut: 'F2', action: () => pbReset() },
+        { label: 'Launch Ball', shortcut: 'Space', action: () => pbLaunch() },
+        { sep: true },
+        { label: 'Exit', action: (w) => closeXPWindow(w.id) }
+      ]},
+      { label: 'Help', items: [
+        { label: 'About Pinball', action: () => showXPMessage('About 3D Pinball', 'Full Tilt! Pinball - Space Cadet<br>Maxis / Cinematronics / Microsoft Windows XP') }
+      ]}
+    ],
     onClose: () => { if (animId) cancelAnimationFrame(animId); },
     render: (container) => {
       container.innerHTML = `
-        <div style="flex:1; background:#090919; display:flex; color:#fff; overflow:hidden;">
-          <canvas id="pb-game-cv" width="300" height="475" style="background:#0c0c24; border-right:2px solid #334;"></canvas>
-          <div style="flex:1; padding:12px; display:flex; flex-direction:column; justify-content:space-between; background:linear-gradient(180deg,#1a1f3d,#0d1024);">
-            <div>
-              <div style="color:#ff9900; font-weight:bold; font-size:14px; text-align:center; border-bottom:1px solid #446; padding-bottom:6px;">SPACE CADET</div>
-              <div style="margin-top:14px;">
-                <div style="color:#88aaff; font-size:10px;">SCORE</div>
-                <div id="pb-score" style="font-family:var(--font-mono); font-size:20px; color:#00ff66; background:#000; padding:4px 6px; border:1px solid #335;">0</div>
+        <div style="flex:1; background:#070814; display:flex; color:#fff; overflow:hidden;">
+          <canvas id="pb-game-cv" width="340" height="498" style="background:#080a1c; border-right:2px solid #2b355e; flex-shrink:0;"></canvas>
+          <div style="flex:1; padding:10px 12px; display:flex; flex-direction:column; justify-content:space-between; background:linear-gradient(180deg,#141936 0%,#0b0e22 100%);">
+            <div style="display:flex; flex-direction:column; gap:9px;">
+              <div style="text-align:center; border:1px solid #3c4d8a; background:#0a0d20; padding:5px 4px;">
+                <div style="color:#ff9900; font-weight:bold; font-size:13px; letter-spacing:1px;">SPACE CADET</div>
+                <div style="color:#55ccff; font-size:9px;">FULL TILT! PINBALL</div>
               </div>
-              <div style="margin-top:12px;">
-                <div style="color:#88aaff; font-size:10px;">BALL</div>
-                <div id="pb-balls" style="font-family:var(--font-mono); font-size:18px; color:#ffff00; background:#000; padding:4px 6px; border:1px solid #335;">1 / 3</div>
+
+              <div>
+                <div style="color:#88aaff; font-size:9px; letter-spacing:0.6px;">SCORE</div>
+                <div id="pb-score" style="font-family:var(--font-mono); font-size:19px; color:#00ff66; background:#000; padding:4px 6px; border:2px inset #334; text-align:right;">0</div>
               </div>
-              <div style="margin-top:14px; font-size:11px; line-height:1.5; color:#ccd;">
-                <b>Controls:</b><br>
-                • <b>Space</b>: Launch Ball<br>
-                • <b>Z / Left</b>: Left Flipper<br>
-                • <b>/ / Right</b>: Right Flipper
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                <div>
+                  <div style="color:#88aaff; font-size:9px;">BALL</div>
+                  <div id="pb-balls" style="font-family:var(--font-mono); font-size:15px; color:#ffff00; background:#000; padding:3px 6px; border:2px inset #334; text-align:center;">1 / 3</div>
+                </div>
+                <div>
+                  <div style="color:#88aaff; font-size:9px;">BONUS MULT</div>
+                  <div id="pb-mult" style="font-family:var(--font-mono); font-size:15px; color:#ff66aa; background:#000; padding:3px 6px; border:2px inset #334; text-align:center;">1x</div>
+                </div>
+              </div>
+
+              <div>
+                <div style="color:#88aaff; font-size:9px;">CURRENT RANK</div>
+                <div id="pb-rank" style="font-family:var(--font-mono); font-size:12px; color:#00ffff; background:#000; padding:4px 6px; border:1px solid #2b3a66;">Cadet</div>
+              </div>
+
+              <div>
+                <div style="color:#88aaff; font-size:9px;">MISSION STATUS</div>
+                <div id="pb-mission" style="font-family:var(--font-mono); font-size:10px; line-height:1.35; color:#ffdd66; background:#000; padding:5px 6px; border:1px solid #2b3a66; min-height:48px;">
+                  Launch ball! Hit ATTACK lanes &amp; bumpers to advance rank.
+                </div>
+              </div>
+
+              <div style="font-size:10px; line-height:1.45; color:#b8c4e6; background:rgba(0,0,0,0.3); padding:6px; border:1px solid #222c4d;">
+                <b style="color:#fff;">Controls:</b><br>
+                &bull; <b>Space</b> (Hold/Tap): Plunger<br>
+                &bull; <b>Z / Left</b>: Left Flipper<br>
+                &bull; <b>/ / Right</b>: Right Flipper<br>
+                &bull; <b>X</b>: Nudge Table
               </div>
             </div>
-            <div style="display:flex; flex-direction:column; gap:6px;">
-              <button class="xp-btn" onclick="pbLaunch()">Launch Ball [Space]</button>
+
+            <div style="display:flex; flex-direction:column; gap:5px;">
+              <button class="xp-btn default" onclick="pbLaunch()">Launch Ball [Space]</button>
               <button class="xp-btn" onclick="pbReset()">New Game [F2]</button>
             </div>
           </div>
@@ -3550,98 +3599,338 @@ function openPinball() {
       const cv = container.querySelector('#pb-game-cv');
       const ctx = cv.getContext('2d');
 
-      let score = 0;
-      let ballNum = 1;
-      let ball = { x: 282, y: 410, vx: 0, vy: 0, r: 7, inLane: true };
-      let leftFlip = false, rightFlip = false;
-      const bumpers = [
-        { x: 110, y: 120, r: 18, pts: 500, flash: 0, col: '#ff3366' },
-        { x: 180, y: 120, r: 18, pts: 500, flash: 0, col: '#00ccff' },
-        { x: 145, y: 175, r: 18, pts: 750, flash: 0, col: '#ffcc00' }
+      const RANKS = [
+        { min: 0, title: "Cadet" },
+        { min: 5000, title: "Ensign" },
+        { min: 15000, title: "Lieutenant" },
+        { min: 35000, title: "Captain" },
+        { min: 75000, title: "Lt. Commander" },
+        { min: 150000, title: "Commander" },
+        { min: 300000, title: "Commodore" },
+        { min: 600000, title: "Admiral" },
+        { min: 1000000, title: "Fleet Admiral" }
       ];
 
-      window.pbReset = () => {
-        score = 0;
-        ballNum = 1;
-        resetBall();
-        updateHud();
-      };
+      // Background starfield
+      const stars = Array.from({ length: 55 }, () => ({
+        x: Math.random() * 340,
+        y: Math.random() * 498,
+        r: Math.random() * 1.4 + 0.4,
+        a: Math.random() * 0.7 + 0.2
+      }));
 
-      function resetBall() {
-        ball = { x: 282, y: 410, vx: 0, vy: 0, r: 7, inLane: true };
+      let score = 0;
+      let ballNum = 1;
+      let maxBalls = 3;
+      let extraBallAwarded = false;
+      let multiplier = 1;
+      let plungerCharge = 0;
+      let chargingPlunger = false;
+      let nudgeShake = 0;
+
+      let ball = { x: 320, y: 430, vx: 0, vy: 0, r: 7, inLane: true };
+      let leftFlip = false;
+      let rightFlip = false;
+
+      // Top ATTACK rollover lanes
+      let attackLanes = [
+        { letter: 'A', x: 78, y: 58, lit: false },
+        { letter: 'T', x: 112, y: 52, lit: false },
+        { letter: 'T', x: 146, y: 49, lit: false },
+        { letter: 'A', x: 180, y: 49, lit: false },
+        { letter: 'C', x: 214, y: 52, lit: false },
+        { letter: 'K', x: 248, y: 58, lit: false }
+      ];
+
+      // 3 Classic Space Cadet Attack Bumpers
+      let bumpers = [
+        { x: 128, y: 138, r: 19, pts: 500, flash: 0, col: '#ff3366', ring: '#ff99bb' },
+        { x: 204, y: 138, r: 19, pts: 500, flash: 0, col: '#00ccff', ring: '#99eeff' },
+        { x: 166, y: 195, r: 20, pts: 750, flash: 0, col: '#ffaa00', ring: '#ffee88' }
+      ];
+
+      // Left Fuel Drop Targets
+      let fuelTargets = [
+        { x: 30, y: 175, w: 10, h: 24, hit: false },
+        { x: 30, y: 206, w: 10, h: 24, hit: false },
+        { x: 30, y: 237, w: 10, h: 24, hit: false },
+        { x: 30, y: 268, w: 10, h: 24, hit: false }
+      ];
+
+      // Right Hyperspace Wormhole
+      const wormhole = { x: 266, y: 215, r: 16, spin: 0, cooldown: 0 };
+
+      // Left & Right Slingshot Kickers
+      const slings = [
+        { x1: 54, y1: 335, x2: 88, y2: 392, nx: 0.85, ny: -0.52, flash: 0 },
+        { x1: 274, y1: 335, x2: 240, y2: 392, nx: -0.85, ny: -0.52, flash: 0 }
+      ];
+
+      function setMissionText(txt) {
+        const mEl = container.querySelector('#pb-mission');
+        if (mEl) mEl.textContent = txt;
       }
 
-      window.pbLaunch = () => {
-        if (ball.inLane) {
-          ball.vy = -13.5 - Math.random() * 2;
-          ball.vx = -1.2;
-          playXPSound('balloon');
+      function addScore(basePts, reason = "") {
+        const gained = basePts * multiplier;
+        score += gained;
+        if (!extraBallAwarded && score >= 25000) {
+          extraBallAwarded = true;
+          maxBalls++;
+          setMissionText("REPLAY ACHIEVED! Extra Ball Awarded!");
+          playXPSound('startup');
+        } else if (reason) {
+          setMissionText(`${reason} (+${gained.toLocaleString()})`);
         }
-      };
+        updateHud();
+      }
 
       function updateHud() {
         const sEl = container.querySelector('#pb-score');
         const bEl = container.querySelector('#pb-balls');
+        const mEl = container.querySelector('#pb-mult');
+        const rEl = container.querySelector('#pb-rank');
         if (sEl) sEl.textContent = score.toLocaleString();
-        if (bEl) bEl.textContent = ballNum <= 3 ? `${ballNum} / 3` : 'GAME OVER';
+        if (bEl) bEl.textContent = ballNum <= maxBalls ? `${ballNum} / ${maxBalls}` : 'GAME OVER';
+        if (mEl) mEl.textContent = `${multiplier}x`;
+        if (rEl) {
+          let curRank = RANKS[0].title;
+          for (const rk of RANKS) {
+            if (score >= rk.min) curRank = rk.title;
+          }
+          rEl.textContent = curRank;
+        }
       }
+
+      function resetBall() {
+        ball = { x: 320, y: 430, vx: 0, vy: 0, r: 7, inLane: true };
+        plungerCharge = 0;
+        chargingPlunger = false;
+      }
+
+      window.pbReset = () => {
+        score = 0;
+        ballNum = 1;
+        maxBalls = 3;
+        extraBallAwarded = false;
+        multiplier = 1;
+        attackLanes.forEach(l => l.lit = false);
+        fuelTargets.forEach(t => t.hit = false);
+        resetBall();
+        setMissionText("Ready on launch pad! Press Space to fire plunger.");
+        updateHud();
+      };
+
+      window.pbLaunch = (power = 15.5) => {
+        if (ball.inLane && ballNum <= maxBalls) {
+          ball.vy = -Math.max(12.5, Math.min(18.5, power));
+          ball.vx = -0.9;
+          plungerCharge = 0;
+          chargingPlunger = false;
+          playXPSound('balloon');
+          setMissionText("Ball in play! Light ATTACK lanes & Fuel targets.");
+        }
+      };
 
       const keyDownHandler = (e) => {
         if (e.key === 'z' || e.key === 'Z' || e.key === 'ArrowLeft') leftFlip = true;
         if (e.key === '/' || e.key === 'ArrowRight') rightFlip = true;
+        if ((e.key === 'x' || e.key === 'X') && !ball.inLane) {
+          nudgeShake = 5;
+          ball.vy -= 1.4;
+          ball.vx += (Math.random() - 0.5) * 2.2;
+        }
         if (e.code === 'Space' && activeWinId && windows.find(w => w.id === activeWinId)?.singletonId === 'pinball') {
           e.preventDefault();
-          pbLaunch();
+          if (ball.inLane) chargingPlunger = true;
         }
       };
+
       const keyUpHandler = (e) => {
         if (e.key === 'z' || e.key === 'Z' || e.key === 'ArrowLeft') leftFlip = false;
         if (e.key === '/' || e.key === 'ArrowRight') rightFlip = false;
+        if (e.code === 'Space' && chargingPlunger) {
+          pbLaunch(12.5 + plungerCharge * 6.0);
+        }
       };
+
       window.addEventListener('keydown', keyDownHandler);
       window.addEventListener('keyup', keyUpHandler);
 
+      function distToSegment(px, py, x1, y1, x2, y2) {
+        const l2 = (x2 - x1) ** 2 + (y2 - y1) ** 2;
+        if (l2 === 0) return Math.hypot(px - x1, py - y1);
+        let t = ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / l2;
+        t = Math.max(0, Math.min(1, t));
+        return Math.hypot(px - (x1 + t * (x2 - x1)), py - (y1 + t * (y2 - y1)));
+      }
+
       function step() {
-        ctx.fillStyle = '#0c0c24';
+        ctx.save();
+        if (nudgeShake > 0) {
+          ctx.translate((Math.random() - 0.5) * nudgeShake, (Math.random() - 0.5) * nudgeShake);
+          nudgeShake *= 0.8;
+          if (nudgeShake < 0.4) nudgeShake = 0;
+        }
+
+        // 1. Space Nebula & Starfield Background
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, cv.height);
+        bgGrad.addColorStop(0, '#090b24');
+        bgGrad.addColorStop(0.55, '#11163d');
+        bgGrad.addColorStop(1, '#07091a');
+        ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, cv.width, cv.height);
 
-        // Draw Table Borders & Plunger Lane
-        ctx.strokeStyle = '#3366ff';
+        stars.forEach(s => {
+          ctx.fillStyle = `rgba(210, 230, 255, ${s.a})`;
+          ctx.fillRect(s.x, s.y, s.r, s.r);
+        });
+
+        // Decorative Space Cadet Launch Chevron Decals
+        ctx.strokeStyle = 'rgba(0, 220, 255, 0.22)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(164, 245); ctx.lineTo(144, 275); ctx.lineTo(164, 267); ctx.lineTo(184, 275); ctx.closePath();
+        ctx.stroke();
+
+        // 2. Outer Playfield Walls & Plunger Shoot Lane
+        ctx.strokeStyle = '#3b6eff';
         ctx.lineWidth = 3;
-        ctx.strokeRect(8, 8, 284, 460);
+        ctx.strokeRect(10, 10, 320, 478);
+
+        // Plunger Lane Divider Wall
         ctx.beginPath();
-        ctx.moveTo(270, 95);
-        ctx.lineTo(270, 468);
+        ctx.moveTo(306, 105);
+        ctx.lineTo(306, 488);
         ctx.stroke();
 
-        // Top Arch
+        // Top Curved Orbit Arch
         ctx.beginPath();
-        ctx.arc(145, 95, 137, Math.PI, 0);
+        ctx.arc(165, 105, 155, Math.PI, 0);
         ctx.stroke();
 
-        // Gravity & Movement
-        if (ballNum <= 3) {
-          ball.vy += 0.22;
+        // Lower Side Guide Rails (Funneling to Flippers)
+        ctx.strokeStyle = '#6699ff';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(26, 315); ctx.lineTo(26, 405); ctx.lineTo(96, 446);
+        ctx.moveTo(294, 315); ctx.lineTo(294, 405); ctx.lineTo(224, 446);
+        ctx.stroke();
+
+        // 3. Plunger Spring Animation
+        if (chargingPlunger && plungerCharge < 1) plungerCharge = Math.min(1, plungerCharge + 0.035);
+        const plungerY = 442 + plungerCharge * 34;
+        ctx.fillStyle = '#ff6600';
+        ctx.fillRect(312, plungerY, 15, 10);
+        ctx.strokeStyle = '#cccccc';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(319, plungerY + 10);
+        ctx.lineTo(319, 486);
+        ctx.stroke();
+
+        // 4. Wormhole Vortex Animation
+        wormhole.spin += 0.08;
+        if (wormhole.cooldown > 0) wormhole.cooldown--;
+        ctx.save();
+        ctx.translate(wormhole.x, wormhole.y);
+        ctx.rotate(wormhole.spin);
+        ctx.strokeStyle = '#bf40ff';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, wormhole.r, 0, Math.PI * 1.5);
+        ctx.stroke();
+        ctx.strokeStyle = '#00ffff';
+        ctx.beginPath();
+        ctx.arc(0, 0, wormhole.r * 0.55, Math.PI * 0.5, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+
+        // 5. Physics Step
+        if (ballNum <= maxBalls) {
+          if (!ball.inLane) {
+            ball.vy += 0.21; // Table incline gravity
+            ball.vx *= 0.996;
+            ball.vy *= 0.996;
+          } else if (ball.vy !== 0) {
+            ball.vy += 0.21;
+          }
+
           ball.x += ball.vx;
           ball.y += ball.vy;
 
-          // Top arch collision
-          if (ball.y < 32) {
-            ball.y = 32;
+          // Top Curved Arch Routing
+          if (ball.y < 36) {
+            ball.y = 36;
             ball.vy = Math.abs(ball.vy) * 0.85;
             if (ball.inLane) {
               ball.inLane = false;
-              ball.vx = -3.5;
+              ball.vx = -4.2 - Math.random() * 1.5;
             }
           }
 
-          // Walls
-          if (ball.x < 16) { ball.x = 16; ball.vx = Math.abs(ball.vx) * 0.85; }
-          if (!ball.inLane && ball.x > 262) { ball.x = 262; ball.vx = -Math.abs(ball.vx) * 0.85; }
-          if (ball.inLane && ball.x > 284) { ball.x = 284; ball.vx = -Math.abs(ball.vx); }
-          if (ball.inLane && ball.y > 410) { ball.y = 410; ball.vy = 0; ball.vx = 0; }
+          // Side Walls
+          if (ball.x < 18) { ball.x = 18; ball.vx = Math.abs(ball.vx) * 0.85; }
+          if (!ball.inLane && ball.x > 298) { ball.x = 298; ball.vx = -Math.abs(ball.vx) * 0.85; }
+          if (ball.inLane && ball.x > 322) { ball.x = 322; ball.vx = -Math.abs(ball.vx); }
+          if (ball.inLane && ball.y > 430) { ball.y = 430; ball.vy = 0; ball.vx = 0; }
 
-          // Bumpers
+          // Lower Funnel Guide Rail Collisions
+          if (!ball.inLane && ball.y > 400 && ball.y < 452) {
+            if (ball.x < 96 && ball.y > 405 + (ball.x - 26) * 0.58) {
+              ball.y = 405 + (ball.x - 26) * 0.58;
+              ball.vx = Math.max(ball.vx, 2.2);
+              ball.vy = -Math.abs(ball.vy) * 0.55;
+            }
+            if (ball.x > 224 && ball.y > 405 + (294 - ball.x) * 0.58) {
+              ball.y = 405 + (294 - ball.x) * 0.58;
+              ball.vx = Math.min(ball.vx, -2.2);
+              ball.vy = -Math.abs(ball.vy) * 0.55;
+            }
+          }
+
+          // Top ATTACK Rollover Lanes
+          attackLanes.forEach(lane => {
+            if (Math.hypot(ball.x - lane.x, ball.y - lane.y) < 13 && !lane.lit) {
+              lane.lit = true;
+              addScore(400, `ATTACK [${lane.letter}] Lit!`);
+              playXPSound('balloon');
+              if (attackLanes.every(l => l.lit)) {
+                multiplier = Math.min(5, multiplier + 1);
+                attackLanes.forEach(l => l.lit = false);
+                addScore(2500, `ALL ATTACK LANES! Bonus Multiplier ${multiplier}x!`);
+                playXPSound('exclamation');
+              }
+            }
+          });
+
+          // Left Fuel Drop Targets
+          fuelTargets.forEach(t => {
+            if (!t.hit && ball.x - ball.r < t.x + t.w && ball.x + ball.r > t.x && ball.y + ball.r > t.y && ball.y - ball.r < t.y + t.h) {
+              t.hit = true;
+              ball.vx = Math.abs(ball.vx) + 2.5;
+              addScore(600, "Fuel Cell Target Hit!");
+              playXPSound('ding');
+              if (fuelTargets.every(ft => ft.hit)) {
+                fuelTargets.forEach(ft => ft.hit = false);
+                addScore(3000, "FUEL TANKS FULL! 3,000 PT REFUEL BONUS!");
+                playXPSound('exclamation');
+              }
+            }
+          });
+
+          // Hyperspace Wormhole Teleport
+          if (wormhole.cooldown === 0 && Math.hypot(ball.x - wormhole.x, ball.y - wormhole.y) < wormhole.r) {
+            wormhole.cooldown = 90;
+            ball.x = 92;
+            ball.y = 95;
+            ball.vx = 2.8;
+            ball.vy = 1.5;
+            addScore(1500, "HYPERSPACE WORMHOLE JUMP!");
+            playXPSound('wormhole');
+          }
+
+          // 3 Attack Bumpers
           bumpers.forEach(b => {
             if (b.flash > 0) b.flash--;
             const dx = ball.x - b.x;
@@ -3649,77 +3938,140 @@ function openPinball() {
             const dist = Math.hypot(dx, dy);
             if (dist < ball.r + b.r) {
               const ang = Math.atan2(dy, dx);
-              ball.vx = Math.cos(ang) * 7.5;
-              ball.vy = Math.sin(ang) * 7.5;
+              ball.x = b.x + Math.cos(ang) * (ball.r + b.r + 1);
+              ball.y = b.y + Math.sin(ang) * (ball.r + b.r + 1);
+              ball.vx = Math.cos(ang) * 8.2;
+              ball.vy = Math.sin(ang) * 8.2;
               b.flash = 8;
-              score += b.pts;
-              updateHud();
-              playXPSound('ding');
+              addScore(b.pts, "Attack Bumper!");
+              playXPSound('bumper');
             }
           });
 
-          // Flippers collision zone
-          const flipY = 425;
-          if (!ball.inLane && ball.y > flipY - 12 && ball.y < flipY + 14) {
-            if (ball.x > 65 && ball.x < 130) {
-              ball.y = flipY - 12;
-              ball.vy = leftFlip ? -11.5 : -4.2;
-              ball.vx += leftFlip ? 2.5 : 0.6;
-              score += 50;
-              updateHud();
-            } else if (ball.x > 150 && ball.x < 215) {
-              ball.y = flipY - 12;
-              ball.vy = rightFlip ? -11.5 : -4.2;
-              ball.vx += rightFlip ? -2.5 : -0.6;
-              score += 50;
-              updateHud();
+          // Slingshot Kickers
+          slings.forEach(s => {
+            if (s.flash > 0) s.flash--;
+            if (distToSegment(ball.x, ball.y, s.x1, s.y1, s.x2, s.y2) < ball.r + 4) {
+              ball.vx = s.nx * 8.5;
+              ball.vy = s.ny * 8.5;
+              s.flash = 7;
+              addScore(250, "Slingshot Kicker!");
+              playXPSound('bumper');
+            }
+          });
+
+          // Left & Right Flipper Collisions
+          const flipY = 446;
+          if (!ball.inLane && ball.y > flipY - 14 && ball.y < flipY + 14) {
+            if (ball.x >= 92 && ball.x <= 154) {
+              ball.y = flipY - 14;
+              ball.vy = leftFlip ? -12.5 : -4.2;
+              ball.vx += leftFlip ? 3.2 : 0.7;
+              addScore(50);
+            } else if (ball.x >= 166 && ball.x <= 228) {
+              ball.y = flipY - 14;
+              ball.vy = rightFlip ? -12.5 : -4.2;
+              ball.vx += rightFlip ? -3.2 : -0.7;
+              addScore(50);
             }
           }
 
-          // Gutter drain
-          if (!ball.inLane && ball.y > 475) {
+          // Center Drain Out
+          if (!ball.inLane && ball.y > 496) {
             ballNum++;
+            playXPSound('error');
             updateHud();
-            if (ballNum <= 3) resetBall();
+            if (ballNum <= maxBalls) {
+              resetBall();
+              setMissionText(`Ball ${ballNum} ready! Press Space to launch.`);
+            } else {
+              setMissionText("GAME OVER! Press New Game [F2] to play again.");
+            }
           }
         }
 
-        // Draw Bumpers
+        // 6. Render Rollover Lanes
+        attackLanes.forEach(lane => {
+          ctx.fillStyle = lane.lit ? '#00ff66' : '#1b2852';
+          ctx.beginPath();
+          ctx.arc(lane.x, lane.y, 10, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = lane.lit ? '#ffffff' : '#4a68b8';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.fillStyle = lane.lit ? '#000000' : '#88aaff';
+          ctx.font = 'bold 11px Tahoma';
+          ctx.textAlign = 'center';
+          ctx.fillText(lane.letter, lane.x, lane.y + 4);
+        });
+
+        // 7. Render Fuel Drop Targets
+        fuelTargets.forEach(t => {
+          ctx.fillStyle = t.hit ? '#22283d' : '#ffaa00';
+          ctx.fillRect(t.x, t.y, t.w, t.h);
+          ctx.strokeStyle = t.hit ? '#445' : '#ffffff';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(t.x, t.y, t.w, t.h);
+        });
+
+        // 8. Render Slingshots
+        slings.forEach(s => {
+          ctx.strokeStyle = s.flash > 0 ? '#ffffff' : '#ff3399';
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.moveTo(s.x1, s.y1);
+          ctx.lineTo(s.x2, s.y2);
+          ctx.stroke();
+        });
+
+        // 9. Render 3D Attack Bumpers
         bumpers.forEach(b => {
           ctx.beginPath();
           ctx.arc(b.x, b.y, b.r + (b.flash > 0 ? 3 : 0), 0, Math.PI * 2);
           ctx.fillStyle = b.flash > 0 ? '#ffffff' : b.col;
           ctx.fill();
-          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = b.ring;
           ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, b.r * 0.45, 0, Math.PI * 2);
+          ctx.fillStyle = '#111428';
+          ctx.fill();
         });
 
-        // Draw Flippers
-        ctx.lineWidth = 7;
+        // 10. Render Flippers
+        ctx.lineWidth = 8;
         ctx.lineCap = 'round';
         ctx.strokeStyle = '#ff6600';
-        // Left
+        // Left Flipper
         ctx.beginPath();
-        ctx.moveTo(68, 425);
-        ctx.lineTo(126, leftFlip ? 405 : 440);
+        ctx.moveTo(96, 446);
+        ctx.lineTo(152, leftFlip ? 422 : 462);
         ctx.stroke();
-        // Right
+        // Right Flipper
         ctx.beginPath();
-        ctx.moveTo(212, 425);
-        ctx.lineTo(154, rightFlip ? 405 : 440);
+        ctx.moveTo(224, 446);
+        ctx.lineTo(168, rightFlip ? 422 : 462);
         ctx.stroke();
 
-        // Draw Silver Pinball
-        if (ballNum <= 3) {
+        // 11. Render Chrome Steel Pinball
+        if (ballNum <= maxBalls) {
+          const ballGrad = ctx.createRadialGradient(ball.x - 2, ball.y - 2, 1, ball.x, ball.y, ball.r);
+          ballGrad.addColorStop(0, '#ffffff');
+          ballGrad.addColorStop(0.55, '#c4d2e8');
+          ballGrad.addColorStop(1, '#586885');
           ctx.beginPath();
           ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
-          ctx.fillStyle = '#e6eeff';
+          ctx.fillStyle = ballGrad;
           ctx.fill();
         }
 
+        ctx.restore();
         animId = requestAnimationFrame(step);
       }
 
+      updateHud();
       step();
     }
   });
@@ -4343,7 +4695,7 @@ function openCmdPrompt() {
 }
 
 /* ============================================================================
-   20. WINDOWS TASK MANAGER (Ctrl+Shift+Esc)
+   20. WINDOWS TASK MANAGER
    ============================================================================ */
 function openTaskManager() {
   let tab = 'apps';
@@ -4425,7 +4777,7 @@ function openTaskManager() {
 }
 
 /* ============================================================================
-   21. CONTROL PANEL & DISPLAY PROPERTIES (Wallpaper + Luna Themes)
+   21. CONTROL PANEL & DISPLAY PROPERTIES
    ============================================================================ */
 function openControlPanel() {
   createXPWindow({
@@ -4541,18 +4893,15 @@ window.addEventListener('keydown', (e) => {
     return;
   }
 
-  // Ctrl+Shift+Esc -> Task Manager
   if (e.ctrlKey && e.shiftKey && e.key === 'Escape') {
     e.preventDefault();
     openTaskManager();
   }
-  // Alt+F4 -> Close active window
   if (e.altKey && e.key === 'F4') {
     e.preventDefault();
     if (activeWinId) closeXPWindow(activeWinId);
     else showTurnOffDialog(false);
   }
-  // Alt+Tab -> Window Switcher
   if (e.altKey && e.key === 'Tab' && windows.length > 0) {
     e.preventDefault();
     const ov = document.getElementById('alt-tab-overlay');

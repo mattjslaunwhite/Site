@@ -294,7 +294,7 @@
         Archive: <span>None</span><br />
         Version: <span>--</span><br />
         Articles: <span>0</span><br />
-        Clusters: <span>0</span>
+        Images Loaded: <span id="img-count-label">0</span>
       </div>
 
       <div class="search-row">
@@ -303,13 +303,14 @@
       </div>
 
       <div style="display:flex; gap:6px; margin-bottom:10px;">
+        <button type="button" style="flex:1; font-size:0.74rem;" onclick="navBack()" id="btn-back" disabled>&larr; Back</button>
         <button type="button" style="flex:1; font-size:0.74rem;" onclick="loadMainPage()">Main Page</button>
         <button type="button" style="flex:1; font-size:0.74rem;" onclick="loadRandomArticle()">Random</button>
       </div>
 
       <ul class="results-list" id="results-list">
         <li class="result-item" style="color:var(--muted); cursor:default;">
-          Select any .zim archive (Wikipedia, Wikibooks, StackExchange, iFixit, or Project Gutenberg) to browse offline.
+          Select any .zim archive (Wikipedia, Wikibooks, StackExchange, iFixit, or Project Gutenberg) to browse offline with embedded photos.
         </li>
       </ul>
     </aside>
@@ -324,21 +325,27 @@
       </div>
 
       <div class="reader-frame-wrap">
-        <iframe id="article-frame" sandbox="allow-same-origin"></iframe>
+        <iframe id="article-frame" sandbox="allow-same-origin allow-scripts"></iframe>
       </div>
     </section>
   </main>
 
   <footer>
-    <div>MAGIC GOAT STUDIO // CANADA // CLIENT-SIDE BINARY ZIM PARSER</div>
+    <div>MAGIC GOAT STUDIO // CANADA // CLIENT-SIDE BINARY ZIM PARSER + MEDIA HYDRATOR</div>
     <div>Reads directly via File.slice() — zero server upload</div>
   </footer>
 
   <script>
     let zimFile = null;
     let header = null;
+    let mimeTypes = [];
     let phosphorTheme = true;
+    let currentRawHtml = "";
+    let navHistory = [];
+    let navPos = -1;
+
     const clusterCache = new Map();
+    const blobUrlCache = new Map();
 
     function setStatus(text, color = "var(--green)") {
       const el = document.getElementById("zim-status");
@@ -361,10 +368,33 @@
       return { str, nextOffset: end + 1 };
     }
 
+    function clearCaches() {
+      clusterCache.clear();
+      for (const url of blobUrlCache.values()) {
+        URL.revokeObjectURL(url);
+      }
+      blobUrlCache.clear();
+    }
+
+    async function parseMimeList() {
+      mimeTypes = [];
+      const raw = await readSlice(header.mimeListPos, 4096);
+      let off = 0;
+      while (off < raw.length) {
+        if (raw[off] === 0) break;
+        const res = readNullTermString(raw, off);
+        mimeTypes.push(res.str);
+        off = res.nextOffset;
+      }
+    }
+
     async function handleZimSelect(file) {
       if (!file) return;
       zimFile = file;
-      clusterCache.clear();
+      clearCaches();
+      navHistory = [];
+      navPos = -1;
+      updateBackBtn();
       setStatus("● PARSING ZIM HEADER...", "var(--amber)");
 
       try {
@@ -388,11 +418,13 @@
           layoutPage: dv.getUint32(68, true)
         };
 
+        await parseMimeList();
+
         document.getElementById("zim-meta").innerHTML = `
           Archive: <span>${file.name}</span><br />
           Version: <span>v${header.majorVersion}.${header.minorVersion}</span><br />
           Entries: <span>${header.articleCount.toLocaleString()}</span><br />
-          Clusters: <span>${header.clusterCount.toLocaleString()}</span>
+          Images Loaded: <span id="img-count-label">0</span>
         `;
 
         setStatus(`● MOUNTED (${header.articleCount.toLocaleString()} ENTRIES)`, "var(--green)");
@@ -422,11 +454,8 @@
       const dv = new DataView(raw.buffer);
 
       const mimeType = dv.getUint16(0, true);
-      const paramLen = raw[2];
       const namespace = String.fromCharCode(raw[3]);
-      const revision = dv.getUint32(4, true);
 
-      // Redirect entry (mimeType === 0xffff)
       if (mimeType === 0xffff) {
         const redirectIndex = dv.getUint32(8, true);
         const urlRes = readNullTermString(raw, 12);
@@ -436,6 +465,7 @@
           isRedirect: true,
           redirectIndex,
           namespace,
+          fullPath: `${namespace}/${urlRes.str}`,
           url: urlRes.str,
           title: titleRes.str || urlRes.str
         };
@@ -450,18 +480,109 @@
         urlIndex,
         isRedirect: false,
         mimeType,
+        mimeStr: mimeTypes[mimeType] || "application/octet-stream",
         namespace,
         clusterNumber,
         blobNumber,
+        fullPath: `${namespace}/${urlRes.str}`,
         url: urlRes.str,
         title: titleRes.str || urlRes.str
       };
     }
 
-    async function readClusterBlob(clusterNumber, blobNumber) {
-      let decompressed = clusterCache.get(clusterNumber);
+    // Binary search the URL pointer table (sorted by "namespace/url")
+    async function findEntryByFullPath(targetPath, depth = 0) {
+      if (!header || depth > 5) return null;
+      let lo = 0;
+      let hi = header.articleCount - 1;
 
-      if (!decompressed) {
+      while (lo <= hi) {
+        const mid = (lo + hi) >>> 1;
+        const entry = await readDirectoryEntry(mid);
+        if (entry.fullPath === targetPath) {
+          if (entry.isRedirect) {
+            const redir = await readDirectoryEntry(entry.redirectIndex);
+            return redir.isRedirect ? findEntryByFullPath(redir.fullPath, depth + 1) : redir;
+          }
+          return entry;
+        } else if (entry.fullPath < targetPath) {
+          lo = mid + 1;
+        } else {
+          hi = mid - 1;
+        }
+      }
+      return null;
+    }
+
+    function resolveRelativePath(baseFullPath, relHref) {
+      let clean = decodeURIComponent(relHref.split("#")[0].split("?")[0]).trim();
+      if (!clean) return null;
+      if (clean.startsWith("/")) clean = clean.slice(1);
+
+      const baseParts = baseFullPath.split("/");
+      baseParts.pop(); // remove current filename
+
+      for (const part of clean.split("/")) {
+        if (!part || part === ".") continue;
+        if (part === "..") {
+          if (baseParts.length > 0) baseParts.pop();
+        } else {
+          baseParts.push(part);
+        }
+      }
+      return baseParts.join("/");
+    }
+
+    async function getResourceBlobUrl(baseFullPath, rawSrc) {
+      if (!rawSrc || rawSrc.startsWith("data:") || rawSrc.startsWith("blob:") || /^https?:\/\//i.test(rawSrc)) {
+        return null;
+      }
+
+      const resolved = resolveRelativePath(baseFullPath, rawSrc);
+      if (!resolved) return null;
+
+      if (blobUrlCache.has(resolved)) {
+        return blobUrlCache.get(resolved);
+      }
+
+      // Try exact resolved path first, then common ZIM image namespaces (I/, C/, A/)
+      const stripped = resolved.replace(/^[A-Z]\//, "");
+      const candidates = [resolved, `I/${stripped}`, `C/${stripped}`, `A/${stripped}`];
+
+      let entry = null;
+      for (const cand of candidates) {
+        entry = await findEntryByFullPath(cand);
+        if (entry) break;
+      }
+      if (!entry) return null;
+
+      try {
+        const bytes = await readClusterBlob(entry.clusterNumber, entry.blobNumber);
+        const mime = entry.mimeStr || guessMimeFromExt(entry.url);
+        const blob = new Blob([bytes], { type: mime });
+        const blobUrl = URL.createObjectURL(blob);
+        blobUrlCache.set(resolved, blobUrl);
+        return blobUrl;
+      } catch {
+        return null;
+      }
+    }
+
+    function guessMimeFromExt(filename) {
+      const ext = filename.split(".").pop().toLowerCase();
+      const map = {
+        png: "image/png",
+        jpg: "image/jpeg",
+        jpeg: "image/jpeg",
+        gif: "image/gif",
+        webp: "image/webp",
+        svg: "image/svg+xml"
+      };
+      return map[ext] || "application/octet-stream";
+    }
+
+    async function readClusterBlob(clusterNumber, blobNumber) {
+      if (!clusterCache.has(clusterNumber)) {
         const ptrPair = await readSlice(header.clusterPtrPos + BigInt(clusterNumber) * 8n, 16);
         const ptrDv = new DataView(ptrPair.buffer);
         const clusterStart = ptrDv.getBigUint64(0, true);
@@ -476,25 +597,23 @@
         const extended = (infoByte & 0x10) !== 0;
         const payload = clusterRaw.slice(1);
 
+        let decompressed;
         if (compType === 0 || compType === 1) {
           decompressed = payload;
         } else if (compType === 5) {
-          // Zstandard compression
           if (typeof fzstd === "undefined") {
             throw new Error("fzstd decompressor library not loaded from CDN.");
           }
           decompressed = fzstd.decompress(payload);
         } else {
-          throw new Error(`Unsupported ZIM cluster compression type (${compType}). Modern Zstd and uncompressed ZIMs are supported.`);
+          throw new Error(`Unsupported ZIM cluster compression type (${compType}).`);
         }
 
-        if (clusterCache.size > 8) {
+        if (clusterCache.size > 16) {
           const firstKey = clusterCache.keys().next().value;
           clusterCache.delete(firstKey);
         }
         clusterCache.set(clusterNumber, { data: decompressed, extended });
-      } else {
-        // Already cached object
       }
 
       const cached = clusterCache.get(clusterNumber);
@@ -512,63 +631,143 @@
       }
     }
 
-    async function openEntry(urlIndex, depth = 0) {
+    function updateBackBtn() {
+      const btn = document.getElementById("btn-back");
+      if (btn) btn.disabled = navPos <= 0;
+    }
+
+    async function navBack() {
+      if (navPos <= 0) return;
+      navPos--;
+      updateBackBtn();
+      await openEntry(navHistory[navPos], 0, false);
+    }
+
+    async function openEntry(urlIndex, depth = 0, pushHistory = true) {
       if (!header || depth > 6) return;
       try {
         const entry = await readDirectoryEntry(urlIndex);
         if (entry.isRedirect) {
-          return openEntry(entry.redirectIndex, depth + 1);
+          return openEntry(entry.redirectIndex, depth + 1, pushHistory);
         }
 
-        document.getElementById("article-title").textContent = `ARTICLE: ${entry.title} (${entry.namespace}/${entry.url})`;
+        if (pushHistory) {
+          navHistory = navHistory.slice(0, navPos + 1);
+          navHistory.push(entry.urlIndex);
+          navPos = navHistory.length - 1;
+          updateBackBtn();
+        }
+
+        document.getElementById("article-title").textContent = `ARTICLE: ${entry.title} (${entry.fullPath})`;
         const blob = await readClusterBlob(entry.clusterNumber, entry.blobNumber);
         const htmlText = new TextDecoder("utf-8", { fatal: false }).decode(blob);
 
-        renderArticleHtml(htmlText);
+        await hydrateAndRenderArticle(htmlText, entry.fullPath);
       } catch (err) {
-        renderArticleHtml(`<div style="color:#ff5555; font-family:monospace; padding:16px;">[ERROR] ${err.message}</div>`);
+        currentRawHtml = `<div style="color:#ff5555; font-family:monospace; padding:16px;">[ERROR] ${err.message}</div>`;
+        renderArticleHtml(currentRawHtml);
       }
     }
 
-    function renderArticleHtml(rawHtml) {
+    async function hydrateAndRenderArticle(rawHtml, baseFullPath) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(rawHtml, "text/html");
+
+      // Hydrate all <img> elements from the ZIM clusters
+      const imgs = Array.from(doc.querySelectorAll("img"));
+      let loadedImages = 0;
+
+      await Promise.all(
+        imgs.map(async (img) => {
+          const origSrc = img.getAttribute("src") || img.getAttribute("data-src");
+          if (!origSrc) return;
+          const blobUrl = await getResourceBlobUrl(baseFullPath, origSrc);
+          if (blobUrl) {
+            img.setAttribute("src", blobUrl);
+            img.removeAttribute("srcset");
+            loadedImages++;
+          }
+        })
+      );
+
+      const imgCounter = document.getElementById("img-count-label");
+      if (imgCounter) imgCounter.textContent = `${loadedImages} in article (${blobUrlCache.size} cached)`;
+
+      // Rewrite internal <a> links so clicking them navigates inside the ZIM archive
+      doc.querySelectorAll("a[href]").forEach((a) => {
+        const href = a.getAttribute("href");
+        if (!href || href.startsWith("#") || /^https?:\/\//i.test(href) || href.startsWith("mailto:")) return;
+        const targetPath = resolveRelativePath(baseFullPath, href);
+        if (targetPath) {
+          a.setAttribute("href", "#");
+          a.setAttribute("onclick", `window.parent.navigateToZimPath(${JSON.stringify(targetPath)}); return false;`);
+        }
+      });
+
+      currentRawHtml = doc.documentElement.outerHTML;
+      renderArticleHtml(currentRawHtml);
+    }
+
+    window.navigateToZimPath = async (targetPath) => {
+      const stripped = targetPath.replace(/^[A-Z]\//, "");
+      const candidates = [targetPath, `A/${stripped}`, `C/${stripped}`];
+      for (const cand of candidates) {
+        const found = await findEntryByFullPath(cand);
+        if (found) {
+          await openEntry(found.urlIndex, 0, true);
+          return;
+        }
+      }
+    };
+
+    function renderArticleHtml(htmlContent) {
       const frame = document.getElementById("article-frame");
       const themeCss = phosphorTheme
-        ? `<style>
+        ? `<style id="mgs-theme-style">
             body {
               background: #020803 !important;
               color: #b8ffbe !important;
               font-family: "Courier New", Courier, monospace !important;
               line-height: 1.6;
               padding: 18px 22px;
-              max-width: 920px;
+              max-width: 960px;
             }
             h1, h2, h3, h4 { color: #39ff14 !important; border-bottom: 1px dashed #1c7a2c; padding-bottom: 4px; }
-            a { color: #39ff14 !important; }
-            table, th, td, div, section, article { background-color: transparent !important; color: #b8ffbe !important; border-color: #1c7a2c !important; }
-            img { max-width: 100%; height: auto; }
+            a { color: #39ff14 !important; text-decoration: underline; }
+            table, th, td, div, section, article, figure, figcaption {
+              background-color: transparent !important;
+              color: #b8ffbe !important;
+              border-color: #1c7a2c !important;
+            }
+            img {
+              max-width: 100%;
+              height: auto;
+              border: 1px solid #1c7a2c;
+              margin: 6px 0;
+              background: #051408;
+            }
           </style>`
-        : `<style>
+        : `<style id="mgs-theme-style">
             body {
               background: #f7f9f7 !important;
               color: #111 !important;
               font-family: Georgia, serif;
               line-height: 1.6;
               padding: 18px 22px;
-              max-width: 920px;
+              max-width: 960px;
             }
-            img { max-width: 100%; height: auto; }
+            img { max-width: 100%; height: auto; margin: 6px 0; }
           </style>`;
 
-      frame.srcdoc = themeCss + rawHtml;
+      const cleaned = htmlContent.replace(/<style id="mgs-theme-style">[\s\S]*?<\/style>/i, "");
+      frame.srcdoc = themeCss + cleaned;
     }
 
     function toggleThemeMode() {
       phosphorTheme = !phosphorTheme;
       document.getElementById("theme-btn").textContent = `Phosphor Mode: ${phosphorTheme ? "ON" : "OFF"}`;
-      const frame = document.getElementById("article-frame");
-      if (frame.srcdoc) {
-        const stripped = frame.srcdoc.replace(/<style>[\s\S]*?<\/style>/i, "");
-        renderArticleHtml(stripped);
+      if (currentRawHtml) {
+        renderArticleHtml(currentRawHtml);
       }
     }
 
@@ -583,7 +782,7 @@
 
     async function loadRandomArticle() {
       if (!header || header.articleCount === 0) return;
-      for (let attempt = 0; attempt < 15; attempt++) {
+      for (let attempt = 0; attempt < 20; attempt++) {
         const rnd = Math.floor(Math.random() * header.articleCount);
         const entry = await readDirectoryEntry(rnd);
         if (!entry.isRedirect && (entry.namespace === "A" || entry.namespace === "C") && !/\.(png|jpg|jpeg|gif|svg|css|js|webp)$/i.test(entry.url)) {
@@ -616,7 +815,6 @@
       const listEl = document.getElementById("results-list");
       listEl.innerHTML = `<li class="result-item" style="color:var(--amber);">Searching index for "${q}"...</li>`;
 
-      // Binary search on Title Pointer Table (sorted lexicographically in ZIM spec)
       let lo = 0;
       let hi = header.articleCount - 1;
       while (lo < hi) {

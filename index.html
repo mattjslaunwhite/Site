@@ -255,10 +255,6 @@
       color: var(--green);
     }
 
-    .side-telemetry span.amber {
-      color: var(--amber);
-    }
-
     /* ================= MAIN WORKSPACE ================= */
     .main-area {
       flex: 1;
@@ -505,20 +501,68 @@
       gap: 10px;
     }
 
-    .admin-grid {
+    .admin-kpi-strip {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .kpi-card {
+      background: #010602;
+      border: 1px solid var(--border);
+      padding: 9px 11px;
+    }
+
+    .kpi-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .kpi-val {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: var(--green);
+      margin-top: 3px;
+    }
+
+    .kpi-val.amber {
+      color: var(--amber);
+    }
+
+    .admin-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      border-bottom: 1px solid var(--border-bright);
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+
+    .admin-tab-btn {
+      padding: 5px 11px;
+      font-size: 0.78rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: #010502;
+    }
+
+    .admin-tab-btn.active {
+      border-color: var(--green);
+      color: var(--green);
+      background: rgba(57, 255, 20, 0.14);
+      font-weight: bold;
     }
 
     .admin-subcard {
       background: #010602;
       border: 1px solid var(--border);
-      padding: 12px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
     .admin-subcard h3 {
@@ -533,9 +577,9 @@
     .order-row {
       border: 1px solid var(--border);
       background: var(--panel);
-      padding: 8px 10px;
+      padding: 10px 12px;
       font-size: 0.78rem;
-      line-height: 1.45;
+      line-height: 1.5;
       display: flex;
       flex-direction: column;
       gap: 5px;
@@ -547,8 +591,9 @@
       align-items: center;
       gap: 8px;
       border: 1px solid var(--border);
-      padding: 6px 8px;
-      font-size: 0.78rem;
+      background: var(--panel);
+      padding: 7px 10px;
+      font-size: 0.8rem;
     }
 
     /* Web Serial Console Panel */
@@ -696,10 +741,6 @@
         display: none;
       }
 
-      .admin-grid {
-        grid-template-columns: 1fr;
-      }
-
       .sidebar {
         position: fixed;
         top: var(--topbar-h);
@@ -731,8 +772,8 @@
 
     <div class="topbar-right">
       <a class="admin-top-btn" href="#admin-console" id="top-admin-badge">ADMIN: LOCKED</a>
-      <span class="build-pill" id="top-build">BUILD 20261120.1345</span>
-      <span class="sys-pill" id="clock">2026-11-20 00:00:00</span>
+      <span class="build-pill" id="top-build">BUILD 20261120.1408</span>
+      <span class="sys-pill" id="clock">2026-11-20 14:08:00</span>
     </div>
   </header>
 
@@ -783,8 +824,14 @@
         </div>
 
         <div class="side-group">
-          <div class="side-label">Hardware &amp; Comms</div>
+          <div class="side-label">Hardware &amp; Knowledge</div>
           <ul class="side-list">
+            <li>
+              <a class="side-link" href="/zim.html">
+                <span>ZIM Wiki Reader</span>
+                <span class="side-badge">LIVE</span>
+              </a>
+            </li>
             <li>
               <a class="side-link" href="/comms.html">
                 <span>Encrypted Comms</span>
@@ -809,12 +856,6 @@
                 <span class="side-badge muted">SOON</span>
               </a>
             </li>
-            <li>
-              <a class="side-link" href="#lab" onclick="alert('RF & Solar Lab slot staged — add lab.html to activate.'); return false;">
-                <span>RF &amp; Solar Lab</span>
-                <span class="side-badge muted">SOON</span>
-              </a>
-            </li>
           </ul>
         </div>
       </div>
@@ -824,7 +865,7 @@
         Host: <span>magicgoat.studio</span><br />
         Region: <span>Canada</span><br />
         Phosphor: <span>P31 Green 520nm</span><br />
-        Build ID: <span id="side-build">20261120.1345</span>
+        Build ID: <span id="side-build">20261120.1408</span>
       </div>
     </aside>
 
@@ -842,14 +883,15 @@
         <section class="welcome-panel" id="welcome">
           <div class="welcome-top-row">
             <div class="welcome-kicker">// VFD PHOSPHOR TERMINAL // WORKBENCH</div>
-            <div class="welcome-build-tag" id="hero-build">REV: BUILD 20261120.1345 // CANADA</div>
+            <div class="welcome-build-tag" id="hero-build">REV: BUILD 20261120.1408 // CANADA</div>
           </div>
           <h1>MAGIC GOAT STUDIO PORTAL</h1>
           <p class="welcome-text">
-            Welcome to the digital workshop of <em>Matt-R&eacute;al Slaunwhite</em> in Canada. This portal brings together a WebAssembly x86 hypervisor, interactive retro operating system recreations, AES-256 encrypted live comms, custom 3D-printed UAV airframes, off-grid 24V solar telemetry, and browser-native hardware tools—all running straight from the edge with zero bloat.
+            Welcome to the digital workshop of <em>Matt-R&eacute;al Slaunwhite</em> in Canada. This portal brings together a WebAssembly x86 hypervisor, interactive retro operating system recreations, an offline ZIM wiki archive reader, AES-256 encrypted live comms, custom 3D-printed UAV airframes, off-grid 24V solar telemetry, and browser-native hardware tools—all running straight from the edge with zero bloat.
           </p>
           <div class="welcome-actions">
             <a class="btn-hero green" href="/vm.html">Boot x86 VM &rarr;</a>
+            <a class="btn-hero green" href="/zim.html">ZIM Reader &rarr;</a>
             <a class="btn-hero green" href="/comms.html">Encrypted Comms &rarr;</a>
             <a class="btn-hero" href="/winxp.html">Windows XP &rarr;</a>
             <a class="btn-hero" href="/win95.html">Windows 95 &rarr;</a>
@@ -880,7 +922,25 @@
             </div>
           </a>
 
-          <!-- Node 02: Encrypted Comms Relay -->
+          <!-- Node 02: ZIM Offline Knowledge Reader -->
+          <a class="card" href="/zim.html">
+            <div>
+              <div class="card-top">
+                <span class="tag live">● Offline Archive</span>
+                <span>/zim.html</span>
+              </div>
+              <h2>ZIM Knowledge Reader</h2>
+              <p>
+                Client-side binary parser and Zstd cluster decompressor for local Kiwix .ZIM archives (Wikipedia, StackExchange, iFixit, Project Gutenberg).
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>MOUNT .ZIM FILE</span>
+              <span>[ &rarr; ]</span>
+            </div>
+          </a>
+
+          <!-- Node 03: Encrypted Comms Relay -->
           <a class="card" href="/comms.html">
             <div>
               <div class="card-top">
@@ -898,7 +958,7 @@
             </div>
           </a>
 
-          <!-- Node 03: Windows XP Professional -->
+          <!-- Node 04: Windows XP Professional -->
           <a class="card" href="/winxp.html">
             <div>
               <div class="card-top">
@@ -916,7 +976,7 @@
             </div>
           </a>
 
-          <!-- Node 04: Windows 95 Simulator -->
+          <!-- Node 05: Windows 95 Simulator -->
           <a class="card" href="/win95.html">
             <div>
               <div class="card-top">
@@ -934,7 +994,7 @@
             </div>
           </a>
 
-          <!-- Node 05: Windows 3.11 Simulator -->
+          <!-- Node 06: Windows 3.11 Simulator -->
           <a class="card" href="/win311.html">
             <div>
               <div class="card-top">
@@ -952,7 +1012,7 @@
             </div>
           </a>
 
-          <!-- Node 06: Custom Drone & UAV Lab -->
+          <!-- Node 07: Custom Drone & UAV Lab -->
           <a class="card" href="/drones.html">
             <div>
               <div class="card-top">
@@ -970,7 +1030,7 @@
             </div>
           </a>
 
-          <!-- Node 07: Custom Drone Kits -->
+          <!-- Node 08: Custom Drone Kits -->
           <a class="card" href="/kits.html">
             <div>
               <div class="card-top">
@@ -988,7 +1048,7 @@
             </div>
           </a>
 
-          <!-- Node 08: OMNIos / VFD Utilities -->
+          <!-- Node 09: OMNIos / VFD Utilities -->
           <a class="card" href="#omnios" onclick="alert('OMNIos web build staged — drop omnios.html into the repo to activate.'); return false;">
             <div>
               <div class="card-top">
@@ -1001,7 +1061,7 @@
               </p>
             </div>
             <div class="card-footer">
-              <span>MODULE SLOT 08</span>
+              <span>MODULE SLOT 09</span>
               <span>[ STANDBY ]</span>
             </div>
           </a>
@@ -1054,8 +1114,8 @@
           </div>
         </section>
 
-        <!-- ================= PERSISTENT ADMIN SECTION ================= -->
-        <div class="section-title" id="admin-console">Admin Command // Cloudflare KV Persistent Control</div>
+        <!-- ================= UPGRADED PERSISTENT ADMIN SECTION ================= -->
+        <div class="section-title" id="admin-console">Admin Command // Cloudflare KV &amp; Local Persistent Control</div>
 
         <section class="admin-panel">
           <!-- Login Bar -->
@@ -1068,38 +1128,75 @@
             />
             <button class="btn-connect" onclick="adminLogin()">Unlock Console</button>
             <span id="admin-login-msg" style="font-size:0.8rem; color:var(--muted);">
-              Persists Orders, Bulletins &amp; Comms state in Cloudflare KV
+              Authenticates against Worker ADMIN_PASSWORD &amp; syncs ORDERS_KV
             </span>
           </div>
 
           <!-- Authenticated Workspace -->
           <div id="admin-workspace" style="display:none;">
-            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px;">
               <div style="font-size:0.82rem; color:var(--green);">
-                ● AUTHENTICATED // KV PERSISTENCE: <span id="admin-kv-state">CHECKING...</span> // ACTIVE COMMS PACKETS: <span id="admin-comms-count">0</span>
+                ● SESSION ACTIVE // STORAGE BACKEND: <span id="admin-kv-state" style="color:var(--amber);">CHECKING...</span>
               </div>
-              <div style="display:flex; gap:8px;">
-                <button class="btn-action" onclick="refreshAdminData()">Refresh KV</button>
-                <button class="btn-disconnect" onclick="adminPurgeComms()">Purge Comms Logs</button>
-                <button class="btn-disconnect" onclick="adminLogout()">Lock</button>
+              <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                <button class="btn-action" onclick="refreshAdminData()">Sync KV</button>
+                <button class="btn-action" onclick="exportAdminJson()">Export JSON</button>
+                <button class="btn-disconnect" onclick="adminLogout()">Lock Console</button>
               </div>
             </div>
 
-            <div class="admin-grid">
-              <!-- Left: Persistent Portal Bulletins -->
-              <div class="admin-subcard">
-                <h3>Persistent Portal Bulletins (Live Banner)</h3>
-                <div style="display:flex; gap:6px;">
-                  <input type="text" id="new-bulletin-input" maxlength="200" placeholder="Post live portal status notice..." style="flex:1;" />
-                  <button class="btn-connect" onclick="adminAddBulletin()">Post</button>
-                </div>
-                <div id="admin-bulletin-list" style="display:flex; flex-direction:column; gap:6px; max-height:240px; overflow-y:auto;"></div>
+            <!-- KPI Telemetry Rollup -->
+            <div class="admin-kpi-strip">
+              <div class="kpi-card">
+                <div class="kpi-label">Kit Orders</div>
+                <div class="kpi-val" id="kpi-orders">0</div>
               </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Gross Retail (CAD)</div>
+                <div class="kpi-val" id="kpi-revenue">$0</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Est. Net Margin</div>
+                <div class="kpi-val amber" id="kpi-margin">$0</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Comms Packets</div>
+                <div class="kpi-val" id="kpi-comms">0</div>
+              </div>
+            </div>
 
-              <!-- Right: Persistent Drone Kit Orders Ledger -->
-              <div class="admin-subcard">
-                <h3>Drone Kit Orders Ledger (ORDERS_KV)</h3>
-                <div id="admin-orders-list" style="display:flex; flex-direction:column; gap:8px; max-height:280px; overflow-y:auto;"></div>
+            <!-- Admin Sub-Tabs -->
+            <div class="admin-tabs">
+              <button class="admin-tab-btn active" id="tab-btn-bulletins" onclick="switchAdminTab('bulletins')">Portal Bulletins</button>
+              <button class="admin-tab-btn" id="tab-btn-orders" onclick="switchAdminTab('orders')">Kit Orders Ledger</button>
+              <button class="admin-tab-btn" id="tab-btn-comms" onclick="switchAdminTab('comms')">Comms &amp; KV Tools</button>
+            </div>
+
+            <!-- Tab 1: Bulletins -->
+            <div id="admin-tab-bulletins" class="admin-subcard">
+              <h3>Persistent Portal Bulletins (Displayed in Top Ticker)</h3>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <input type="text" id="new-bulletin-input" maxlength="200" placeholder="Post live portal status notice..." style="flex:1; min-width:220px;" onkeydown="if (event.key === 'Enter') adminAddBulletin();" />
+                <button class="btn-connect" onclick="adminAddBulletin()">Publish Notice</button>
+              </div>
+              <div id="admin-bulletin-list" style="display:flex; flex-direction:column; gap:6px; max-height:250px; overflow-y:auto;"></div>
+            </div>
+
+            <!-- Tab 2: Orders -->
+            <div id="admin-tab-orders" class="admin-subcard" style="display:none;">
+              <h3>Drone Kit Orders Ledger (ORDERS_KV)</h3>
+              <div id="admin-orders-list" style="display:flex; flex-direction:column; gap:8px; max-height:320px; overflow-y:auto;"></div>
+            </div>
+
+            <!-- Tab 3: Comms & KV Maintenance -->
+            <div id="admin-tab-comms" class="admin-subcard" style="display:none;">
+              <h3>Encrypted Comms &amp; Storage Maintenance</h3>
+              <p style="font-size:0.8rem; color:var(--muted); line-height:1.5;">
+                Manage ephemeral AES-256-GCM relay packets stored under <code>chat:msg:*</code> in Cloudflare KV or clear cached browser fallback records.
+              </p>
+              <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:4px;">
+                <button class="btn-disconnect" onclick="adminPurgeComms()">Purge All Comms Logs</button>
+                <button class="btn-action" onclick="clearLocalMirror()">Clear Local Browser Mirror</button>
               </div>
             </div>
           </div>
@@ -1108,7 +1205,7 @@
       </div>
 
       <footer>
-        <div id="footer-build">&copy; 2026 MAGIC GOAT STUDIO // CANADA // BUILD 20261120.1345</div>
+        <div id="footer-build">&copy; 2026 MAGIC GOAT STUDIO // CANADA // BUILD 20261120.1408</div>
         <div>
           <a href="mailto:matt@magicgoat.studio">matt@magicgoat.studio</a> &middot;
           <a href="https://github.com/mattjslaunwhite/Site" target="_blank" rel="noopener">GitHub Repo</a>
@@ -1160,23 +1257,53 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // ================= PUBLIC BULLETINS LOADER =================
+    // ================= PUBLIC BULLETINS LOADER (KV + Local Mirror Fallback) =================
+    const LOCAL_BULLETINS_KEY = "mgs_local_bulletins";
+
+    function getLocalBulletins() {
+      try {
+        return JSON.parse(localStorage.getItem(LOCAL_BULLETINS_KEY) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function saveLocalBulletins(list) {
+      try {
+        localStorage.setItem(LOCAL_BULLETINS_KEY, JSON.stringify(list));
+      } catch {}
+    }
+
     async function loadPublicBulletins() {
       try {
         const res = await fetch("/api/bulletins");
         const data = await res.json();
         if (data.ok && Array.isArray(data.bulletins) && data.bulletins.length > 0) {
+          saveLocalBulletins(data.bulletins);
           document.getElementById("bulletin-display").textContent = data.bulletins[0].text;
-        } else {
-          document.getElementById("bulletin-display").textContent = "ALL SYSTEMS NOMINAL // READY FOR BENCH OPERATIONS.";
+          return;
         }
-      } catch {
-        document.getElementById("bulletin-display").textContent = "LOCAL EDGE MODE // READY.";
+      } catch {}
+
+      const cached = getLocalBulletins();
+      if (cached.length > 0) {
+        document.getElementById("bulletin-display").textContent = cached[0].text;
+      } else {
+        document.getElementById("bulletin-display").textContent =
+          "ALL SYSTEMS NOMINAL // ZIM WIKI READER, X86 VM & E2EE COMMS ONLINE.";
       }
     }
 
     // ================= PERSISTENT ADMIN CONSOLE =================
     let adminPass = sessionStorage.getItem("mgs_admin_pass") || "";
+    let cachedAdminSnapshot = { orders: [], bulletins: [], commsCount: 0, kvBound: false };
+
+    function switchAdminTab(tab) {
+      ["bulletins", "orders", "comms"].forEach(name => {
+        document.getElementById(`admin-tab-${name}`).style.display = name === tab ? "flex" : "none";
+        document.getElementById(`tab-btn-${name}`).classList.toggle("active", name === tab);
+      });
+    }
 
     async function adminLogin() {
       const input = document.getElementById("admin-pass-input");
@@ -1190,8 +1317,9 @@
       } else {
         adminPass = "";
         sessionStorage.removeItem("mgs_admin_pass");
-        document.getElementById("admin-login-msg").textContent = "ACCESS DENIED — Invalid Admin Passcode.";
-        document.getElementById("admin-login-msg").style.color = "var(--red)";
+        const msg = document.getElementById("admin-login-msg");
+        msg.textContent = "ACCESS DENIED — Invalid Admin Passcode.";
+        msg.style.color = "var(--red)";
       }
     }
 
@@ -1200,9 +1328,10 @@
       sessionStorage.removeItem("mgs_admin_pass");
       document.getElementById("admin-workspace").style.display = "none";
       document.getElementById("admin-login-view").style.display = "flex";
-      document.getElementById("top-admin-badge").textContent = "ADMIN: LOCKED";
-      document.getElementById("top-admin-badge").style.color = "var(--amber)";
-      document.getElementById("top-admin-badge").style.borderColor = "var(--amber)";
+      const badge = document.getElementById("top-admin-badge");
+      badge.textContent = "ADMIN: LOCKED";
+      badge.style.color = "var(--amber)";
+      badge.style.borderColor = "var(--amber)";
     }
 
     async function refreshAdminData() {
@@ -1217,15 +1346,36 @@
 
         document.getElementById("admin-login-view").style.display = "none";
         document.getElementById("admin-workspace").style.display = "block";
-        document.getElementById("top-admin-badge").textContent = "ADMIN: ONLINE";
-        document.getElementById("top-admin-badge").style.color = "var(--green)";
-        document.getElementById("top-admin-badge").style.borderColor = "var(--green)";
+        const badge = document.getElementById("top-admin-badge");
+        badge.textContent = "ADMIN: ONLINE";
+        badge.style.color = "var(--green)";
+        badge.style.borderColor = "var(--green)";
 
-        document.getElementById("admin-kv-state").textContent = data.kvBound ? "CONNECTED (ORDERS_KV)" : "MEMORY FALLBACK";
-        document.getElementById("admin-comms-count").textContent = data.commsCount ?? 0;
+        const kvLabel = document.getElementById("admin-kv-state");
+        kvLabel.textContent = data.kvBound ? "CLOUDFLARE ORDERS_KV (BOUND)" : "WORKER MEMORY + LOCAL MIRROR";
+        kvLabel.style.color = data.kvBound ? "var(--green)" : "var(--amber)";
 
-        renderAdminBulletins(data.bulletins || []);
-        renderAdminOrders(data.orders || []);
+        const bulletins = (data.bulletins && data.bulletins.length) ? data.bulletins : getLocalBulletins();
+        saveLocalBulletins(bulletins);
+
+        const orders = data.orders || [];
+        cachedAdminSnapshot = {
+          orders,
+          bulletins,
+          commsCount: data.commsCount ?? 0,
+          kvBound: Boolean(data.kvBound)
+        };
+
+        // Update KPI strip
+        const totalRetail = orders.reduce((acc, o) => acc + (Number(o.totalRetailCad) || 0), 0);
+        const totalMargin = orders.reduce((acc, o) => acc + (Number(o.grossMarginCad) || 0), 0);
+        document.getElementById("kpi-orders").textContent = orders.length;
+        document.getElementById("kpi-revenue").textContent = `$${totalRetail.toLocaleString()}`;
+        document.getElementById("kpi-margin").textContent = `$${totalMargin.toLocaleString()}`;
+        document.getElementById("kpi-comms").textContent = data.commsCount ?? 0;
+
+        renderAdminBulletins(bulletins);
+        renderAdminOrders(orders);
         return true;
       } catch {
         return false;
@@ -1246,7 +1396,7 @@
         span.textContent = b.text;
         const btn = document.createElement("button");
         btn.className = "btn-disconnect";
-        btn.style.padding = "2px 7px";
+        btn.style.padding = "2px 8px";
         btn.style.fontSize = "0.72rem";
         btn.textContent = "DEL";
         btn.onclick = () => adminDeleteBulletin(b.id);
@@ -1260,28 +1410,28 @@
       const box = document.getElementById("admin-orders-list");
       box.innerHTML = "";
       if (!orders.length) {
-        box.innerHTML = `<div style="font-size:0.78rem; color:var(--muted);">No drone kit orders stored in KV yet.</div>`;
+        box.innerHTML = `<div style="font-size:0.78rem; color:var(--muted);">No drone kit orders stored in ORDERS_KV yet.</div>`;
         return;
       }
       orders.forEach(o => {
         const row = document.createElement("div");
         row.className = "order-row";
         row.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
             <strong style="color:var(--green);">${o.orderId}</strong>
-            <span style="color:var(--amber);">$${o.totalRetailCad} CAD (BOM $${o.totalBomCad})</span>
+            <span style="color:var(--amber);">$${o.totalRetailCad} CAD (BOM $${o.totalBomCad} // ${o.totalWeight || 0}g)</span>
           </div>
-          <div>${o.customer?.name || "Unknown"} &lt;${o.customer?.email || ""}&gt;</div>
+          <div>${o.customer?.name || "Unknown"} &lt;${o.customer?.email || ""}&gt; &middot; ${o.customer?.shipping || ""}</div>
           <div style="color:var(--muted);">${o.build?.frame?.label || ""}</div>
-          <div style="display:flex; gap:6px; align-items:center; margin-top:4px;">
+          <div style="display:flex; gap:6px; align-items:center; margin-top:4px; flex-wrap:wrap;">
             <select data-oid="${o.orderId}" style="padding:3px 6px; font-size:0.74rem;">
               <option value="PENDING_CONFIRMATION" ${o.status === "PENDING_CONFIRMATION" ? "selected" : ""}>PENDING_CONFIRMATION</option>
               <option value="IN_PRODUCTION" ${o.status === "IN_PRODUCTION" ? "selected" : ""}>IN_PRODUCTION</option>
               <option value="SHIPPED" ${o.status === "SHIPPED" ? "selected" : ""}>SHIPPED</option>
               <option value="COMPLETED" ${o.status === "COMPLETED" ? "selected" : ""}>COMPLETED</option>
             </select>
-            <button class="btn-action" style="padding:3px 8px; font-size:0.72rem;">Save</button>
-            <button class="btn-disconnect" style="padding:3px 8px; font-size:0.72rem;">Del</button>
+            <button class="btn-action" style="padding:3px 8px; font-size:0.72rem;">Save Status</button>
+            <button class="btn-disconnect" style="padding:3px 8px; font-size:0.72rem;">Delete</button>
           </div>
         `;
         const sel = row.querySelector("select");
@@ -1298,6 +1448,11 @@
       const text = inp.value.trim();
       if (!text) return;
       inp.value = "";
+
+      const local = getLocalBulletins();
+      local.unshift({ id: "b-" + Date.now(), text, ts: Date.now() });
+      saveLocalBulletins(local.slice(0, 10));
+
       await fetch("/api/admin", {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-Admin-Pass": adminPass },
@@ -1308,6 +1463,7 @@
     }
 
     async function adminDeleteBulletin(id) {
+      saveLocalBulletins(getLocalBulletins().filter(b => b.id !== id));
       await fetch("/api/admin", {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-Admin-Pass": adminPass },
@@ -1327,6 +1483,7 @@
     }
 
     async function adminDeleteOrder(orderId) {
+      if (!confirm(`Delete order ${orderId} from KV?`)) return;
       await fetch("/api/admin", {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-Admin-Pass": adminPass },
@@ -1343,6 +1500,22 @@
         body: JSON.stringify({ action: "purge_comms" })
       });
       await refreshAdminData();
+    }
+
+    function clearLocalMirror() {
+      localStorage.removeItem(LOCAL_BULLETINS_KEY);
+      refreshAdminData();
+      loadPublicBulletins();
+    }
+
+    function exportAdminJson() {
+      const blob = new Blob([JSON.stringify(cachedAdminSnapshot, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `magicgoat-kv-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
     loadPublicBulletins();

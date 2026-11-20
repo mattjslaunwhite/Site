@@ -6,17 +6,18 @@
   <title>MAGIC GOAT STUDIO // COMMAND PORTAL</title>
   <style>
     :root {
-      --bg: #000000;
-      --panel: #060a0c;
-      --panel-alt: #030608;
-      --border: #123640;
-      --border-bright: #1e5766;
-      --cyan: #00f3ff;
+      --bg: #000401;
+      --panel: #030b05;
+      --panel-alt: #020803;
+      --border: #0e3b16;
+      --border-bright: #1c7a2c;
       --green: #39ff14;
-      --amber: #ff9e00;
+      --green-mid: #24c90a;
+      --green-dim: #147a07;
+      --amber: #ffb000;
       --red: #ff3b3b;
-      --muted: #6c8b94;
-      --text: #d7f7ff;
+      --muted: #5b9663;
+      --text: #b8ffbe;
       --topbar-h: 54px;
       --sidebar-w: 255px;
     }
@@ -39,11 +40,11 @@
       display: flex;
       flex-direction: column;
       background-image:
-        radial-gradient(circle at 60% 0%, rgba(0, 243, 255, 0.07), transparent 65%),
+        radial-gradient(circle at 55% 0%, rgba(57, 255, 20, 0.09), transparent 68%),
         repeating-linear-gradient(
           0deg,
-          rgba(255, 255, 255, 0.014) 0px,
-          rgba(255, 255, 255, 0.014) 1px,
+          rgba(57, 255, 20, 0.024) 0px,
+          rgba(57, 255, 20, 0.024) 1px,
           transparent 1px,
           transparent 3px
         );
@@ -55,9 +56,9 @@
       top: 0;
       z-index: 100;
       height: var(--topbar-h);
-      background: #04080a;
+      background: #020904;
       border-bottom: 1px solid var(--border-bright);
-      box-shadow: 0 2px 18px rgba(0, 243, 255, 0.12);
+      box-shadow: 0 2px 20px rgba(57, 255, 20, 0.14);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -73,8 +74,8 @@
 
     .menu-toggle {
       display: none;
-      background: #020506;
-      color: var(--cyan);
+      background: #010502;
+      color: var(--green);
       border: 1px solid var(--border-bright);
       padding: 5px 10px;
       font-family: inherit;
@@ -87,11 +88,11 @@
       align-items: center;
       gap: 10px;
       text-decoration: none;
-      color: var(--cyan);
+      color: var(--green);
       font-weight: bold;
       font-size: 1.05rem;
-      letter-spacing: 0.1em;
-      text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+      letter-spacing: 0.12em;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.65);
     }
 
     .pulse {
@@ -100,8 +101,8 @@
       height: 9px;
       background: var(--green);
       border-radius: 50%;
-      box-shadow: 0 0 8px var(--green);
-      animation: blink 1.6s infinite;
+      box-shadow: 0 0 10px var(--green);
+      animation: blink 1.5s infinite;
     }
 
     @keyframes blink {
@@ -117,19 +118,35 @@
     }
 
     .build-pill {
-      border: 1px solid rgba(255, 158, 0, 0.45);
-      background: rgba(255, 158, 0, 0.07);
-      color: var(--amber);
+      border: 1px solid var(--border-bright);
+      background: rgba(57, 255, 20, 0.06);
+      color: var(--green-mid);
       padding: 3px 8px;
       letter-spacing: 0.05em;
     }
 
     .sys-pill {
-      border: 1px solid rgba(57, 255, 20, 0.4);
-      background: rgba(57, 255, 20, 0.06);
+      border: 1px solid var(--green);
+      background: rgba(57, 255, 20, 0.1);
       color: var(--green);
       padding: 3px 8px;
       letter-spacing: 0.06em;
+      text-shadow: 0 0 6px rgba(57, 255, 20, 0.45);
+    }
+
+    .admin-top-btn {
+      border: 1px solid var(--amber);
+      background: rgba(255, 176, 0, 0.08);
+      color: var(--amber);
+      padding: 3px 9px;
+      text-decoration: none;
+      font-size: 0.76rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .admin-top-btn:hover {
+      background: rgba(255, 176, 0, 0.2);
     }
 
     /* ================= SHELL LAYOUT ================= */
@@ -160,10 +177,11 @@
       font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.14em;
-      color: var(--amber);
+      color: var(--green);
       padding: 0 8px 8px;
-      border-bottom: 1px dashed var(--border);
+      border-bottom: 1px dashed var(--border-bright);
       margin-bottom: 8px;
+      text-shadow: 0 0 6px rgba(57, 255, 20, 0.35);
     }
 
     .side-list {
@@ -186,15 +204,15 @@
     }
 
     .side-link:hover {
-      background: rgba(0, 243, 255, 0.09);
+      background: rgba(57, 255, 20, 0.1);
       border-color: var(--border-bright);
-      color: var(--cyan);
+      color: var(--green);
     }
 
     .side-link.active {
-      background: rgba(0, 243, 255, 0.14);
-      border-color: var(--cyan);
-      color: var(--cyan);
+      background: rgba(57, 255, 20, 0.15);
+      border-color: var(--green);
+      color: var(--green);
       font-weight: bold;
     }
 
@@ -217,7 +235,7 @@
     }
 
     .side-telemetry {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-bright);
       background: var(--panel);
       padding: 12px;
       font-size: 0.76rem;
@@ -226,7 +244,7 @@
     }
 
     .side-telemetry strong {
-      color: var(--cyan);
+      color: var(--green);
       display: block;
       margin-bottom: 4px;
       text-transform: uppercase;
@@ -257,13 +275,37 @@
       margin: 0 auto;
     }
 
+    /* Persistent Live Bulletin Ticker */
+    .bulletin-bar {
+      border: 1px solid var(--border-bright);
+      background: rgba(57, 255, 20, 0.06);
+      padding: 9px 14px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.82rem;
+    }
+
+    .bulletin-bar strong {
+      color: var(--green);
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+
+    .bulletin-msg {
+      color: var(--text);
+      flex: 1;
+    }
+
     /* Welcome Hero Box */
     .welcome-panel {
       border: 1px solid var(--border-bright);
       background: var(--panel);
       padding: 22px 24px;
       margin-bottom: 28px;
-      box-shadow: 0 0 28px rgba(0, 243, 255, 0.08);
+      box-shadow: 0 0 30px rgba(57, 255, 20, 0.09);
       position: relative;
     }
 
@@ -285,15 +327,15 @@
 
     .welcome-build-tag {
       font-size: 0.76rem;
-      color: var(--amber);
+      color: var(--green-mid);
       letter-spacing: 0.06em;
     }
 
     .welcome-panel h1 {
       font-size: clamp(1.5rem, 3.4vw, 2.2rem);
-      color: var(--cyan);
-      text-shadow: 0 0 12px rgba(0, 243, 255, 0.5);
-      letter-spacing: 0.08em;
+      color: var(--green);
+      text-shadow: 0 0 14px rgba(57, 255, 20, 0.55);
+      letter-spacing: 0.09em;
       margin-bottom: 12px;
     }
 
@@ -306,8 +348,9 @@
     }
 
     .welcome-text em {
-      color: var(--amber);
+      color: var(--green);
       font-style: normal;
+      font-weight: bold;
     }
 
     .welcome-actions {
@@ -323,24 +366,27 @@
       font-size: 0.82rem;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
-      background: rgba(0, 243, 255, 0.08);
-      transition: background 0.15s;
+      border: 1px solid var(--border-bright);
+      color: var(--text);
+      background: rgba(57, 255, 20, 0.05);
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
     }
 
     .btn-hero:hover {
-      background: rgba(0, 243, 255, 0.2);
+      background: rgba(57, 255, 20, 0.18);
+      border-color: var(--green);
+      color: var(--green);
     }
 
     .btn-hero.green {
       border-color: var(--green);
       color: var(--green);
-      background: rgba(57, 255, 20, 0.08);
+      background: rgba(57, 255, 20, 0.12);
+      font-weight: bold;
     }
 
     .btn-hero.green:hover {
-      background: rgba(57, 255, 20, 0.2);
+      background: rgba(57, 255, 20, 0.25);
     }
 
     /* Section Title */
@@ -348,18 +394,19 @@
       font-size: 0.84rem;
       text-transform: uppercase;
       letter-spacing: 0.14em;
-      color: var(--amber);
+      color: var(--green);
       margin-bottom: 14px;
       display: flex;
       align-items: center;
       gap: 10px;
+      text-shadow: 0 0 8px rgba(57, 255, 20, 0.35);
     }
 
     .section-title::after {
       content: "";
       flex: 1;
       height: 1px;
-      background: var(--border);
+      background: var(--border-bright);
     }
 
     /* Project Grid */
@@ -384,8 +431,8 @@
 
     .card:hover {
       transform: translateY(-3px);
-      border-color: var(--cyan);
-      box-shadow: 0 0 20px rgba(0, 243, 255, 0.18);
+      border-color: var(--green);
+      box-shadow: 0 0 22px rgba(57, 255, 20, 0.22);
     }
 
     .card-top {
@@ -394,19 +441,20 @@
       align-items: center;
       margin-bottom: 12px;
       font-size: 0.76rem;
+      color: var(--muted);
     }
 
     .tag {
       padding: 2px 7px;
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
+      border: 1px solid var(--border-bright);
+      color: var(--green-mid);
       text-transform: uppercase;
     }
 
     .tag.live {
       border-color: var(--green);
       color: var(--green);
-      box-shadow: 0 0 8px rgba(57, 255, 20, 0.25);
+      box-shadow: 0 0 8px rgba(57, 255, 20, 0.28);
     }
 
     .tag.store {
@@ -421,7 +469,7 @@
 
     .card h2 {
       font-size: 1.12rem;
-      color: var(--text);
+      color: var(--green);
       margin-bottom: 8px;
     }
 
@@ -434,11 +482,73 @@
 
     .card-footer {
       font-size: 0.8rem;
-      color: var(--cyan);
+      color: var(--green);
       display: flex;
       justify-content: space-between;
-      border-top: 1px dashed var(--border);
+      border-top: 1px dashed var(--border-bright);
       padding-top: 10px;
+    }
+
+    /* ================= ADMIN SECTION ================= */
+    .admin-panel {
+      background: var(--panel);
+      border: 1px solid var(--border-bright);
+      padding: 18px;
+      margin-bottom: 32px;
+      box-shadow: 0 0 24px rgba(57, 255, 20, 0.08);
+    }
+
+    .admin-login-box {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .admin-subcard {
+      background: #010602;
+      border: 1px solid var(--border);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .admin-subcard h3 {
+      font-size: 0.82rem;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 6px;
+    }
+
+    .order-row {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      padding: 8px 10px;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .bulletin-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      font-size: 0.78rem;
     }
 
     /* Web Serial Console Panel */
@@ -467,21 +577,21 @@
 
     .serial-status.connected {
       color: var(--green);
-      text-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
+      text-shadow: 0 0 8px rgba(57, 255, 20, 0.45);
     }
 
-    select, input[type="text"], button {
-      background: #020506;
+    select, input[type="text"], input[type="password"], button {
+      background: #010502;
       color: var(--text);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-bright);
       font-family: "Courier New", Courier, monospace;
       font-size: 0.84rem;
       padding: 7px 11px;
       outline: none;
     }
 
-    select:focus, input[type="text"]:focus {
-      border-color: var(--cyan);
+    select:focus, input[type="text"]:focus, input[type="password"]:focus {
+      border-color: var(--green);
     }
 
     button {
@@ -497,7 +607,7 @@
     }
 
     button.btn-connect:hover {
-      background: rgba(57, 255, 20, 0.15);
+      background: rgba(57, 255, 20, 0.16);
     }
 
     button.btn-disconnect {
@@ -506,21 +616,21 @@
     }
 
     button.btn-disconnect:hover {
-      background: rgba(255, 59, 59, 0.15);
+      background: rgba(255, 59, 59, 0.16);
     }
 
     button.btn-action {
-      border-color: var(--cyan);
-      color: var(--cyan);
+      border-color: var(--green-mid);
+      color: var(--green);
     }
 
     button.btn-action:hover {
-      background: rgba(0, 243, 255, 0.15);
+      background: rgba(57, 255, 20, 0.16);
     }
 
     .serial-terminal {
-      background: #010304;
-      border: 1px solid var(--border);
+      background: #010402;
+      border: 1px solid var(--border-bright);
       color: var(--green);
       height: 220px;
       overflow-y: auto;
@@ -530,7 +640,7 @@
       white-space: pre-wrap;
       word-break: break-all;
       margin-bottom: 10px;
-      text-shadow: 0 0 4px rgba(57, 255, 20, 0.25);
+      text-shadow: 0 0 5px rgba(57, 255, 20, 0.35);
     }
 
     .serial-tx-row {
@@ -558,7 +668,7 @@
       max-width: 1060px;
       width: 100%;
       margin: 0 auto;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid var(--border-bright);
       padding-top: 16px;
       display: flex;
       flex-wrap: wrap;
@@ -569,7 +679,7 @@
     }
 
     footer a {
-      color: var(--cyan);
+      color: var(--green);
       text-decoration: none;
     }
 
@@ -577,7 +687,6 @@
       text-decoration: underline;
     }
 
-    /* Responsive Mobile Drawer */
     @media (max-width: 860px) {
       .menu-toggle {
         display: inline-block;
@@ -585,6 +694,10 @@
 
       .build-pill {
         display: none;
+      }
+
+      .admin-grid {
+        grid-template-columns: 1fr;
       }
 
       .sidebar {
@@ -595,7 +708,7 @@
         z-index: 90;
         transform: translateX(-100%);
         transition: transform 0.2s ease;
-        box-shadow: 6px 0 24px rgba(0, 0, 0, 0.85);
+        box-shadow: 6px 0 24px rgba(0, 0, 0, 0.9);
       }
 
       .sidebar.open {
@@ -617,7 +730,8 @@
     </div>
 
     <div class="topbar-right">
-      <span class="build-pill" id="top-build">BUILD 20261120.0907</span>
+      <a class="admin-top-btn" href="#admin-console" id="top-admin-badge">ADMIN: LOCKED</a>
+      <span class="build-pill" id="top-build">BUILD 20261120.1345</span>
       <span class="sys-pill" id="clock">2026-11-20 00:00:00</span>
     </div>
   </header>
@@ -634,6 +748,7 @@
             <li><a class="side-link active" href="#welcome"><span>&gt; Overview &amp; Welcome</span></a></li>
             <li><a class="side-link" href="#nodes"><span>&gt; Project Directory</span></a></li>
             <li><a class="side-link" href="#serial-bench"><span>&gt; USB Serial Terminal</span></a></li>
+            <li><a class="side-link" href="#admin-console"><span>&gt; Admin Command</span><span class="side-badge amber">KV</span></a></li>
           </ul>
         </div>
 
@@ -705,11 +820,11 @@
       </div>
 
       <div class="side-telemetry">
-        <strong>Node Telemetry</strong>
+        <strong>VFD Node Telemetry</strong>
         Host: <span>magicgoat.studio</span><br />
         Region: <span>Canada</span><br />
-        Build ID: <span class="amber" id="side-build">20261120.0907</span><br />
-        Stamp: <span id="side-stamp">2026-11-20 09:07</span>
+        Phosphor: <span>P31 Green 520nm</span><br />
+        Build ID: <span id="side-build">20261120.1345</span>
       </div>
     </aside>
 
@@ -717,11 +832,17 @@
     <div class="main-area">
       <div class="content-wrap">
 
+        <!-- PERSISTENT KV BULLETIN FEED -->
+        <div class="bulletin-bar" id="bulletin-bar">
+          <strong>[SYS BULLETIN]</strong>
+          <div class="bulletin-msg" id="bulletin-display">Loading persistent telemetry feed...</div>
+        </div>
+
         <!-- WELCOME TEXT SPOT -->
         <section class="welcome-panel" id="welcome">
           <div class="welcome-top-row">
-            <div class="welcome-kicker">// WELCOME TO THE WORKBENCH</div>
-            <div class="welcome-build-tag" id="hero-build">REV: BUILD 20261120.0907 // CANADA</div>
+            <div class="welcome-kicker">// VFD PHOSPHOR TERMINAL // WORKBENCH</div>
+            <div class="welcome-build-tag" id="hero-build">REV: BUILD 20261120.1345 // CANADA</div>
           </div>
           <h1>MAGIC GOAT STUDIO PORTAL</h1>
           <p class="welcome-text">
@@ -786,7 +907,7 @@
               </div>
               <h2>Windows XP Professional</h2>
               <p>
-                Full Award BIOS POST &amp; Setup, Luna Blue/Olive/Silver themes, Winamp 2.91, 3D Pinball Space Cadet, Minesweeper, Solitaire, IE6, and CMD.
+                Award BIOS POST &amp; Setup, Luna themes, ISO-9660 CD mounter, Warcraft II, Winamp 2.91 MP3 player, 3D Pinball, Solitaire, and DxDiag.
               </p>
             </div>
             <div class="card-footer">
@@ -884,24 +1005,6 @@
               <span>[ STANDBY ]</span>
             </div>
           </a>
-
-          <!-- Node 09: Embedded, RF & Solar Lab -->
-          <a class="card" href="#lab" onclick="alert('RF, Telemetry & Solar Lab slot staged — add lab.html to activate.'); return false;">
-            <div>
-              <div class="card-top">
-                <span class="tag soon">Staged</span>
-                <span>/lab.html</span>
-              </div>
-              <h2>RF, Telemetry &amp; Solar Lab</h2>
-              <p>
-                Build logs, OpenSCAD/Fusion 360 STL releases, ESP32/CC1101 firmware notes, and 24V LiFePO4 off-grid schematics.
-              </p>
-            </div>
-            <div class="card-footer">
-              <span>MODULE SLOT 09</span>
-              <span>[ STANDBY ]</span>
-            </div>
-          </a>
         </main>
 
         <!-- BUILT-IN WEB SERIAL CONSOLE -->
@@ -937,7 +1040,7 @@
             <div id="serial-status" class="serial-status">● Disconnected</div>
           </div>
 
-          <div id="serial-log" class="serial-terminal">[VFD SERIAL MONITOR READY — Click "Connect Port" to attach an ESP32, Arduino, GPS, or UART adapter]
+          <div id="serial-log" class="serial-terminal">[VFD PHOSPHOR SERIAL MONITOR READY — Click "Connect Port" to attach an ESP32, Arduino, GPS, or UART adapter]
 </div>
 
           <div class="serial-tx-row">
@@ -951,10 +1054,61 @@
           </div>
         </section>
 
+        <!-- ================= PERSISTENT ADMIN SECTION ================= -->
+        <div class="section-title" id="admin-console">Admin Command // Cloudflare KV Persistent Control</div>
+
+        <section class="admin-panel">
+          <!-- Login Bar -->
+          <div id="admin-login-view" class="admin-login-box">
+            <input
+              type="password"
+              id="admin-pass-input"
+              placeholder="Enter Admin Passcode..."
+              onkeydown="if (event.key === 'Enter') adminLogin();"
+            />
+            <button class="btn-connect" onclick="adminLogin()">Unlock Console</button>
+            <span id="admin-login-msg" style="font-size:0.8rem; color:var(--muted);">
+              Persists Orders, Bulletins &amp; Comms state in Cloudflare KV
+            </span>
+          </div>
+
+          <!-- Authenticated Workspace -->
+          <div id="admin-workspace" style="display:none;">
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+              <div style="font-size:0.82rem; color:var(--green);">
+                ● AUTHENTICATED // KV PERSISTENCE: <span id="admin-kv-state">CHECKING...</span> // ACTIVE COMMS PACKETS: <span id="admin-comms-count">0</span>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn-action" onclick="refreshAdminData()">Refresh KV</button>
+                <button class="btn-disconnect" onclick="adminPurgeComms()">Purge Comms Logs</button>
+                <button class="btn-disconnect" onclick="adminLogout()">Lock</button>
+              </div>
+            </div>
+
+            <div class="admin-grid">
+              <!-- Left: Persistent Portal Bulletins -->
+              <div class="admin-subcard">
+                <h3>Persistent Portal Bulletins (Live Banner)</h3>
+                <div style="display:flex; gap:6px;">
+                  <input type="text" id="new-bulletin-input" maxlength="200" placeholder="Post live portal status notice..." style="flex:1;" />
+                  <button class="btn-connect" onclick="adminAddBulletin()">Post</button>
+                </div>
+                <div id="admin-bulletin-list" style="display:flex; flex-direction:column; gap:6px; max-height:240px; overflow-y:auto;"></div>
+              </div>
+
+              <!-- Right: Persistent Drone Kit Orders Ledger -->
+              <div class="admin-subcard">
+                <h3>Drone Kit Orders Ledger (ORDERS_KV)</h3>
+                <div id="admin-orders-list" style="display:flex; flex-direction:column; gap:8px; max-height:280px; overflow-y:auto;"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
       </div>
 
       <footer>
-        <div id="footer-build">&copy; 2026 MAGIC GOAT STUDIO // CANADA // BUILD 20261120.0907</div>
+        <div id="footer-build">&copy; 2026 MAGIC GOAT STUDIO // CANADA // BUILD 20261120.1345</div>
         <div>
           <a href="mailto:matt@magicgoat.studio">matt@magicgoat.studio</a> &middot;
           <a href="https://github.com/mattjslaunwhite/Site" target="_blank" rel="noopener">GitHub Repo</a>
@@ -986,11 +1140,9 @@
       const min = pad(mod.getMinutes());
 
       const buildNum = `${yyyy}${mm}${dd}.${hh}${min}`;
-      const stampStr = `${yyyy}-${mm}-${dd} ${hh}:${min}`;
 
       document.getElementById("top-build").textContent = `BUILD ${buildNum}`;
       document.getElementById("side-build").textContent = buildNum;
-      document.getElementById("side-stamp").textContent = stampStr;
       document.getElementById("hero-build").textContent = `REV: BUILD ${buildNum} // CANADA`;
       document.getElementById("footer-build").innerHTML =
         `&copy; ${yyyy} MAGIC GOAT STUDIO // CANADA // BUILD ${buildNum}`;
@@ -1008,7 +1160,195 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // Web Serial API Implementation
+    // ================= PUBLIC BULLETINS LOADER =================
+    async function loadPublicBulletins() {
+      try {
+        const res = await fetch("/api/bulletins");
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.bulletins) && data.bulletins.length > 0) {
+          document.getElementById("bulletin-display").textContent = data.bulletins[0].text;
+        } else {
+          document.getElementById("bulletin-display").textContent = "ALL SYSTEMS NOMINAL // READY FOR BENCH OPERATIONS.";
+        }
+      } catch {
+        document.getElementById("bulletin-display").textContent = "LOCAL EDGE MODE // READY.";
+      }
+    }
+
+    // ================= PERSISTENT ADMIN CONSOLE =================
+    let adminPass = sessionStorage.getItem("mgs_admin_pass") || "";
+
+    async function adminLogin() {
+      const input = document.getElementById("admin-pass-input");
+      const candidate = input.value.trim();
+      if (!candidate) return;
+      adminPass = candidate;
+      const ok = await refreshAdminData();
+      if (ok) {
+        sessionStorage.setItem("mgs_admin_pass", adminPass);
+        input.value = "";
+      } else {
+        adminPass = "";
+        sessionStorage.removeItem("mgs_admin_pass");
+        document.getElementById("admin-login-msg").textContent = "ACCESS DENIED — Invalid Admin Passcode.";
+        document.getElementById("admin-login-msg").style.color = "var(--red)";
+      }
+    }
+
+    function adminLogout() {
+      adminPass = "";
+      sessionStorage.removeItem("mgs_admin_pass");
+      document.getElementById("admin-workspace").style.display = "none";
+      document.getElementById("admin-login-view").style.display = "flex";
+      document.getElementById("top-admin-badge").textContent = "ADMIN: LOCKED";
+      document.getElementById("top-admin-badge").style.color = "var(--amber)";
+      document.getElementById("top-admin-badge").style.borderColor = "var(--amber)";
+    }
+
+    async function refreshAdminData() {
+      if (!adminPass) return false;
+      try {
+        const res = await fetch("/api/admin", {
+          headers: { "X-Admin-Pass": adminPass }
+        });
+        if (!res.ok) return false;
+        const data = await res.json();
+        if (!data.ok) return false;
+
+        document.getElementById("admin-login-view").style.display = "none";
+        document.getElementById("admin-workspace").style.display = "block";
+        document.getElementById("top-admin-badge").textContent = "ADMIN: ONLINE";
+        document.getElementById("top-admin-badge").style.color = "var(--green)";
+        document.getElementById("top-admin-badge").style.borderColor = "var(--green)";
+
+        document.getElementById("admin-kv-state").textContent = data.kvBound ? "CONNECTED (ORDERS_KV)" : "MEMORY FALLBACK";
+        document.getElementById("admin-comms-count").textContent = data.commsCount ?? 0;
+
+        renderAdminBulletins(data.bulletins || []);
+        renderAdminOrders(data.orders || []);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function renderAdminBulletins(list) {
+      const box = document.getElementById("admin-bulletin-list");
+      box.innerHTML = "";
+      if (!list.length) {
+        box.innerHTML = `<div style="font-size:0.78rem; color:var(--muted);">No active bulletins.</div>`;
+        return;
+      }
+      list.forEach(b => {
+        const row = document.createElement("div");
+        row.className = "bulletin-item";
+        const span = document.createElement("span");
+        span.textContent = b.text;
+        const btn = document.createElement("button");
+        btn.className = "btn-disconnect";
+        btn.style.padding = "2px 7px";
+        btn.style.fontSize = "0.72rem";
+        btn.textContent = "DEL";
+        btn.onclick = () => adminDeleteBulletin(b.id);
+        row.appendChild(span);
+        row.appendChild(btn);
+        box.appendChild(row);
+      });
+    }
+
+    function renderAdminOrders(orders) {
+      const box = document.getElementById("admin-orders-list");
+      box.innerHTML = "";
+      if (!orders.length) {
+        box.innerHTML = `<div style="font-size:0.78rem; color:var(--muted);">No drone kit orders stored in KV yet.</div>`;
+        return;
+      }
+      orders.forEach(o => {
+        const row = document.createElement("div");
+        row.className = "order-row";
+        row.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:var(--green);">${o.orderId}</strong>
+            <span style="color:var(--amber);">$${o.totalRetailCad} CAD (BOM $${o.totalBomCad})</span>
+          </div>
+          <div>${o.customer?.name || "Unknown"} &lt;${o.customer?.email || ""}&gt;</div>
+          <div style="color:var(--muted);">${o.build?.frame?.label || ""}</div>
+          <div style="display:flex; gap:6px; align-items:center; margin-top:4px;">
+            <select data-oid="${o.orderId}" style="padding:3px 6px; font-size:0.74rem;">
+              <option value="PENDING_CONFIRMATION" ${o.status === "PENDING_CONFIRMATION" ? "selected" : ""}>PENDING_CONFIRMATION</option>
+              <option value="IN_PRODUCTION" ${o.status === "IN_PRODUCTION" ? "selected" : ""}>IN_PRODUCTION</option>
+              <option value="SHIPPED" ${o.status === "SHIPPED" ? "selected" : ""}>SHIPPED</option>
+              <option value="COMPLETED" ${o.status === "COMPLETED" ? "selected" : ""}>COMPLETED</option>
+            </select>
+            <button class="btn-action" style="padding:3px 8px; font-size:0.72rem;">Save</button>
+            <button class="btn-disconnect" style="padding:3px 8px; font-size:0.72rem;">Del</button>
+          </div>
+        `;
+        const sel = row.querySelector("select");
+        const saveBtn = row.querySelectorAll("button")[0];
+        const delBtn = row.querySelectorAll("button")[1];
+        saveBtn.onclick = () => adminUpdateOrder(o.orderId, sel.value);
+        delBtn.onclick = () => adminDeleteOrder(o.orderId);
+        box.appendChild(row);
+      });
+    }
+
+    async function adminAddBulletin() {
+      const inp = document.getElementById("new-bulletin-input");
+      const text = inp.value.trim();
+      if (!text) return;
+      inp.value = "";
+      await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Admin-Pass": adminPass },
+        body: JSON.stringify({ action: "add_bulletin", text })
+      });
+      await refreshAdminData();
+      await loadPublicBulletins();
+    }
+
+    async function adminDeleteBulletin(id) {
+      await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Admin-Pass": adminPass },
+        body: JSON.stringify({ action: "delete_bulletin", id })
+      });
+      await refreshAdminData();
+      await loadPublicBulletins();
+    }
+
+    async function adminUpdateOrder(orderId, status) {
+      await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Admin-Pass": adminPass },
+        body: JSON.stringify({ action: "update_order_status", orderId, status })
+      });
+      await refreshAdminData();
+    }
+
+    async function adminDeleteOrder(orderId) {
+      await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Admin-Pass": adminPass },
+        body: JSON.stringify({ action: "delete_order", orderId })
+      });
+      await refreshAdminData();
+    }
+
+    async function adminPurgeComms() {
+      if (!confirm("Purge all encrypted comms messages from KV?")) return;
+      await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Admin-Pass": adminPass },
+        body: JSON.stringify({ action: "purge_comms" })
+      });
+      await refreshAdminData();
+    }
+
+    loadPublicBulletins();
+    if (adminPass) refreshAdminData();
+
+    // ================= WEB SERIAL API IMPLEMENTATION =================
     let port = null;
     let reader = null;
     let keepReading = false;

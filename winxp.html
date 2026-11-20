@@ -1,0 +1,4587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microsoft Windows XP Professional</title>
+<style>
+  :root {
+    --font-ui: "Tahoma", "Segoe UI", "Verdana", sans-serif;
+    --font-mono: "Lucida Console", "Courier New", monospace;
+    --font-bios: "Courier New", monospace;
+
+    /* Default Luna Blue Theme Tokens */
+    --title-bg: linear-gradient(180deg, #0997ff 0%, #0053ee 8%, #0050ee 40%, #06f 88%, #06f 93%, #005bff 95%, #003dd7 96%, #003dd7 100%);
+    --title-inactive-bg: linear-gradient(180deg, #9db9eb 0%, #7a96df 10%, #7a96df 90%, #5a7edc 100%);
+    --title-border: #0054e3;
+    --title-inactive-border: #7a96df;
+    --title-text: #ffffff;
+    --title-inactive-text: #d8e4f8;
+
+    --win-face: #ece9d8;
+    --win-light: #ffffff;
+    --win-shadow: #aca899;
+    --win-dark: #716f64;
+
+    --taskbar-bg: linear-gradient(180deg, #3168d5 0%, #4993e6 9%, #2663d6 18%, #225ad1 92%, #1941a5 100%);
+    --start-btn-bg: linear-gradient(180deg, #3c9b3c 0%, #52b852 10%, #379237 50%, #2b7b2b 92%, #1f5e1f 100%);
+    --start-btn-hover: linear-gradient(180deg, #4cb04c 0%, #64cc64 10%, #42a642 50%, #338c33 92%, #246b24 100%);
+    --tray-bg: linear-gradient(180deg, #1690e6 0%, #199bf0 10%, #1182db 50%, #0e72c7 92%, #0a58a3 100%);
+    --task-btn-bg: linear-gradient(180deg, #4b87e8 0%, #3c77de 15%, #3771d8 85%, #2758b8 100%);
+    --task-btn-active: linear-gradient(180deg, #1b449c 0%, #1f4fb3 15%, #2256bf 85%, #2b64cf 100%);
+
+    --start-header-bg: linear-gradient(180deg, #1565c0 0%, #2a85e5 50%, #1c6ed4 100%);
+    --start-right-bg: #d3e5fa;
+    --start-right-border: #95bdee;
+    --explorer-pane-bg: linear-gradient(180deg, #7ba2e7 0%, #6375d6 100%);
+    --explorer-card-header: linear-gradient(90deg, #ffffff 0%, #c6d3f7 100%);
+    --explorer-card-text: #215dc6;
+    --highlight-bg: #316ac5;
+    --highlight-text: #ffffff;
+  }
+
+  /* Olive Green Luna Theme */
+  body.theme-olive {
+    --title-bg: linear-gradient(180deg, #b8c68b 0%, #99a867 10%, #8f9e5d 85%, #758446 100%);
+    --title-inactive-bg: linear-gradient(180deg, #d7dec0 0%, #bcc69c 100%);
+    --title-border: #768447;
+    --title-inactive-border: #b8c29b;
+    --taskbar-bg: linear-gradient(180deg, #98a866 0%, #b4c287 10%, #8e9e5c 85%, #718042 100%);
+    --start-btn-bg: linear-gradient(180deg, #e08b36 0%, #f2a24e 10%, #d47b26 50%, #b86214 92%, #944b0a 100%);
+    --start-btn-hover: linear-gradient(180deg, #eb9946 0%, #ffb261 10%, #e08834 50%, #c46e1f 92%, #a15410 100%);
+    --tray-bg: linear-gradient(180deg, #8b9c58 0%, #9eb068 10%, #7d8e4b 90%, #647337 100%);
+    --task-btn-bg: linear-gradient(180deg, #aebc80 0%, #96a664 15%, #8b9b59 85%, #728243 100%);
+    --task-btn-active: linear-gradient(180deg, #647338 0%, #748445 15%, #7e8f4e 85%, #8c9d5a 100%);
+    --start-header-bg: linear-gradient(180deg, #889856 0%, #a5b572 50%, #829250 100%);
+    --start-right-bg: #e7ecd6;
+    --start-right-border: #b6c293;
+    --explorer-pane-bg: linear-gradient(180deg, #b8c58d 0%, #8f9f5d 100%);
+    --explorer-card-header: linear-gradient(90deg, #ffffff 0%, #dfe6c8 100%);
+    --explorer-card-text: #566628;
+    --highlight-bg: #8ba169;
+  }
+
+  /* Silver Luna Theme */
+  body.theme-silver {
+    --title-bg: linear-gradient(180deg, #d7d9e3 0%, #b2b5c4 12%, #9fa3b5 50%, #8d91a6 88%, #777b91 100%);
+    --title-inactive-bg: linear-gradient(180deg, #e6e7ed 0%, #c9cbd6 100%);
+    --title-border: #7a7e94;
+    --title-inactive-border: #c2c4cf;
+    --title-text: #000000;
+    --title-inactive-text: #555555;
+    --taskbar-bg: linear-gradient(180deg, #c8cad4 0%, #e3e4eb 10%, #b4b7c4 85%, #8f93a3 100%);
+    --tray-bg: linear-gradient(180deg, #aeb1bf 0%, #c6c9d6 10%, #9a9ead 90%, #7e8291 100%);
+    --task-btn-bg: linear-gradient(180deg, #dcdee6 0%, #c2c5d1 15%, #b5b8c7 85%, #9a9eb0 100%);
+    --task-btn-active: linear-gradient(180deg, #85899c 0%, #999db0 15%, #a5a9bc 85%, #b5b9cc 100%);
+    --start-header-bg: linear-gradient(180deg, #989cb0 0%, #c4c7d6 50%, #9397ab 100%);
+    --start-right-bg: #e4e6ed;
+    --start-right-border: #b5b8c7;
+    --explorer-pane-bg: linear-gradient(180deg, #c6c9d6 0%, #9a9eb0 100%);
+    --explorer-card-header: linear-gradient(90deg, #ffffff 0%, #dcdee8 100%);
+    --explorer-card-text: #3f4354;
+    --highlight-bg: #8f93a6;
+  }
+
+  /* Windows Classic Theme */
+  body.theme-classic {
+    --win-face: #d4d0c8;
+    --title-bg: linear-gradient(90deg, #0a246a 0%, #a6caf0 100%);
+    --title-inactive-bg: linear-gradient(90deg, #808080 0%, #c0c0c0 100%);
+    --title-border: #404040;
+    --title-inactive-border: #808080;
+    --taskbar-bg: #d4d0c8;
+    --start-btn-bg: #d4d0c8;
+    --start-btn-hover: #dfdcd5;
+    --tray-bg: #d4d0c8;
+    --task-btn-bg: #d4d0c8;
+    --task-btn-active: #e6e3dc;
+    --start-header-bg: linear-gradient(180deg, #0a246a 0%, #3a6ea5 100%);
+    --start-right-bg: #d4d0c8;
+    --start-right-border: #808080;
+    --explorer-pane-bg: #d4d0c8;
+    --explorer-card-header: #0a246a;
+    --explorer-card-text: #ffffff;
+    --highlight-bg: #0a246a;
+  }
+
+  * {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--font-ui);
+    font-size: 11px;
+    background: #000;
+    color: #000;
+  }
+
+  /* ==========================================================================
+     1. AWARD MODULAR BIOS POST & SETUP SCREEN (Pentium III 800MHz, 3072MB RAM)
+     ========================================================================== */
+  #bios-screen {
+    position: fixed;
+    inset: 0;
+    background: #000000;
+    color: #c0c0c0;
+    font-family: var(--font-bios);
+    font-size: 15px;
+    line-height: 1.3;
+    padding: 20px 28px;
+    z-index: 99000;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .bios-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .energy-star-logo {
+    border: 2px solid #ffd700;
+    padding: 6px 12px;
+    color: #ffd700;
+    text-align: center;
+    font-weight: bold;
+    background: #000044;
+    box-shadow: 0 0 0 2px #0055ff;
+  }
+
+  #bios-post-body {
+    white-space: pre-wrap;
+    margin-top: 10px;
+  }
+
+  .bios-footer {
+    border-top: 1px solid #555;
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ffffff;
+  }
+
+  /* Award BIOS Setup Utility */
+  #bios-setup-utility {
+    position: fixed;
+    inset: 0;
+    background: #0000aa;
+    color: #ffff55;
+    font-family: var(--font-bios);
+    font-size: 15px;
+    z-index: 99500;
+    display: none;
+    flex-direction: column;
+    padding: 14px 20px;
+  }
+
+  .bios-setup-header {
+    text-align: center;
+    color: #ffffff;
+    font-weight: bold;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #ffffff;
+  }
+
+  .bios-setup-main {
+    flex: 1;
+    border: 2px solid #ffffff;
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    background: #0000aa;
+  }
+
+  .bios-setup-columns {
+    flex: 1;
+    display: flex;
+  }
+
+  .bios-col {
+    flex: 1;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .bios-col:first-child {
+    border-right: 2px solid #ffffff;
+  }
+
+  .bios-menu-opt {
+    padding: 4px 8px;
+    cursor: pointer;
+    color: #ffff55;
+    font-weight: bold;
+  }
+
+  .bios-menu-opt.selected, .bios-menu-opt:hover {
+    background: #aa0000;
+    color: #ffffff;
+  }
+
+  .bios-subpage {
+    padding: 16px 24px;
+    color: #ffffff;
+    line-height: 1.6;
+  }
+
+  .bios-setup-help {
+    border-top: 2px solid #ffffff;
+    padding: 10px 18px;
+    color: #55ffff;
+    min-height: 75px;
+  }
+
+  /* ==========================================================================
+     2. WINDOWS XP BOOT SCREEN & LUNA WELCOME SCREEN
+     ========================================================================== */
+  #xp-boot-screen {
+    position: fixed;
+    inset: 0;
+    background: #000000;
+    z-index: 98000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px 24px;
+    color: #ffffff;
+  }
+
+  .xp-boot-loader {
+    width: 170px;
+    height: 14px;
+    border: 2px solid #8c8c8c;
+    border-radius: 4px;
+    padding: 2px;
+    overflow: hidden;
+    position: relative;
+    background: #000;
+  }
+
+  .xp-boot-bars {
+    display: flex;
+    gap: 3px;
+    position: absolute;
+    top: 2px;
+    left: -45px;
+    animation: xpBootSlide 1.4s linear infinite;
+  }
+
+  .xp-boot-bars span {
+    width: 9px;
+    height: 6px;
+    border-radius: 1px;
+    background: linear-gradient(180deg, #8eb9ff 0%, #2d6ce0 50%, #1545a8 100%);
+  }
+
+  @keyframes xpBootSlide {
+    0% { left: -45px; }
+    100% { left: 175px; }
+  }
+
+  /* Luna Welcome / Logon Screen */
+  #xp-welcome-screen {
+    position: fixed;
+    inset: 0;
+    background: #5a7edc;
+    z-index: 97000;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .welcome-top-bar {
+    height: 82px;
+    background: #00309c;
+    border-bottom: 3px solid #f59b25;
+  }
+
+  .welcome-center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 30% 40%, #8fb1f7 0%, #5a7edc 55%, #4669c7 100%);
+    padding: 20px;
+  }
+
+  .welcome-split {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    max-width: 720px;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .welcome-divider {
+    width: 2px;
+    height: 220px;
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,0.65), transparent);
+  }
+
+  .welcome-user-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background 0.15s;
+    min-width: 270px;
+  }
+
+  .welcome-user-card:hover, .welcome-user-card.selected {
+    background: linear-gradient(90deg, #1648b8 0%, rgba(22, 72, 184, 0.25) 100%);
+    border-color: rgba(255, 255, 255, 0.45);
+  }
+
+  .welcome-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 6px;
+    border: 2px solid #ffcb3d;
+    background: #ffffff;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+  }
+
+  .welcome-bottom-bar {
+    height: 82px;
+    background: #00309c;
+    border-top: 3px solid #f59b25;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    color: #ffffff;
+  }
+
+  /* ==========================================================================
+     3. WINDOWS XP LUNA DESKTOP, ICONS & RUBBER-BAND SELECTION
+     ========================================================================== */
+  #xp-desktop {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #3a6ea5;
+    background-size: cover;
+    background-position: center;
+    transition: filter 1.2s ease;
+  }
+
+  #xp-desktop.desaturate {
+    filter: grayscale(100%) brightness(0.8);
+  }
+
+  #desktop-icons-area {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    bottom: 42px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 14px 18px;
+    z-index: 10;
+  }
+
+  .desktop-icon {
+    width: 74px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    padding: 4px 2px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+  }
+
+  .desktop-icon svg {
+    filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.55));
+  }
+
+  .desktop-icon-label {
+    margin-top: 4px;
+    color: #ffffff;
+    font-size: 11px;
+    line-height: 1.2;
+    text-shadow: 1px 1px 2px #000000, -1px -1px 1px rgba(0,0,0,0.6);
+    padding: 1px 4px;
+    border-radius: 2px;
+    word-break: break-word;
+  }
+
+  .desktop-icon.selected .desktop-icon-label {
+    background-color: var(--highlight-bg);
+    color: #ffffff;
+    text-shadow: none;
+    outline: 1px dotted #ffff00;
+  }
+
+  .desktop-icon.selected svg {
+    filter: drop-shadow(0 0 2px #316ac5) brightness(0.92);
+  }
+
+  #selection-marquee {
+    position: fixed;
+    border: 1px dotted #ffffff;
+    background: rgba(49, 106, 197, 0.28);
+    pointer-events: none;
+    z-index: 50;
+    display: none;
+  }
+
+  /* ==========================================================================
+     4. XP CONTROLS, BUTTONS & CLASSIC BEVELS
+     ========================================================================== */
+  .xp-btn {
+    background: linear-gradient(180deg, #ffffff 0%, #ece9d8 85%, #d6d2c2 100%);
+    border: 1px solid #003c74;
+    border-radius: 3px;
+    padding: 3px 12px;
+    font-family: var(--font-ui);
+    font-size: 11px;
+    color: #000000;
+    cursor: pointer;
+    box-shadow: inset 0 1px 0 #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .xp-btn:hover:not(:disabled) {
+    box-shadow: inset 0 0 0 1px #f8b330, inset 0 0 3px #f8b330;
+  }
+
+  .xp-btn:active:not(:disabled) {
+    background: linear-gradient(180deg, #dcd8c8 0%, #ece9d8 100%);
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.25);
+  }
+
+  .xp-btn.default {
+    box-shadow: inset 0 0 0 1px #6699ff;
+    font-weight: bold;
+  }
+
+  .xp-btn:disabled {
+    color: #888;
+    border-color: #999;
+    cursor: default;
+  }
+
+  .xp-input, .xp-select {
+    background: #ffffff;
+    border: 1px solid #7f9db9;
+    padding: 2px 5px;
+    font-family: var(--font-ui);
+    font-size: 11px;
+    color: #000;
+    outline: none;
+  }
+
+  .xp-input:focus, .xp-select:focus {
+    border-color: #316ac5;
+  }
+
+  .xp-groupbox {
+    border: 1px solid #d0d0bf;
+    border-radius: 4px;
+    padding: 10px 12px;
+    position: relative;
+    margin-top: 8px;
+  }
+
+  .xp-groupbox-title {
+    position: absolute;
+    top: -7px;
+    left: 10px;
+    background: var(--win-face);
+    padding: 0 5px;
+    color: #0046d5;
+    font-size: 11px;
+  }
+
+  /* ==========================================================================
+     5. LUNA WINDOW CHROME, RESIZERS, TITLE BAR & MENUS
+     ========================================================================== */
+  .xp-window {
+    position: absolute;
+    background: var(--win-face);
+    border: 3px solid var(--title-inactive-border);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.42);
+    display: flex;
+    flex-direction: column;
+    min-width: 210px;
+    min-height: 130px;
+    overflow: hidden;
+  }
+
+  .xp-window.active {
+    border-color: var(--title-border);
+    box-shadow: 3px 6px 18px rgba(0,0,0,0.55);
+  }
+
+  body.theme-classic .xp-window {
+    border-radius: 0;
+    border: 2px solid #d4d0c8;
+    box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #404040, 2px 2px 6px rgba(0,0,0,0.4);
+  }
+
+  .xp-titlebar {
+    height: 28px;
+    background: var(--title-inactive-bg);
+    color: var(--title-inactive-text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px 0 7px;
+    flex-shrink: 0;
+  }
+
+  .xp-window.active > .xp-titlebar {
+    background: var(--title-bg);
+    color: var(--title-text);
+  }
+
+  .xp-title-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  .xp-title-text {
+    font-weight: bold;
+    font-size: 12px;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.65);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  body.theme-silver .xp-title-text {
+    text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+  }
+
+  .xp-win-controls {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  .xp-ctrl-btn {
+    width: 21px;
+    height: 21px;
+    border-radius: 3px;
+    border: 1px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: linear-gradient(180deg, #4b8bf5 0%, #1c5bd4 50%, #1244ab 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+
+  .xp-ctrl-btn:hover {
+    filter: brightness(1.18);
+  }
+
+  .xp-ctrl-btn.close-btn {
+    background: linear-gradient(180deg, #f37b63 0%, #dc3e24 50%, #b3240e 100%);
+  }
+
+  .xp-ctrl-btn.close-btn:hover {
+    filter: brightness(1.18);
+  }
+
+  .xp-menubar {
+    height: 21px;
+    background: var(--win-face);
+    border-bottom: 1px solid #d0ccc0;
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .xp-menu-item {
+    padding: 2px 7px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .xp-menu-item:hover, .xp-menu-item.open {
+    background: var(--highlight-bg);
+    color: #ffffff;
+  }
+
+  .xp-submenu {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #aca899;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    min-width: 175px;
+    z-index: 9000;
+    padding: 2px;
+  }
+
+  .xp-submenu-item {
+    padding: 4px 16px;
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .xp-submenu-item:hover:not(.disabled) {
+    background: var(--highlight-bg);
+    color: #ffffff;
+  }
+
+  .xp-submenu-item.disabled {
+    color: #999;
+    cursor: default;
+  }
+
+  .xp-menu-sep {
+    height: 1px;
+    background: #d0ccc0;
+    margin: 3px 2px;
+  }
+
+  .xp-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    background: var(--win-face);
+  }
+
+  /* Resize Handles */
+  .resizer { position: absolute; z-index: 30; }
+  .resizer.n { top: -3px; left: 6px; right: 6px; height: 5px; cursor: ns-resize; }
+  .resizer.s { bottom: -3px; left: 6px; right: 6px; height: 5px; cursor: ns-resize; }
+  .resizer.e { right: -3px; top: 6px; bottom: 6px; width: 5px; cursor: ew-resize; }
+  .resizer.w { left: -3px; top: 6px; bottom: 6px; width: 5px; cursor: ew-resize; }
+  .resizer.nw { top: -3px; left: -3px; width: 9px; height: 9px; cursor: nwse-resize; }
+  .resizer.ne { top: -3px; right: -3px; width: 9px; height: 9px; cursor: nesw-resize; }
+  .resizer.sw { bottom: -3px; left: -3px; width: 9px; height: 9px; cursor: nesw-resize; }
+  .resizer.se { bottom: -3px; right: -3px; width: 9px; height: 9px; cursor: nwse-resize; }
+
+  /* ==========================================================================
+     6. TASKBAR, START MENU & SYSTEM TRAY
+     ========================================================================== */
+  #xp-taskbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: var(--taskbar-bg);
+    z-index: 50000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+  }
+
+  #start-button {
+    height: 30px;
+    padding: 0 16px 0 10px;
+    background: var(--start-btn-bg);
+    border: none;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    color: #ffffff;
+    font-family: var(--font-ui);
+    font-weight: bold;
+    font-style: italic;
+    font-size: 14px;
+    letter-spacing: 0.4px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.65);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.45);
+    flex-shrink: 0;
+  }
+
+  #start-button:hover {
+    background: var(--start-btn-hover);
+  }
+
+  body.theme-classic #start-button {
+    border-radius: 0;
+    color: #000;
+    font-style: normal;
+    font-size: 12px;
+    text-shadow: none;
+    border: 2px solid #fff;
+    border-right-color: #404040;
+    border-bottom-color: #404040;
+    height: 24px;
+    margin-left: 3px;
+  }
+
+  .quick-launch {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 8px;
+    border-right: 1px solid rgba(0,0,0,0.25);
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  .ql-icon {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .ql-icon:hover {
+    background: rgba(255,255,255,0.22);
+  }
+
+  #taskbar-tasks {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 0 6px;
+    overflow: hidden;
+  }
+
+  .taskbar-item {
+    height: 23px;
+    min-width: 90px;
+    max-width: 165px;
+    flex: 1;
+    background: var(--task-btn-bg);
+    border: 1px solid rgba(0,0,0,0.35);
+    border-radius: 3px;
+    color: #ffffff;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+    overflow: hidden;
+  }
+
+  .taskbar-item:hover {
+    filter: brightness(1.1);
+  }
+
+  .taskbar-item.active {
+    background: var(--task-btn-active);
+    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.55);
+  }
+
+  body.theme-classic .taskbar-item {
+    color: #000;
+    border-radius: 0;
+  }
+
+  .taskbar-item-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #system-tray {
+    height: 30px;
+    background: var(--tray-bg);
+    border-left: 1px solid rgba(0,0,0,0.35);
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ffffff;
+    flex-shrink: 0;
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,0.25);
+  }
+
+  body.theme-classic #system-tray {
+    color: #000;
+    height: 24px;
+    margin-right: 3px;
+    border: 1px solid #808080;
+  }
+
+  .tray-icon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  /* Two-Column XP Start Menu */
+  #start-menu {
+    position: fixed;
+    bottom: 30px;
+    left: 0;
+    width: 390px;
+    max-width: 96vw;
+    background: #ffffff;
+    border: 2px solid var(--title-border);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    box-shadow: 4px -2px 14px rgba(0,0,0,0.5);
+    z-index: 60000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .start-menu-header {
+    height: 54px;
+    background: var(--start-header-bg);
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.65);
+    border-bottom: 2px solid #f59b25;
+  }
+
+  .start-menu-body {
+    display: flex;
+    min-height: 330px;
+  }
+
+  .start-left-col {
+    flex: 1.05;
+    background: #ffffff;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .start-right-col {
+    flex: 0.95;
+    background: var(--start-right-bg);
+    border-left: 1px solid var(--start-right-border);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .start-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    color: #000000;
+  }
+
+  .start-item:hover {
+    background: var(--highlight-bg);
+    color: #ffffff;
+  }
+
+  .start-item:hover .start-item-sub {
+    color: #e0ecff;
+  }
+
+  .start-item-sub {
+    font-size: 10px;
+    color: #666666;
+  }
+
+  .start-sep {
+    height: 1px;
+    background: #d8d8d8;
+    margin: 4px 6px;
+  }
+
+  .start-menu-footer {
+    height: 38px;
+    background: var(--start-header-bg);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 0 14px;
+    color: #ffffff;
+  }
+
+  .start-power-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 3px 6px;
+    border-radius: 3px;
+  }
+
+  .start-power-btn:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  /* All Programs Cascading Flyout */
+  #all-programs-flyout {
+    position: fixed;
+    bottom: 68px;
+    left: 185px;
+    width: 215px;
+    background: #ffffff;
+    border: 1px solid #0054e3;
+    border-left: 4px solid #316ac5;
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.45);
+    z-index: 61000;
+    display: none;
+    flex-direction: column;
+    padding: 3px;
+  }
+
+  .flyout-item {
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .flyout-item:hover {
+    background: var(--highlight-bg);
+    color: #ffffff;
+  }
+
+  .flyout-sub {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: -3px;
+    width: 205px;
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #0054e3;
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.4);
+    padding: 3px;
+  }
+
+  .flyout-item:hover > .flyout-sub {
+    display: block;
+  }
+
+  /* Desktop Context Menu */
+  #context-menu {
+    position: fixed;
+    background: #ffffff;
+    border: 1px solid #aca899;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.35);
+    padding: 2px;
+    min-width: 170px;
+    z-index: 70000;
+    display: none;
+  }
+
+  /* ==========================================================================
+     7. APPLICATION SPECIFIC STYLES (Explorer, Winamp, Minesweeper, Pinball, etc.)
+     ========================================================================== */
+  /* Explorer Blue Left Task Pane */
+  .exp-left-pane {
+    width: 195px;
+    background: var(--explorer-pane-bg);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .exp-card {
+    border-radius: 4px 4px 0 0;
+    overflow: hidden;
+    background: #d6dff7;
+  }
+
+  .exp-card-head {
+    background: var(--explorer-card-header);
+    color: var(--explorer-card-text);
+    font-weight: bold;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .exp-card-body {
+    padding: 7px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: #215dc6;
+  }
+
+  .exp-link {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .exp-link:hover {
+    text-decoration: underline;
+    color: #428eff;
+  }
+
+  /* Winamp 2.91 Classic Skin */
+  .winamp-shell {
+    background: #1c1d26;
+    color: #00ff00;
+    font-family: var(--font-mono);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 6px;
+    gap: 6px;
+    border: 2px solid #484a5c;
+  }
+
+  .winamp-lcd {
+    background: #000000;
+    border: 2px inset #383a4a;
+    padding: 6px 8px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .winamp-btn {
+    background: linear-gradient(180deg, #b8bcc8 0%, #7d8191 100%);
+    border: 1px solid #222;
+    border-top-color: #eee;
+    border-left-color: #eee;
+    color: #000;
+    font-weight: bold;
+    font-size: 10px;
+    padding: 3px 7px;
+    cursor: pointer;
+  }
+
+  .winamp-btn:active {
+    border-top-color: #222;
+    border-left-color: #222;
+    border-bottom-color: #eee;
+    border-right-color: #eee;
+  }
+
+  /* Minesweeper */
+  .mine-led {
+    background: #000000;
+    color: #ff0000;
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: bold;
+    padding: 2px 5px;
+    border: 2px inset #808080;
+    letter-spacing: 1px;
+  }
+
+  .mine-cell {
+    width: 20px;
+    height: 20px;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .mine-cell.open {
+    border: 1px solid #808080;
+    background: #c0c0c0;
+    cursor: default;
+  }
+
+  .mine-cell.boom {
+    background: #ff0000;
+  }
+
+  /* Solitaire */
+  .sol-felt {
+    background: #008000;
+    flex: 1;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow: auto;
+    position: relative;
+  }
+
+  .sol-pile {
+    width: 64px;
+    height: 88px;
+    border: 1px solid #005500;
+    border-radius: 5px;
+    background: rgba(0, 50, 0, 0.35);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .sol-card {
+    width: 64px;
+    height: 88px;
+    border-radius: 5px;
+    background: #ffffff;
+    border: 1px solid #000000;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.45);
+    position: absolute;
+    left: 0;
+    padding: 3px 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .sol-card.sel {
+    outline: 2px solid #ffff00;
+  }
+
+  .sol-card.back-castle {
+    background: repeating-linear-gradient(45deg, #003399, #003399 4px, #3366cc 4px, #3366cc 8px);
+    border: 2px solid #fff;
+    outline: 1px solid #000;
+  }
+
+  .sol-card.back-beach {
+    background: linear-gradient(180deg, #ff9933 0%, #ffcc66 55%, #0099cc 55%, #006699 100%);
+    border: 2px solid #fff;
+    outline: 1px solid #000;
+  }
+
+  .sol-card.back-robot {
+    background: repeating-linear-gradient(0deg, #666, #666 3px, #aaa 3px, #aaa 6px);
+    border: 2px solid #fff;
+    outline: 1px solid #000;
+  }
+
+  /* Modal Dialogs & Alt+Tab Switcher */
+  #modal-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 85000;
+  }
+
+  .xp-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.2);
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .xp-dialog {
+    background: var(--win-face);
+    border: 3px solid var(--title-border);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    box-shadow: 4px 6px 18px rgba(0,0,0,0.55);
+    min-width: 310px;
+    max-width: 94vw;
+    overflow: hidden;
+  }
+
+  #alt-tab-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--win-face);
+    border: 2px solid #0054e3;
+    box-shadow: 4px 4px 16px rgba(0,0,0,0.5);
+    padding: 14px 18px;
+    z-index: 95000;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 280px;
+  }
+
+  /* Balloon Notification */
+  #tray-balloon {
+    position: fixed;
+    bottom: 38px;
+    right: 12px;
+    width: 265px;
+    background: #ffffe1;
+    border: 1px solid #000000;
+    border-radius: 6px;
+    padding: 9px 12px;
+    box-shadow: 2px 3px 8px rgba(0,0,0,0.35);
+    z-index: 65000;
+    display: none;
+    color: #000;
+  }
+</style>
+</head>
+<body>
+
+<!-- ==========================================================================
+     1. AWARD MODULAR BIOS v6.00PG POST SCREEN (Intel Pentium III 800MHz, 3GB)
+     ========================================================================== -->
+<div id="bios-screen">
+  <div>
+    <div class="bios-top-row">
+      <div style="display:flex; gap:12px; align-items:center;">
+        <div style="border:2px solid #00aaff; padding:4px 8px; color:#00aaff; font-weight:bold;">AWARD<br>BIOS</div>
+        <div>
+          <div style="color:#ffffff; font-weight:bold;">Award Modular BIOS v6.00PG, An Energy Star Ally</div>
+          <div>Copyright (C) 1984-2001, Award Software, Inc.</div>
+          <div style="color:#55ffff; margin-top:4px;">ASUS CUSL2-C ACPI BIOS Revision 1009 (Intel i815EP Chipset)</div>
+        </div>
+      </div>
+      <div class="energy-star-logo">
+        <div style="font-size:16px; letter-spacing:1px;">energy</div>
+        <div style="font-size:10px; color:#55ffff;">EPA POLLUTION PREVENTER</div>
+      </div>
+    </div>
+    <div id="bios-post-body"></div>
+  </div>
+  <div class="bios-footer">
+    <div>Press <span style="color:#ffff55; font-weight:bold;">DEL</span> to enter SETUP, <span style="color:#ffff55; font-weight:bold;">ESC</span> to skip memory test</div>
+    <div style="display:flex; gap:8px;">
+      <button onclick="openBiosSetup()" style="background:#0000aa; color:#ffff55; border:1px solid #fff; padding:4px 10px; font-family:monospace; cursor:pointer;">Enter BIOS Setup [DEL]</button>
+      <button onclick="skipToXpBoot()" style="background:#222; color:#fff; border:1px solid #888; padding:4px 10px; font-family:monospace; cursor:pointer;">Fast Boot</button>
+    </div>
+  </div>
+</div>
+
+<!-- Award BIOS Setup Utility -->
+<div id="bios-setup-utility">
+  <div class="bios-setup-header">CMOS Setup Utility - Copyright (C) 1984-2001 Award Software</div>
+  <div class="bios-setup-main" id="bios-setup-content"></div>
+  <div style="display:flex; justify-content:space-between; color:#ffffff; padding:4px 6px;">
+    <span>↑↓←→ : Move &nbsp;&nbsp; Enter : Select &nbsp;&nbsp; ESC : Exit/Back &nbsp;&nbsp; F10 : Save & Exit</span>
+    <div style="display:flex; gap:8px;">
+      <button onclick="biosGoBack()" style="background:#333; color:#fff; border:1px solid #fff; padding:2px 10px; font-family:monospace; cursor:pointer;">Back [ESC]</button>
+      <button onclick="saveAndExitBios()" style="background:#aa0000; color:#ffff55; border:1px solid #fff; padding:2px 10px; font-family:monospace; cursor:pointer;">Save & Exit [F10]</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================================================
+     2. WINDOWS XP BOOT SCREEN
+     ========================================================================== -->
+<div id="xp-boot-screen">
+  <div></div>
+  <div style="display:flex; flex-direction:column; align-items:center; gap:36px;">
+    <div style="display:flex; align-items:flex-end; gap:14px;">
+      <div>
+        <div style="font-size:15px; color:#ccc; letter-spacing:0.5px;">Microsoft<sup style="font-size:9px;">&reg;</sup></div>
+        <div style="font-size:44px; font-weight:bold; line-height:0.95; letter-spacing:-1px;">Windows<sup style="font-size:16px; color:#ff6a00; font-weight:bold;">xp</sup></div>
+        <div style="font-size:18px; color:#d8d8d8; margin-top:4px; letter-spacing:1px;">Professional</div>
+      </div>
+      <!-- 4-Color XP Flag -->
+      <svg width="68" height="60" viewBox="0 0 68 60" style="margin-bottom:14px;">
+        <path d="M6 12 Q18 6 30 12 L27 28 Q16 22 4 28 Z" fill="#f25022"/>
+        <path d="M34 13 Q46 19 58 13 L55 29 Q44 35 31 29 Z" fill="#7fba00"/>
+        <path d="M4 32 Q16 26 27 32 L24 48 Q13 42 2 48 Z" fill="#00a4ef"/>
+        <path d="M31 33 Q44 39 55 33 L52 49 Q41 55 28 49 Z" fill="#ffb900"/>
+      </svg>
+    </div>
+    <div class="xp-boot-loader">
+      <div class="xp-boot-bars">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+  <div style="width:100%; display:flex; justify-content:space-between; color:#888; font-size:12px;">
+    <span>Copyright &copy; Microsoft Corporation</span>
+    <span style="font-style:italic; font-weight:bold; color:#bbb;">Microsoft</span>
+  </div>
+</div>
+
+<!-- ==========================================================================
+     3. WINDOWS XP WELCOME / LOGON SCREEN
+     ========================================================================== -->
+<div id="xp-welcome-screen">
+  <div class="welcome-top-bar"></div>
+  <div class="welcome-center">
+    <div class="welcome-split">
+      <div style="text-align:right; color:#ffffff;">
+        <div style="display:inline-flex; align-items:center; gap:10px; margin-bottom:10px;">
+          <div style="text-align:left;">
+            <div style="font-size:13px;">Microsoft<sup style="font-size:8px;">&reg;</sup></div>
+            <div style="font-size:34px; font-weight:bold; line-height:0.95;">Windows<sup style="font-size:13px; color:#ff9900;">xp</sup></div>
+            <div style="font-size:13px; color:#dce8ff;">Professional</div>
+          </div>
+          <svg width="52" height="46" viewBox="0 0 68 60">
+            <path d="M6 12 Q18 6 30 12 L27 28 Q16 22 4 28 Z" fill="#f25022"/>
+            <path d="M34 13 Q46 19 58 13 L55 29 Q44 35 31 29 Z" fill="#7fba00"/>
+            <path d="M4 32 Q16 26 27 32 L24 48 Q13 42 2 48 Z" fill="#00a4ef"/>
+            <path d="M31 33 Q44 39 55 33 L52 49 Q41 55 28 49 Z" fill="#ffb900"/>
+          </svg>
+        </div>
+        <div style="font-size:16px; text-shadow:1px 1px 2px rgba(0,0,0,0.4);">To begin, click your user name</div>
+      </div>
+
+      <div class="welcome-divider"></div>
+
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div class="welcome-user-card selected" onclick="logOnUser('Administrator')">
+          <div class="welcome-avatar" id="welcome-avatar-img"></div>
+          <div style="color:#ffffff;">
+            <div style="font-size:18px; font-weight:bold; text-shadow:1px 1px 2px rgba(0,0,0,0.5);">Administrator</div>
+            <div style="font-size:11px; color:#d2e2ff;">Intel Pentium III 800MHz &bull; 3.00 GB RAM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="welcome-bottom-bar">
+    <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="showTurnOffDialog(true)">
+      <div style="width:26px; height:26px; border-radius:4px; background:linear-gradient(180deg,#ff6a4d,#c9260e); border:1px solid #fff; display:flex; align-items:center; justify-content:center; font-weight:bold;">⏻</div>
+      <span style="font-size:14px;">Turn off computer</span>
+    </div>
+    <div style="font-size:11px; color:#c8d8ff; max-width:340px; text-align:right;">
+      After you log on, you can add or change accounts.<br>Just go to Control Panel and click User Accounts.
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================================================
+     4. WINDOWS XP LUNA DESKTOP SURFACE
+     ========================================================================== -->
+<div id="xp-desktop" onmousedown="desktopMouseDown(event)" oncontextmenu="desktopContextMenu(event)">
+  <div id="desktop-icons-area"></div>
+  <div id="selection-marquee"></div>
+</div>
+
+<!-- Start Menu & All Programs Flyout -->
+<div id="start-menu" onclick="event.stopPropagation()">
+  <div class="start-menu-header">
+    <div class="welcome-avatar" style="width:42px; height:42px; border-color:#fff;" id="start-avatar-img"></div>
+    <span id="start-username">Administrator</span>
+  </div>
+  <div class="start-menu-body">
+    <div class="start-left-col">
+      <div>
+        <div class="start-item" onclick="closeStartMenu(); openIE6();">
+          <div id="sm-ic-ie"></div>
+          <div>
+            <div style="font-weight:bold;">Internet</div>
+            <div class="start-item-sub">Internet Explorer</div>
+          </div>
+        </div>
+        <div class="start-item" onclick="closeStartMenu(); openOutlookModal();">
+          <div id="sm-ic-mail"></div>
+          <div>
+            <div style="font-weight:bold;">E-mail</div>
+            <div class="start-item-sub">Outlook Express</div>
+          </div>
+        </div>
+        <div class="start-sep"></div>
+        <div class="start-item" onclick="closeStartMenu(); openWinamp();">
+          <div id="sm-ic-winamp"></div>
+          <div>Winamp 2.91</div>
+        </div>
+        <div class="start-item" onclick="closeStartMenu(); openWMP9();">
+          <div id="sm-ic-wmp"></div>
+          <div>Windows Media Player</div>
+        </div>
+        <div class="start-item" onclick="closeStartMenu(); openPaint();">
+          <div id="sm-ic-paint"></div>
+          <div>Paint</div>
+        </div>
+        <div class="start-item" onclick="closeStartMenu(); openNotepad();">
+          <div id="sm-ic-notepad"></div>
+          <div>Notepad</div>
+        </div>
+        <div class="start-item" onclick="closeStartMenu(); openPinball();">
+          <div id="sm-ic-pinball"></div>
+          <div>3D Pinball - Space Cadet</div>
+        </div>
+        <div class="start-item" onclick="closeStartMenu(); openCmdPrompt();">
+          <div id="sm-ic-cmd"></div>
+          <div>Command Prompt</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="start-sep"></div>
+        <div class="start-item" style="justify-content:center; font-weight:bold;" onmouseenter="showAllPrograms()" onclick="showAllPrograms()">
+          <span>All Programs</span>
+          <span style="color:#2b7b2b; font-size:13px;">▶</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="start-right-col">
+      <div class="start-item" style="font-weight:bold;" onclick="closeStartMenu(); openExplorer('C:\\Documents and Settings\\Administrator\\My Documents');">
+        <div id="sm-ic-mydocs"></div><span>My Documents</span>
+      </div>
+      <div class="start-item" style="font-weight:bold;" onclick="closeStartMenu(); openExplorer('C:\\Documents and Settings\\Administrator\\My Documents\\My Pictures');">
+        <div id="sm-ic-mypics"></div><span>My Pictures</span>
+      </div>
+      <div class="start-item" style="font-weight:bold;" onclick="closeStartMenu(); openExplorer('C:\\Documents and Settings\\Administrator\\My Documents\\My Music');">
+        <div id="sm-ic-mymusic"></div><span>My Music</span>
+      </div>
+      <div class="start-item" style="font-weight:bold;" onclick="closeStartMenu(); openExplorer('My Computer');">
+        <div id="sm-ic-mycomp"></div><span>My Computer</span>
+      </div>
+      <div class="start-sep" style="background:#b0c8e8;"></div>
+      <div class="start-item" onclick="closeStartMenu(); openControlPanel();">
+        <div id="sm-ic-cp"></div><span>Control Panel</span>
+      </div>
+      <div class="start-item" onclick="closeStartMenu(); openDisplayProperties();">
+        <div id="sm-ic-disp"></div><span>Set Program Access and Defaults</span>
+      </div>
+      <div class="start-item" onclick="closeStartMenu(); showXPMessage('Printers and Faxes', 'No local or network printers are installed.', 'info');">
+        <div id="sm-ic-print"></div><span>Printers and Faxes</span>
+      </div>
+      <div class="start-sep" style="background:#b0c8e8;"></div>
+      <div class="start-item" onclick="closeStartMenu(); openSystemProperties();">
+        <div id="sm-ic-help"></div><span>Help and Support</span>
+      </div>
+      <div class="start-item" onclick="closeStartMenu(); openSearchDialog();">
+        <div id="sm-ic-search"></div><span>Search</span>
+      </div>
+      <div class="start-item" onclick="closeStartMenu(); openRunDialog();">
+        <div id="sm-ic-run"></div><span>Run...</span>
+      </div>
+    </div>
+  </div>
+  <div class="start-menu-footer">
+    <div class="start-power-btn" onclick="closeStartMenu(); showLogOffDialog();">
+      <span style="background:#e89b25; padding:2px 5px; border-radius:3px; border:1px solid #fff;">🔑</span>
+      <span>Log Off</span>
+    </div>
+    <div class="start-power-btn" onclick="closeStartMenu(); showTurnOffDialog(false);">
+      <span style="background:#d9381e; padding:2px 5px; border-radius:3px; border:1px solid #fff;">⏻</span>
+      <span>Turn Off Computer</span>
+    </div>
+  </div>
+</div>
+
+<!-- All Programs Cascading Flyout -->
+<div id="all-programs-flyout" onclick="event.stopPropagation()">
+  <div class="flyout-item">
+    <span>📁 Accessories</span><span>▶</span>
+    <div class="flyout-sub">
+      <div class="flyout-item" onclick="closeStartMenu(); openCalculator();">🧮 Calculator</div>
+      <div class="flyout-item" onclick="closeStartMenu(); openCmdPrompt();">💻 Command Prompt</div>
+      <div class="flyout-item" onclick="closeStartMenu(); openNotepad();">📝 Notepad</div>
+      <div class="flyout-item" onclick="closeStartMenu(); openPaint();">🎨 Paint</div>
+      <div class="flyout-item" onclick="closeStartMenu(); openWordPad();">📄 WordPad</div>
+      <div class="flyout-item" onclick="closeStartMenu(); openExplorer('My Computer');">📂 Windows Explorer</div>
+    </div>
+  </div>
+  <div class="flyout-item">
+    <span>📁 Games</span><span>▶</span>
+    <div class="flyout-sub">
+      <div class="flyout-item" onclick="closeStartMenu(); openPinball();">🚀 3D Pinball - Space Cadet</div>
+      <div class="flyout-item" onclick="closeStartMenu(); openMinesweeper();">💣 Minesweeper</div>
+      <div class="flyout-item" onclick="closeStartMenu(); openSolitaire();">🃏 Solitaire</div>
+    </div>
+  </div>
+  <div class="flyout-item">
+    <span>📁 System Tools</span><span>▶</span>
+    <div class="flyout-sub">
+      <div class="flyout-item" onclick="closeStartMenu(); openTaskManager();">📊 Task Manager</div>
+      <div class="flyout-item" onclick="closeStartMenu(); openSystemProperties();">🖥️ System Information</div>
+      <div class="flyout-item" onclick="closeStartMenu(); openDxDiag();">🎛️ DirectX Diagnostic (dxdiag)</div>
+    </div>
+  </div>
+  <div class="start-sep"></div>
+  <div class="flyout-item" onclick="closeStartMenu(); openIE6();">🌐 Internet Explorer</div>
+  <div class="flyout-item" onclick="closeStartMenu(); openWinamp();">⚡ Winamp 2.91</div>
+  <div class="flyout-item" onclick="closeStartMenu(); openWMP9();">💿 Windows Media Player 9</div>
+</div>
+
+<!-- Taskbar -->
+<div id="xp-taskbar" onclick="event.stopPropagation()">
+  <div style="display:flex; align-items:center; flex:1; overflow:hidden;">
+    <button id="start-button" onclick="toggleStartMenu()">
+      <svg width="18" height="16" viewBox="0 0 68 60">
+        <path d="M6 12 Q18 6 30 12 L27 28 Q16 22 4 28 Z" fill="#f25022"/>
+        <path d="M34 13 Q46 19 58 13 L55 29 Q44 35 31 29 Z" fill="#7fba00"/>
+        <path d="M4 32 Q16 26 27 32 L24 48 Q13 42 2 48 Z" fill="#00a4ef"/>
+        <path d="M31 33 Q44 39 55 33 L52 49 Q41 55 28 49 Z" fill="#ffb900"/>
+      </svg>
+      <span>start</span>
+    </button>
+
+    <div class="quick-launch">
+      <div class="ql-icon" title="Show Desktop (Win+D)" onclick="toggleShowDesktop()">🖥️</div>
+      <div class="ql-icon" title="Launch Internet Explorer" onclick="openIE6()">🌐</div>
+      <div class="ql-icon" title="Winamp 2.91" onclick="openWinamp()">⚡</div>
+      <div class="ql-icon" title="Windows Media Player" onclick="openWMP9()">💿</div>
+    </div>
+
+    <div id="taskbar-tasks"></div>
+  </div>
+
+  <div id="system-tray">
+    <div class="tray-icon" title="Windows Security Alerts - Automatic Updates & Firewall Active" onclick="showBalloon('Windows Security Center', 'Your computer is protected. Intel Pentium III 800MHz & 3.00 GB RAM verified.')">🛡️</div>
+    <div class="tray-icon" title="Local Area Connection - Speed: 100.0 Mbps, Status: Connected" onclick="showBalloon('Local Area Connection', 'Speed: 100.0 Mbps\nStatus: Connected (Intel PRO/100 VE)')">🖧</div>
+    <div class="tray-icon" id="tray-vol-icon" title="Volume (Click to toggle sound)" onclick="toggleMute()">🔊</div>
+    <div id="tray-clock" style="font-size:11px; cursor:pointer; padding:2px 4px;" title="Double-click to adjust Date/Time" ondblclick="openDateTimeDialog()">12:00 PM</div>
+  </div>
+</div>
+
+<!-- Tray Balloon Notification -->
+<div id="tray-balloon">
+  <div style="display:flex; justify-content:space-between; align-items:center; font-weight:bold; margin-bottom:4px;">
+    <span id="balloon-title">Windows XP</span>
+    <span style="cursor:pointer; border:1px solid #999; padding:0 4px; border-radius:2px;" onclick="document.getElementById('tray-balloon').style.display='none'">✕</span>
+  </div>
+  <div id="balloon-text" style="font-size:11px; white-space:pre-line;"></div>
+</div>
+
+<!-- Desktop Context Menu -->
+<div id="context-menu" onclick="event.stopPropagation()"></div>
+
+<!-- Alt+Tab Switcher -->
+<div id="alt-tab-overlay">
+  <div style="font-weight:bold; color:#003399;">Switch To Window (Alt+Tab)</div>
+  <div id="alt-tab-list" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
+</div>
+
+<!-- Modal Layer -->
+<div id="modal-layer"></div>
+
+<script>
+/* ============================================================================
+   1. AUDIO SYNTHESIZER (Windows XP Chimes, Error Dings & Winamp Synth Tracks)
+   ============================================================================ */
+let audioEnabled = true;
+let audioCtx = null;
+
+function ensureAudio() {
+  if (!audioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (Ctx) audioCtx = new Ctx();
+  }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function toggleMute() {
+  audioEnabled = !audioEnabled;
+  const ic = document.getElementById('tray-vol-icon');
+  if (ic) ic.textContent = audioEnabled ? '🔊' : '🔇';
+  if (audioEnabled) playXPSound('ding');
+}
+
+function playXPSound(type) {
+  if (!audioEnabled) return;
+  try {
+    const ctx = ensureAudio();
+    if (!ctx) return;
+    const t = ctx.currentTime;
+
+    if (type === 'startup') {
+      // Lush Windows XP Startup Harp/Pad Chord (Eb major 9 arpeggio)
+      const notes = [
+        { f: 311.13, start: 0.00, dur: 1.4 }, // Eb4
+        { f: 466.16, start: 0.14, dur: 1.3 }, // Bb4
+        { f: 622.25, start: 0.28, dur: 1.2 }, // Eb5
+        { f: 783.99, start: 0.42, dur: 1.2 }, // G5
+        { f: 932.33, start: 0.56, dur: 1.3 }, // Bb5
+        { f: 698.46, start: 0.72, dur: 1.4 }  // F5
+      ];
+      notes.forEach(n => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(n.f, t + n.start);
+        gain.gain.setValueAtTime(0.0001, t + n.start);
+        gain.gain.exponentialRampToValueAtTime(0.08, t + n.start + 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + n.start + n.dur);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t + n.start);
+        osc.stop(t + n.start + n.dur + 0.05);
+      });
+    } else if (type === 'shutdown') {
+      const notes = [698.46, 622.25, 466.16, 311.13];
+      notes.forEach((f, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(f, t + i * 0.22);
+        gain.gain.setValueAtTime(0.08, t + i * 0.22);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.22 + 0.5);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t + i * 0.22);
+        osc.stop(t + i * 0.22 + 0.52);
+      });
+    } else if (type === 'error') {
+      // XP Critical Stop Chord
+      [220, 277.18, 329.63].forEach(f => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(f, t);
+        gain.gain.setValueAtTime(0.09, t);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.46);
+      });
+    } else if (type === 'exclamation') {
+      [523.25, 659.25, 783.99].forEach((f, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(f, t + i * 0.06);
+        gain.gain.setValueAtTime(0.07, t + i * 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.06 + 0.35);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t + i * 0.06);
+        osc.stop(t + i * 0.06 + 0.36);
+      });
+    } else if (type === 'balloon') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, t);
+      osc.frequency.exponentialRampToValueAtTime(950, t + 0.08);
+      gain.gain.setValueAtTime(0.06, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.13);
+    } else {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, t);
+      gain.gain.setValueAtTime(0.06, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.22);
+    }
+  } catch (e) {}
+}
+
+/* ============================================================================
+   2. SVG ARTWORK & WALLPAPER GENERATOR (Zero Broken External Images)
+   ============================================================================ */
+function getChessAvatarSVG() {
+  return `<svg width="48" height="48" viewBox="0 0 48 48">
+    <defs>
+      <linearGradient id="avBg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#ffaa33"/>
+        <stop offset="100%" stop-color="#cc5500"/>
+      </linearGradient>
+    </defs>
+    <rect width="48" height="48" fill="url(#avBg)"/>
+    <rect x="4" y="34" width="40" height="10" fill="#222" opacity="0.35"/>
+    <!-- Classic XP Chess Knight Silhouette -->
+    <path d="M16 38 L34 38 L32 32 C30 27 33 21 31 15 C29 10 24 8 20 9 L18 6 L16 10 C13 12 11 16 12 20 L17 21 C18 19 20 18 22 19 C21 23 17 27 16 38 Z" fill="#ffffff" stroke="#331100" stroke-width="1.5"/>
+  </svg>`;
+}
+
+function getXPSvgIcon(name, size = 32) {
+  const map = {
+    mycomp: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <rect x="4" y="4" width="28" height="20" rx="2" fill="#d8e4f8" stroke="#2c4d75" stroke-width="2"/>
+      <rect x="7" y="7" width="22" height="14" fill="#2478d8"/>
+      <path d="M7 18 Q18 13 29 18 L29 21 L7 21 Z" fill="#46a832"/>
+      <rect x="13" y="24" width="10" height="4" fill="#a0a8b8" stroke="#444"/>
+      <rect x="7" y="28" width="22" height="4" rx="1" fill="#d0d4dc" stroke="#444"/>
+    </svg>`,
+    mydocs: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <path d="M4 9 L14 9 L17 12 L32 12 L32 30 L4 30 Z" fill="#ffd859" stroke="#b58319" stroke-width="1.5"/>
+      <rect x="10" y="6" width="14" height="18" fill="#ffffff" stroke="#5577aa" stroke-width="1.2"/>
+      <line x1="13" y1="10" x2="21" y2="10" stroke="#316ac5" stroke-width="1.5"/>
+      <line x1="13" y1="14" x2="21" y2="14" stroke="#316ac5" stroke-width="1.5"/>
+      <path d="M4 15 L32 15 L30 30 L6 30 Z" fill="#ffdf73" stroke="#b58319" stroke-width="1.5"/>
+    </svg>`,
+    mynet: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <circle cx="18" cy="17" r="12" fill="#4aa3ff" stroke="#184e9e" stroke-width="2"/>
+      <path d="M10 14 Q16 10 22 14 Q26 19 20 24 Q13 25 10 14 Z" fill="#58c443"/>
+      <rect x="5" y="25" width="9" height="7" fill="#dce6f7" stroke="#224"/>
+      <rect x="22" y="25" width="9" height="7" fill="#dce6f7" stroke="#224"/>
+      <line x1="14" y1="29" x2="22" y2="29" stroke="#ff9900" stroke-width="2"/>
+    </svg>`,
+    recycle: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <polygon points="8,10 28,10 25,31 11,31" fill="#c8d8f0" stroke="#4a6b9c" stroke-width="1.8"/>
+      <ellipse cx="18" cy="10" rx="10" ry="3" fill="#e6f0ff" stroke="#4a6b9c" stroke-width="1.5"/>
+      <path d="M15 18 L18 14 L21 18 M21 22 L18 26 L15 22" fill="none" stroke="#2e8b57" stroke-width="2"/>
+    </svg>`,
+    ie: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <circle cx="18" cy="18" r="12" fill="#2989e8" stroke="#124b8a" stroke-width="1.5"/>
+      <ellipse cx="18" cy="18" rx="16" ry="6" transform="rotate(-28 18 18)" fill="none" stroke="#ffd23f" stroke-width="3"/>
+      <text x="11" y="25" fill="#ffffff" font-family="Arial" font-weight="bold" font-size="22">e</text>
+    </svg>`,
+    winamp: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <polygon points="18,3 33,18 18,33 3,18" fill="#ff9900" stroke="#331a00" stroke-width="2"/>
+      <polygon points="19,8 12,19 18,19 15,28 24,16 18,16" fill="#ffffff"/>
+    </svg>`,
+    wmp: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <circle cx="18" cy="18" r="14" fill="#ff7700" stroke="#003399" stroke-width="2.5"/>
+      <circle cx="18" cy="18" r="10" fill="#1e90ff"/>
+      <polygon points="15,12 25,18 15,24" fill="#ffffff"/>
+    </svg>`,
+    cmd: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <rect x="4" y="6" width="28" height="24" rx="2" fill="#000000" stroke="#4a6ea8" stroke-width="2"/>
+      <rect x="4" y="6" width="28" height="5" fill="#245edb"/>
+      <text x="7" y="21" fill="#ffffff" font-family="monospace" font-weight="bold" font-size="11">C:\\&gt;_</text>
+    </svg>`,
+    notepad: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <rect x="7" y="4" width="22" height="28" rx="2" fill="#70b8ff" stroke="#1d5694" stroke-width="1.5"/>
+      <rect x="9" y="8" width="18" height="22" fill="#ffffff"/>
+      <line x1="12" y1="13" x2="24" y2="13" stroke="#555" stroke-width="1.5"/>
+      <line x1="12" y1="17" x2="24" y2="17" stroke="#555" stroke-width="1.5"/>
+      <line x1="12" y1="21" x2="20" y2="21" stroke="#555" stroke-width="1.5"/>
+    </svg>`,
+    paint: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <path d="M9 14 L27 14 L25 31 L11 31 Z" fill="#e8eef7" stroke="#445577" stroke-width="1.5"/>
+      <line x1="13" y1="14" x2="10" y2="5" stroke="#cc2222" stroke-width="3"/>
+      <line x1="18" y1="14" x2="18" y2="4" stroke="#22aa22" stroke-width="3"/>
+      <line x1="23" y1="14" x2="26" y2="6" stroke="#2255dd" stroke-width="3"/>
+    </svg>`,
+    pinball: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <circle cx="18" cy="18" r="14" fill="#1b1464" stroke="#ff9900" stroke-width="2"/>
+      <polygon points="18,6 23,24 18,20 13,24" fill="#00ffff"/>
+      <circle cx="18" cy="27" r="3" fill="#ff3366"/>
+    </svg>`,
+    mine: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <circle cx="18" cy="19" r="9" fill="#111"/>
+      <line x1="18" y1="5" x2="18" y2="33" stroke="#111" stroke-width="3"/>
+      <line x1="4" y1="19" x2="32" y2="19" stroke="#111" stroke-width="3"/>
+      <circle cx="15" cy="16" r="2.2" fill="#fff"/>
+    </svg>`,
+    sol: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <rect x="5" y="5" width="17" height="24" rx="2" fill="#fff" stroke="#222" stroke-width="1.5"/>
+      <rect x="14" y="8" width="17" height="24" rx="2" fill="#fff" stroke="#222" stroke-width="1.5"/>
+      <path d="M22.5 16 L26 20 L22.5 24 L19 20 Z" fill="#e60000"/>
+    </svg>`,
+    calc: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <rect x="7" y="3" width="22" height="30" rx="2" fill="#99b4d1" stroke="#2b4566" stroke-width="1.8"/>
+      <rect x="10" y="6" width="16" height="6" fill="#d8f0d8" stroke="#335"/>
+      <rect x="10" y="15" width="4" height="4" fill="#fff"/>
+      <rect x="16" y="15" width="4" height="4" fill="#fff"/>
+      <rect x="22" y="15" width="4" height="4" fill="#ff9933"/>
+      <rect x="10" y="21" width="4" height="4" fill="#fff"/>
+      <rect x="16" y="21" width="4" height="4" fill="#fff"/>
+      <rect x="22" y="21" width="4" height="8" fill="#3366cc"/>
+    </svg>`,
+    cp: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <rect x="4" y="6" width="28" height="24" rx="2" fill="#ece9d8" stroke="#316ac5" stroke-width="2"/>
+      <rect x="8" y="10" width="8" height="7" fill="#ff5533"/>
+      <rect x="20" y="10" width="8" height="7" fill="#3399ff"/>
+      <rect x="8" y="20" width="8" height="7" fill="#44bb44"/>
+      <rect x="20" y="20" width="8" height="7" fill="#ffbb22"/>
+    </svg>`,
+    folder: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <path d="M4 9 L14 9 L17 12 L32 12 L32 29 L4 29 Z" fill="#f5c645" stroke="#b8861b" stroke-width="1.5"/>
+      <path d="M4 14 L32 14 L30 29 L6 29 Z" fill="#ffe07d" stroke="#b8861b" stroke-width="1.5"/>
+    </svg>`,
+    drive: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <rect x="5" y="12" width="26" height="13" rx="2" fill="#d0d6e0" stroke="#445" stroke-width="1.8"/>
+      <rect x="8" y="15" width="20" height="4" fill="#8894a8"/>
+      <circle cx="26" cy="21" r="1.5" fill="#00dd00"/>
+    </svg>`,
+    cdrom: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <circle cx="18" cy="18" r="13" fill="#d8e8ff" stroke="#446699" stroke-width="1.8"/>
+      <path d="M18 5 L24 18 L18 31 L12 18 Z" fill="#88ccff" opacity="0.6"/>
+      <circle cx="18" cy="18" r="4" fill="#ffffff" stroke="#446699" stroke-width="1.5"/>
+    </svg>`,
+    generic: `<svg width="${size}" height="${size}" viewBox="0 0 36 36">
+      <rect x="5" y="5" width="26" height="26" rx="3" fill="#ffffff" stroke="#316ac5" stroke-width="2"/>
+      <rect x="5" y="5" width="26" height="6" fill="#316ac5"/>
+    </svg>`
+  };
+  return map[name] || map.generic;
+}
+
+/* Crisp SVG Data-URI Wallpapers (Bliss, Azul, Autumn, Ascent, Red Moon Desert) */
+const xpWallpapers = {
+  'Bliss': `url("data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 800' preserveAspectRatio='none'>
+    <defs>
+      <linearGradient id='sky' x1='0' y1='0' x2='0' y2='1'>
+        <stop offset='0%' stop-color='#1e5ec7'/>
+        <stop offset='55%' stop-color='#5b9ef5'/>
+        <stop offset='100%' stop-color='#b5d8ff'/>
+      </linearGradient>
+      <linearGradient id='hillBack' x1='0' y1='0' x2='0' y2='1'>
+        <stop offset='0%' stop-color='#6db832'/>
+        <stop offset='100%' stop-color='#3d7a16'/>
+      </linearGradient>
+      <linearGradient id='hillFront' x1='0' y1='0' x2='0' y2='1'>
+        <stop offset='0%' stop-color='#7ed435'/>
+        <stop offset='45%' stop-color='#54a81d'/>
+        <stop offset='100%' stop-color='#2e6b0c'/>
+      </linearGradient>
+    </defs>
+    <rect width='1280' height='800' fill='url(#sky)'/>
+    <!-- Fluffy Cumulus Clouds -->
+    <g fill='#ffffff' opacity='0.88'>
+      <ellipse cx='260' cy='165' rx='115' ry='32'/>
+      <ellipse cx='220' cy='150' rx='65' ry='28'/>
+      <ellipse cx='310' cy='152' rx='75' ry='26'/>
+      <ellipse cx='820' cy='130' rx='150' ry='36'/>
+      <ellipse cx='760' cy='112' rx='85' ry='30'/>
+      <ellipse cx='890' cy='115' rx='95' ry='28'/>
+      <ellipse cx='1090' cy='210' rx='95' ry='22' opacity='0.7'/>
+    </g>
+    <!-- Distant Hill -->
+    <path d='M0 535 Q360 445 780 515 Q1060 560 1280 480 L1280 800 L0 800 Z' fill='url(#hillBack)'/>
+    <!-- Iconic Foreground Rolling Green Hill -->
+    <path d='M-40 585 Q340 435 760 555 Q1050 635 1320 535 L1320 800 L-40 800 Z' fill='url(#hillFront)'/>
+  </svg>`)}")`,
+  'Azul': `url("data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 800' preserveAspectRatio='none'>
+    <defs>
+      <linearGradient id='az' x1='0' y1='0' x2='1' y2='1'>
+        <stop offset='0%' stop-color='#004e98'/>
+        <stop offset='50%' stop-color='#0088cc'/>
+        <stop offset='100%' stop-color='#002b5c'/>
+      </linearGradient>
+    </defs>
+    <rect width='1280' height='800' fill='url(#az)'/>
+    <path d='M0 600 Q400 350 850 550 T1280 420 L1280 800 L0 800 Z' fill='#00a8e8' opacity='0.35'/>
+    <circle cx='920' cy='240' r='220' fill='#ffffff' opacity='0.08'/>
+  </svg>`)}")`,
+  'Autumn': `url("data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 800' preserveAspectRatio='none'>
+    <defs>
+      <linearGradient id='au' x1='0' y1='0' x2='0' y2='1'>
+        <stop offset='0%' stop-color='#d97724'/>
+        <stop offset='50%' stop-color='#b5441c'/>
+        <stop offset='100%' stop-color='#5e210d'/>
+      </linearGradient>
+    </defs>
+    <rect width='1280' height='800' fill='url(#au)'/>
+    <path d='M0 560 Q450 470 900 570 T1280 510 L1280 800 L0 800 Z' fill='#8c2d12'/>
+    <circle cx='320' cy='220' r='90' fill='#ffcc66' opacity='0.5'/>
+  </svg>`)}")`,
+  'Ascent': `url("data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 800' preserveAspectRatio='none'>
+    <defs>
+      <linearGradient id='as' x1='0' y1='0' x2='0' y2='1'>
+        <stop offset='0%' stop-color='#0f2557'/>
+        <stop offset='100%' stop-color='#4d88d6'/>
+      </linearGradient>
+    </defs>
+    <rect width='1280' height='800' fill='url(#as)'/>
+    <polygon points='180,800 540,260 900,800' fill='#e6eef8'/>
+    <polygon points='540,260 660,440 520,410 460,460' fill='#8cb3e6'/>
+    <polygon points='620,800 940,340 1260,800' fill='#c5d9f2'/>
+  </svg>`)}")`,
+  'None (Classic Teal)': 'none'
+};
+
+function setWallpaper(name) {
+  const desk = document.getElementById('xp-desktop');
+  if (!desk) return;
+  desk.style.backgroundImage = xpWallpapers[name] || xpWallpapers['Bliss'];
+}
+
+function setTheme(themeKey) {
+  document.body.classList.remove('theme-olive', 'theme-silver', 'theme-classic');
+  if (themeKey === 'olive') document.body.classList.add('theme-olive');
+  if (themeKey === 'silver') document.body.classList.add('theme-silver');
+  if (themeKey === 'classic') document.body.classList.add('theme-classic');
+}
+
+/* ============================================================================
+   3. VIRTUAL FILESYSTEM (Shared by Explorer, Notepad, WordPad, Paint, CMD)
+   ============================================================================ */
+const vfs = {
+  'C:\\': [
+    { name: 'Documents and Settings', type: 'folder', path: 'C:\\Documents and Settings' },
+    { name: 'Program Files', type: 'folder', path: 'C:\\Program Files' },
+    { name: 'WINDOWS', type: 'folder', path: 'C:\\WINDOWS' },
+    { name: 'boot.ini', type: 'file', size: '211 bytes', content: '[boot loader]\r\ntimeout=30\r\ndefault=multi(0)disk(0)rdisk(0)partition(1)\\WINDOWS\r\n[operating systems]\r\nmulti(0)disk(0)rdisk(0)partition(1)\\WINDOWS="Microsoft Windows XP Professional" /noexecute=optin /fastdetect\r\n' },
+    { name: 'AUTOEXEC.BAT', type: 'file', size: '0 bytes', content: 'REM Windows XP Professional Environment\r\n' }
+  ],
+  'C:\\Documents and Settings': [
+    { name: 'Administrator', type: 'folder', path: 'C:\\Documents and Settings\\Administrator' }
+  ],
+  'C:\\Documents and Settings\\Administrator': [
+    { name: 'Desktop', type: 'folder', path: 'C:\\Documents and Settings\\Administrator\\Desktop' },
+    { name: 'My Documents', type: 'folder', path: 'C:\\Documents and Settings\\Administrator\\My Documents' }
+  ],
+  'C:\\Documents and Settings\\Administrator\\Desktop': [
+    { name: 'Readme_XP.txt', type: 'file', size: '482 bytes', content: 'Welcome to Microsoft Windows XP Professional (Service Pack 3)!\r\n\r\nHardware Profile:\r\n- Processor: Intel Pentium III 800MHz (Coppermine, 133MHz FSB)\r\n- Memory: 3072 MB (3.00 GB) PC133 SDRAM\r\n- Graphics: NVIDIA GeForce2 MX 400 (64MB)\r\n\r\nEnjoy classic apps including Winamp 2.91, 3D Pinball Space Cadet, Minesweeper, Solitaire, Paint, IE6, and Command Prompt!' }
+  ],
+  'C:\\Documents and Settings\\Administrator\\My Documents': [
+    { name: 'My Pictures', type: 'folder', path: 'C:\\Documents and Settings\\Administrator\\My Documents\\My Pictures' },
+    { name: 'My Music', type: 'folder', path: 'C:\\Documents and Settings\\Administrator\\My Documents\\My Music' },
+    { name: 'Pentium3_Specs.txt', type: 'file', size: '390 bytes', content: 'SYSTEM SPECIFICATION SHEET\r\n--------------------------\r\nMotherboard: ASUS CUSL2-C (Intel 815EP)\r\nBIOS: Award Modular BIOS v6.00PG\r\nCPU: Intel Pentium III 800EB MHz (133 x 6.0)\r\nRAM: 3072 MB (3 x 1024MB SDRAM)\r\nOS: Windows XP Professional SP3\r\n' }
+  ],
+  'C:\\Documents and Settings\\Administrator\\My Documents\\My Pictures': [
+    { name: 'Bliss.bmp', type: 'file', size: '1.44 MB', app: 'paint' },
+    { name: 'Sample_Art.bmp', type: 'file', size: '640 KB', app: 'paint' }
+  ],
+  'C:\\Documents and Settings\\Administrator\\My Documents\\My Music': [
+    { name: 'DJ Mike Llama - Llama Whippin Intro.mp3', type: 'file', size: '245 KB', app: 'winamp' },
+    { name: 'Windows XP Title.wma', type: 'file', size: '1.82 MB', app: 'wmp' }
+  ],
+  'C:\\Program Files': [
+    { name: 'Internet Explorer', type: 'folder', path: 'C:\\Program Files\\Internet Explorer' },
+    { name: 'Winamp', type: 'folder', path: 'C:\\Program Files\\Winamp' },
+    { name: 'Windows Media Player', type: 'folder', path: 'C:\\Program Files\\Windows Media Player' },
+    { name: 'Windows NT', type: 'folder', path: 'C:\\Program Files\\Windows NT' }
+  ],
+  'C:\\Program Files\\Internet Explorer': [
+    { name: 'iexplore.exe', type: 'exe', size: '91 KB', app: 'ie' }
+  ],
+  'C:\\Program Files\\Winamp': [
+    { name: 'winamp.exe', type: 'exe', size: '842 KB', app: 'winamp' }
+  ],
+  'C:\\Program Files\\Windows Media Player': [
+    { name: 'wmplayer.exe', type: 'exe', size: '1.2 MB', app: 'wmp' }
+  ],
+  'C:\\Program Files\\Windows NT': [
+    { name: 'pinball.exe', type: 'exe', size: '1.8 MB', app: 'pinball' }
+  ],
+  'C:\\WINDOWS': [
+    { name: 'system32', type: 'folder', path: 'C:\\WINDOWS\\system32' },
+    { name: 'explorer.exe', type: 'exe', size: '1,008 KB', app: 'explorer' },
+    { name: 'notepad.exe', type: 'exe', size: '68 KB', app: 'notepad' },
+    { name: 'regedit.exe', type: 'exe', size: '142 KB' },
+    { name: 'win.ini', type: 'file', size: '215 bytes', content: '; for 16-bit app support\r\n[fonts]\r\n[extensions]\r\n[mci extensions]\r\n' }
+  ],
+  'C:\\WINDOWS\\system32': [
+    { name: 'cmd.exe', type: 'exe', size: '380 KB', app: 'cmd' },
+    { name: 'calc.exe', type: 'exe', size: '112 KB', app: 'calc' },
+    { name: 'mspaint.exe', type: 'exe', size: '335 KB', app: 'paint' },
+    { name: 'winmine.exe', type: 'exe', size: '117 KB', app: 'mine' },
+    { name: 'sol.exe', type: 'exe', size: '56 KB', app: 'sol' },
+    { name: 'taskmgr.exe', type: 'exe', size: '132 KB', app: 'taskmgr' },
+    { name: 'dxdiag.exe', type: 'exe', size: '1,290 KB', app: 'dxdiag' }
+  ],
+  'D:\\': [
+    { name: 'SETUP.EXE', type: 'exe', size: '420 KB', app: 'sysprop' },
+    { name: 'README.TXT', type: 'file', size: '180 bytes', content: 'Microsoft Windows XP Professional Service Pack 3 CD-ROM (Volume Label: WXPVOL_EN)\r\n' }
+  ]
+};
+
+/* ============================================================================
+   4. BIOS POST & INTERACTIVE AWARD BIOS SETUP UTILITY
+   ============================================================================ */
+let biosHaltedForSetup = false;
+let biosTimers = [];
+let biosSettings = {
+  quickPost: 'Enabled',
+  firstBoot: 'HDD-0',
+  secondBoot: 'CDROM',
+  cpuClock: '800MHz (133x6.0)'
+};
+
+function startBiosPost() {
+  const postEl = document.getElementById('bios-post-body');
+  biosHaltedForSetup = false;
+
+  const lines = [
+    "Main Processor : Intel Pentium(R) III 800MHz (133x6.0)",
+    "Memory Testing : 3145728K OK (3072MB SDRAM Installed)",
+    "",
+    "Award Plug and Play BIOS Extension v1.0A",
+    "Initialize Plug and Play Cards...",
+    "PNP Init Completed",
+    "",
+    "Detecting Primary Master   ... Maxtor 4D040H2 (40.0 GB Ultra DMA Mode 5)",
+    "Detecting Primary Slave    ... None",
+    "Detecting Secondary Master ... LITE-ON LTR-52327S 52x32x52 CD-RW",
+    "Detecting Secondary Slave  ... None",
+    "",
+    "Verifying DMI Pool Data ........ Update Success",
+    "Boot from CD/DVD : No Emulation",
+    "Starting Windows XP..."
+  ];
+
+  let step = 0;
+  function tick() {
+    if (biosHaltedForSetup) return;
+    if (step === 1) {
+      // Animate fast RAM count up to 3145728K (3GB)
+      let ram = 0;
+      const ramTimer = setInterval(() => {
+        if (biosHaltedForSetup) { clearInterval(ramTimer); return; }
+        ram += 393216;
+        if (ram >= 3145728) {
+          ram = 3145728;
+          clearInterval(ramTimer);
+          postEl.textContent = lines[0] + "\nMemory Testing : 3145728K OK (3072MB SDRAM Installed)\n";
+          step = 2;
+          biosTimers.push(setTimeout(tick, 180));
+        } else {
+          postEl.textContent = lines[0] + `\nMemory Testing : ${ram}K`;
+        }
+      }, 45);
+      return;
+    }
+
+    if (step < lines.length) {
+      postEl.textContent = lines.slice(0, step + 1).join('\n');
+      step++;
+      biosTimers.push(setTimeout(tick, step > 11 ? 260 : 120));
+    } else {
+      biosTimers.push(setTimeout(transitionToXpBoot, 400));
+    }
+  }
+  tick();
+}
+
+function openBiosSetup() {
+  biosHaltedForSetup = true;
+  biosTimers.forEach(t => clearTimeout(t));
+  document.getElementById('bios-screen').style.display = 'none';
+  const util = document.getElementById('bios-setup-utility');
+  util.style.display = 'flex';
+  renderBiosMainMenu();
+}
+
+function renderBiosMainMenu() {
+  const c = document.getElementById('bios-setup-content');
+  c.innerHTML = `
+    <div class="bios-setup-columns">
+      <div class="bios-col">
+        <div class="bios-menu-opt selected" onclick="renderBiosSub('cmos')">► Standard CMOS Features</div>
+        <div class="bios-menu-opt" onclick="renderBiosSub('adv')">► Advanced BIOS Features</div>
+        <div class="bios-menu-opt" onclick="renderBiosSub('chipset')">► Advanced Chipset Features</div>
+        <div class="bios-menu-opt" onclick="renderBiosSub('pnp')">► PnP/PCI Configurations</div>
+        <div class="bios-menu-opt" onclick="renderBiosSub('health')">► PC Health Status</div>
+      </div>
+      <div class="bios-col">
+        <div class="bios-menu-opt" onclick="renderBiosSub('freq')">► Frequency/Voltage Control</div>
+        <div class="bios-menu-opt" onclick="biosLoadDefaults()">Load Fail-Safe Defaults</div>
+        <div class="bios-menu-opt" onclick="biosLoadDefaults()">Load Optimized Defaults</div>
+        <div class="bios-menu-opt" onclick="saveAndExitBios()">Save & Exit Setup</div>
+        <div class="bios-menu-opt" onclick="saveAndExitBios()">Exit Without Saving</div>
+      </div>
+    </div>
+    <div class="bios-setup-help" id="bios-help-box">
+      Time, Date, Hard Disk Type...<br>
+      System Detected: Intel Pentium III 800MHz | Total Memory: 3072MB (3145728K)
+    </div>
+  `;
+}
+
+function renderBiosSub(page) {
+  const c = document.getElementById('bios-setup-content');
+  if (page === 'cmos') {
+    c.innerHTML = `
+      <div class="bios-subpage">
+        <div style="color:#ffff55; font-weight:bold; margin-bottom:10px;">Standard CMOS Features</div>
+        <div>Date (mm:dd:yy) : ${new Date().toDateString()}</div>
+        <div>Time (hh:mm:ss) : ${new Date().toLocaleTimeString()}</div>
+        <br>
+        <div>IDE Primary Master   : <span style="color:#55ffff;">Maxtor 4D040H2 (40020 MB)</span></div>
+        <div>IDE Primary Slave    : None</div>
+        <div>IDE Secondary Master : <span style="color:#55ffff;">LITE-ON LTR-52327S CD-RW</span></div>
+        <div>IDE Secondary Slave  : None</div>
+        <br>
+        <div>Base Memory          : 640K</div>
+        <div>Extended Memory      : <span style="color:#55ffff;">3144704K</span></div>
+        <div>Total Memory         : <span style="color:#55ffff;">3145728K (3072 MB)</span></div>
+      </div>
+    `;
+  } else if (page === 'adv') {
+    c.innerHTML = `
+      <div class="bios-subpage">
+        <div style="color:#ffff55; font-weight:bold; margin-bottom:10px;">Advanced BIOS Features</div>
+        <div>CPU Internal Cache        : <span style="color:#55ffff;">Enabled (32KB L1)</span></div>
+        <div>External Cache            : <span style="color:#55ffff;">Enabled (256KB ATC L2)</span></div>
+        <div>Quick Power On Self Test  : <span style="color:#55ffff; cursor:pointer;" onclick="biosSettings.quickPost = biosSettings.quickPost==='Enabled'?'Disabled':'Enabled'; renderBiosSub('adv');">[${biosSettings.quickPost}]</span> (Click to toggle)</div>
+        <div>First Boot Device         : <span style="color:#55ffff; cursor:pointer;" onclick="biosSettings.firstBoot = biosSettings.firstBoot==='HDD-0'?'CDROM':'HDD-0'; renderBiosSub('adv');">[${biosSettings.firstBoot}]</span></div>
+        <div>Second Boot Device        : <span style="color:#55ffff;">[${biosSettings.secondBoot}]</span></div>
+        <div>Boot Up Floppy Seek       : Disabled</div>
+      </div>
+    `;
+  } else if (page === 'health') {
+    c.innerHTML = `
+      <div class="bios-subpage">
+        <div style="color:#ffff55; font-weight:bold; margin-bottom:10px;">PC Health Status</div>
+        <div>CPU Core Temperature : <span style="color:#55ff55;">38°C / 100°F</span></div>
+        <div>System Temperature   : <span style="color:#55ff55;">29°C / 84°F</span></div>
+        <div>CPU Fan Speed        : <span style="color:#55ffff;">4620 RPM</span></div>
+        <div>Vcore (Coppermine)   : <span style="color:#55ffff;">1.70 V</span></div>
+        <div>+3.3V Voltage        : <span style="color:#55ffff;">3.31 V</span></div>
+        <div>+5.0V Voltage        : <span style="color:#55ffff;">5.04 V</span></div>
+        <div>+12.0V Voltage       : <span style="color:#55ffff;">12.08 V</span></div>
+      </div>
+    `;
+  } else if (page === 'freq') {
+    c.innerHTML = `
+      <div class="bios-subpage">
+        <div style="color:#ffff55; font-weight:bold; margin-bottom:10px;">Frequency / Voltage Control</div>
+        <div>CPU Operating Speed     : <span style="color:#55ffff;">Intel Pentium III 800EB MHz</span></div>
+        <div>CPU External Frequency  : <span style="color:#55ffff;">133 MHz</span></div>
+        <div>CPU Multiplier Factor   : <span style="color:#55ffff;">6.0x</span></div>
+        <div>DRAM Clock / Timing     : <span style="color:#55ffff;">133 MHz (CAS 2-2-2)</span></div>
+        <div>Installed SDRAM Banks   : <span style="color:#55ffff;">Bank 0: 1024MB | Bank 1: 1024MB | Bank 2: 1024MB</span></div>
+      </div>
+    `;
+  } else {
+    c.innerHTML = `
+      <div class="bios-subpage">
+        <div style="color:#ffff55; font-weight:bold; margin-bottom:10px;">PnP / PCI Device Listing</div>
+        <div>Bus 0 Dev 0  : Intel 82815 Host-Hub Interface Bridge</div>
+        <div>Bus 1 Dev 0  : NVIDIA GeForce2 MX 400 (AGP 4X, 64MB, IRQ 11)</div>
+        <div>Bus 2 Dev 5  : Creative Sound Blaster Live! Value (IRQ 5)</div>
+        <div>Bus 2 Dev 8  : Intel PRO/100 VE Network Connection (IRQ 10)</div>
+      </div>
+    `;
+  }
+}
+
+function biosGoBack() {
+  renderBiosMainMenu();
+}
+
+function biosLoadDefaults() {
+  const hb = document.getElementById('bios-help-box');
+  if (hb) hb.innerHTML = '<span style="color:#ffff55; font-weight:bold;">Optimized Defaults Loaded! (P3-800MHz, 3072MB PC133)</span>';
+}
+
+function saveAndExitBios() {
+  document.getElementById('bios-setup-utility').style.display = 'none';
+  transitionToXpBoot();
+}
+
+function skipToXpBoot() {
+  biosHaltedForSetup = true;
+  biosTimers.forEach(t => clearTimeout(t));
+  document.getElementById('bios-screen').style.display = 'none';
+  document.getElementById('bios-setup-utility').style.display = 'none';
+  showWelcomeScreen();
+}
+
+function transitionToXpBoot() {
+  document.getElementById('bios-screen').style.display = 'none';
+  const boot = document.getElementById('xp-boot-screen');
+  boot.style.display = 'flex';
+  setTimeout(() => {
+    boot.style.display = 'none';
+    showWelcomeScreen();
+  }, 1900);
+}
+
+function showWelcomeScreen() {
+  const ws = document.getElementById('xp-welcome-screen');
+  document.getElementById('welcome-avatar-img').innerHTML = getChessAvatarSVG();
+  ws.style.display = 'flex';
+}
+
+function logOnUser(user) {
+  document.getElementById('xp-welcome-screen').style.display = 'none';
+  document.getElementById('xp-desktop').classList.remove('desaturate');
+  document.getElementById('start-avatar-img').innerHTML = getChessAvatarSVG();
+  document.getElementById('start-username').textContent = user;
+  playXPSound('startup');
+  initDesktop();
+  setTimeout(() => {
+    showBalloon('Windows XP Professional SP3', 'Logged on as Administrator.\nHardware: Intel Pentium III 800MHz, 3.00 GB RAM.');
+  }, 900);
+}
+
+/* ============================================================================
+   5. DESKTOP ICONS, MARQUEE SELECTION, START MENU & TRAY CLOCK
+   ============================================================================ */
+let desktopIcons = [
+  { id: 'ic_mycomp', label: 'My Computer', icon: 'mycomp', action: () => openExplorer('My Computer') },
+  { id: 'ic_mydocs', label: 'My Documents', icon: 'mydocs', action: () => openExplorer('C:\\Documents and Settings\\Administrator\\My Documents') },
+  { id: 'ic_mynet', label: 'My Network Places', icon: 'mynet', action: () => openExplorer('My Network Places') },
+  { id: 'ic_recycle', label: 'Recycle Bin', icon: 'recycle', action: () => openExplorer('Recycle Bin') },
+  { id: 'ic_ie', label: 'Internet Explorer', icon: 'ie', action: () => openIE6() },
+  { id: 'ic_winamp', label: 'Winamp', icon: 'winamp', action: () => openWinamp() },
+  { id: 'ic_pinball', label: '3D Pinball', icon: 'pinball', action: () => openPinball() },
+  { id: 'ic_cmd', label: 'Command Prompt', icon: 'cmd', action: () => openCmdPrompt() }
+];
+
+function initDesktop() {
+  setWallpaper('Bliss');
+  renderDesktopIcons();
+  populateStartMenuIcons();
+  updateTrayClock();
+  setInterval(updateTrayClock, 1000);
+}
+
+function renderDesktopIcons() {
+  const area = document.getElementById('desktop-icons-area');
+  area.innerHTML = desktopIcons.map(ic => `
+    <div class="desktop-icon" id="${ic.id}" data-id="${ic.id}">
+      ${getXPSvgIcon(ic.icon, 36)}
+      <div class="desktop-icon-label">${ic.label}</div>
+    </div>
+  `).join('');
+
+  area.querySelectorAll('.desktop-icon').forEach(el => {
+    const ic = desktopIcons.find(x => x.id === el.dataset.id);
+    el.onmousedown = (e) => {
+      e.stopPropagation();
+      closeStartMenu();
+      closeAllMenus();
+      if (!e.ctrlKey) {
+        area.querySelectorAll('.desktop-icon').forEach(x => x.classList.remove('selected'));
+      }
+      el.classList.add('selected');
+    };
+    el.ondblclick = (e) => {
+      e.stopPropagation();
+      if (ic && ic.action) ic.action();
+    };
+  });
+}
+
+function populateStartMenuIcons() {
+  const map = {
+    'sm-ic-ie': 'ie', 'sm-ic-mail': 'generic', 'sm-ic-winamp': 'winamp',
+    'sm-ic-wmp': 'wmp', 'sm-ic-paint': 'paint', 'sm-ic-notepad': 'notepad',
+    'sm-ic-pinball': 'pinball', 'sm-ic-cmd': 'cmd', 'sm-ic-mydocs': 'mydocs',
+    'sm-ic-mypics': 'folder', 'sm-ic-mymusic': 'folder', 'sm-ic-mycomp': 'mycomp',
+    'sm-ic-cp': 'cp', 'sm-ic-disp': 'cp', 'sm-ic-print': 'generic',
+    'sm-ic-help': 'generic', 'sm-ic-search': 'generic', 'sm-ic-run': 'cmd'
+  };
+  Object.entries(map).forEach(([id, ic]) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = getXPSvgIcon(ic, 24);
+  });
+}
+
+function updateTrayClock() {
+  const el = document.getElementById('tray-clock');
+  if (el) {
+    el.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  }
+}
+
+function showBalloon(title, text) {
+  const b = document.getElementById('tray-balloon');
+  document.getElementById('balloon-title').textContent = title;
+  document.getElementById('balloon-text').textContent = text;
+  b.style.display = 'block';
+  playXPSound('balloon');
+  setTimeout(() => { b.style.display = 'none'; }, 5500);
+}
+
+/* Marquee Drag Selection on Desktop */
+function desktopMouseDown(e) {
+  closeStartMenu();
+  closeAllMenus();
+  document.getElementById('context-menu').style.display = 'none';
+  if (e.button !== 0 || e.target.closest('.xp-window') || e.target.closest('.desktop-icon')) return;
+
+  document.querySelectorAll('.desktop-icon').forEach(x => x.classList.remove('selected'));
+  const marquee = document.getElementById('selection-marquee');
+  const startX = e.clientX;
+  const startY = e.clientY;
+  marquee.style.left = startX + 'px';
+  marquee.style.top = startY + 'px';
+  marquee.style.width = '0px';
+  marquee.style.height = '0px';
+  marquee.style.display = 'block';
+
+  function onMove(ev) {
+    const x = Math.min(startX, ev.clientX);
+    const y = Math.min(startY, ev.clientY);
+    const w = Math.abs(ev.clientX - startX);
+    const h = Math.abs(ev.clientY - startY);
+    marquee.style.left = x + 'px';
+    marquee.style.top = y + 'px';
+    marquee.style.width = w + 'px';
+    marquee.style.height = h + 'px';
+
+    const mRect = { left: x, top: y, right: x + w, bottom: y + h };
+    document.querySelectorAll('.desktop-icon').forEach(icEl => {
+      const r = icEl.getBoundingClientRect();
+      const overlap = !(r.right < mRect.left || r.left > mRect.right || r.bottom < mRect.top || r.top > mRect.bottom);
+      icEl.classList.toggle('selected', overlap);
+    });
+  }
+
+  function onUp() {
+    marquee.style.display = 'none';
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  }
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+/* Desktop Right-Click Context Menu */
+function desktopContextMenu(e) {
+  if (e.target.closest('.xp-window')) return;
+  e.preventDefault();
+  closeStartMenu();
+  const cm = document.getElementById('context-menu');
+  cm.style.left = Math.min(e.clientX, window.innerWidth - 180) + 'px';
+  cm.style.top = Math.min(e.clientY, window.innerHeight - 190) + 'px';
+  cm.innerHTML = `
+    <div class="xp-submenu-item" onclick="renderDesktopIcons(); hideCtx();">Arrange Icons By Name</div>
+    <div class="xp-submenu-item" onclick="renderDesktopIcons(); hideCtx();">Refresh</div>
+    <div class="xp-menu-sep"></div>
+    <div class="xp-submenu-item" onclick="createNewDesktopFile(); hideCtx();">New ► Text Document</div>
+    <div class="xp-menu-sep"></div>
+    <div class="xp-submenu-item" style="font-weight:bold;" onclick="openDisplayProperties(); hideCtx();">Properties</div>
+  `;
+  cm.style.display = 'block';
+}
+
+function hideCtx() {
+  document.getElementById('context-menu').style.display = 'none';
+}
+
+function createNewDesktopFile() {
+  const name = `New Text Document (${desktopIcons.length - 7}).txt`;
+  vfs['C:\\Documents and Settings\\Administrator\\Desktop'].push({
+    name, type: 'file', size: '0 bytes', content: ''
+  });
+  desktopIcons.push({
+    id: 'ic_' + Date.now(),
+    label: name,
+    icon: 'notepad',
+    action: () => openNotepad('C:\\Documents and Settings\\Administrator\\Desktop\\' + name)
+  });
+  renderDesktopIcons();
+}
+
+/* Start Menu Toggles */
+function toggleStartMenu() {
+  const sm = document.getElementById('start-menu');
+  const open = sm.style.display === 'flex';
+  closeStartMenu();
+  if (!open) sm.style.display = 'flex';
+}
+
+function closeStartMenu() {
+  document.getElementById('start-menu').style.display = 'none';
+  document.getElementById('all-programs-flyout').style.display = 'none';
+}
+
+function showAllPrograms() {
+  document.getElementById('all-programs-flyout').style.display = 'flex';
+}
+
+/* ============================================================================
+   6. WINDOW MANAGER (Drag, Resize, Minimize, Maximize, Taskbar, Alt+Tab)
+   ============================================================================ */
+let windows = [];
+let zTop = 100;
+let activeWinId = null;
+
+function createXPWindow(opts) {
+  if (opts.singletonId) {
+    const ex = windows.find(w => w.singletonId === opts.singletonId);
+    if (ex) {
+      if (ex.minimized) restoreXPWindow(ex.id);
+      focusXPWindow(ex.id);
+      return ex;
+    }
+  }
+
+  const id = 'xpwin_' + Date.now() + '_' + Math.floor(Math.random() * 999);
+  const vw = window.innerWidth;
+  const vh = window.innerHeight - 30;
+  const width = Math.min(opts.width || 520, vw - 16);
+  const height = Math.min(opts.height || 380, vh - 16);
+  const off = (windows.length % 7) * 24;
+  const x = opts.x !== undefined ? opts.x : Math.max(8, Math.min(48 + off, vw - width - 8));
+  const y = opts.y !== undefined ? opts.y : Math.max(8, Math.min(32 + off, vh - height - 8));
+
+  const winObj = {
+    id,
+    singletonId: opts.singletonId || null,
+    title: opts.title || 'Window',
+    icon: opts.icon || 'generic',
+    x, y, width, height,
+    minimized: false,
+    maximized: false,
+    prevBounds: null,
+    resizable: opts.resizable !== false,
+    menus: opts.menus || [],
+    onClose: opts.onClose || null
+  };
+
+  const el = document.createElement('div');
+  el.className = 'xp-window';
+  el.id = id;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  el.style.width = width + 'px';
+  el.style.height = height + 'px';
+
+  const resizers = winObj.resizable
+    ? ['n','s','e','w','nw','ne','sw','se'].map(d => `<div class="resizer ${d}" data-dir="${d}"></div>`).join('')
+    : '';
+
+  const menuBar = winObj.menus.length
+    ? `<div class="xp-menubar">` + winObj.menus.map((m, mIdx) => `
+        <div class="xp-menu-item" onclick="toggleXPMenu('${id}', ${mIdx}, event)">
+          ${m.label}
+          <div class="xp-submenu" id="${id}_m_${mIdx}" style="display:none;">
+            ${m.items.map((it, sIdx) => it.sep
+              ? `<div class="xp-menu-sep"></div>`
+              : `<div class="xp-submenu-item ${it.disabled ? 'disabled' : ''}" onclick="runXPMenu('${id}', ${mIdx}, ${sIdx}, event)">
+                  <span>${it.label}</span>
+                  ${it.shortcut ? `<span style="color:#666;">${it.shortcut}</span>` : ''}
+                </div>`
+            ).join('')}
+          </div>
+        </div>
+      `).join('') + `</div>`
+    : '';
+
+  el.innerHTML = `
+    ${resizers}
+    <div class="xp-titlebar" onmousedown="dragXPWindow(event, '${id}')" ondblclick="toggleMaxXPWindow('${id}')">
+      <div class="xp-title-left">
+        ${getXPSvgIcon(winObj.icon, 16)}
+        <span class="xp-title-text" id="${id}_title">${winObj.title}</span>
+      </div>
+      <div class="xp-win-controls" onmousedown="event.stopPropagation()">
+        <div class="xp-ctrl-btn" title="Minimize" onclick="minimizeXPWindow('${id}')">
+          <svg width="10" height="10" viewBox="0 0 10 10"><rect x="2" y="7" width="6" height="2" fill="#fff"/></svg>
+        </div>
+        ${winObj.resizable ? `
+        <div class="xp-ctrl-btn" title="Maximize" onclick="toggleMaxXPWindow('${id}')">
+          <svg width="10" height="10" viewBox="0 0 10 10"><rect x="2" y="2" width="6" height="6" fill="none" stroke="#fff" stroke-width="1.6"/></svg>
+        </div>` : ''}
+        <div class="xp-ctrl-btn close-btn" title="Close" onclick="closeXPWindow('${id}')">
+          <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 2 L8 8 M8 2 L2 8" stroke="#fff" stroke-width="1.8"/></svg>
+        </div>
+      </div>
+    </div>
+    ${menuBar}
+    <div class="xp-content" id="${id}_body"></div>
+  `;
+
+  el.addEventListener('mousedown', () => focusXPWindow(id));
+  el.querySelectorAll('.resizer').forEach(r => {
+    r.addEventListener('mousedown', (e) => resizeXPWindow(e, id, r.dataset.dir));
+  });
+
+  document.getElementById('xp-desktop').appendChild(el);
+  windows.push(winObj);
+
+  if (opts.render) opts.render(document.getElementById(id + '_body'), winObj);
+  focusXPWindow(id);
+  renderTaskbar();
+  return winObj;
+}
+
+function focusXPWindow(id) {
+  activeWinId = id;
+  zTop++;
+  windows.forEach(w => {
+    const el = document.getElementById(w.id);
+    if (!el) return;
+    if (w.id === id) {
+      el.classList.add('active');
+      el.style.zIndex = zTop;
+    } else {
+      el.classList.remove('active');
+    }
+  });
+  renderTaskbar();
+}
+
+function closeXPWindow(id) {
+  const idx = windows.findIndex(w => w.id === id);
+  if (idx === -1) return;
+  const w = windows[idx];
+  if (w.onClose) w.onClose();
+  const el = document.getElementById(id);
+  if (el) el.remove();
+  windows.splice(idx, 1);
+
+  const visible = windows.filter(x => !x.minimized);
+  if (visible.length) {
+    visible.sort((a, b) => parseInt(document.getElementById(b.id).style.zIndex || 0) - parseInt(document.getElementById(a.id).style.zIndex || 0));
+    focusXPWindow(visible[0].id);
+  } else {
+    activeWinId = null;
+    renderTaskbar();
+  }
+}
+
+function minimizeXPWindow(id) {
+  const w = windows.find(x => x.id === id);
+  if (!w) return;
+  w.minimized = true;
+  document.getElementById(id).style.display = 'none';
+  if (activeWinId === id) activeWinId = null;
+  renderTaskbar();
+}
+
+function restoreXPWindow(id) {
+  const w = windows.find(x => x.id === id);
+  if (!w) return;
+  const el = document.getElementById(id);
+  if (w.minimized) {
+    w.minimized = false;
+    el.style.display = 'flex';
+  }
+  if (w.maximized && w.prevBounds) {
+    w.maximized = false;
+    Object.assign(w, w.prevBounds);
+    el.style.left = w.x + 'px';
+    el.style.top = w.y + 'px';
+    el.style.width = w.width + 'px';
+    el.style.height = w.height + 'px';
+  }
+  focusXPWindow(id);
+}
+
+function toggleMaxXPWindow(id) {
+  const w = windows.find(x => x.id === id);
+  if (!w || !w.resizable) return;
+  const el = document.getElementById(id);
+  if (!w.maximized) {
+    w.prevBounds = { x: w.x, y: w.y, width: w.width, height: w.height };
+    w.maximized = true;
+    w.x = 0; w.y = 0;
+    w.width = window.innerWidth;
+    w.height = window.innerHeight - 30;
+    el.style.left = '0px';
+    el.style.top = '0px';
+    el.style.width = w.width + 'px';
+    el.style.height = w.height + 'px';
+  } else {
+    restoreXPWindow(id);
+  }
+  focusXPWindow(id);
+}
+
+function toggleShowDesktop() {
+  const anyVisible = windows.some(w => !w.minimized);
+  windows.forEach(w => {
+    const el = document.getElementById(w.id);
+    if (!el) return;
+    w.minimized = anyVisible;
+    el.style.display = anyVisible ? 'none' : 'flex';
+  });
+  activeWinId = anyVisible ? null : (windows[windows.length - 1]?.id || null);
+  renderTaskbar();
+}
+
+function renderTaskbar() {
+  const container = document.getElementById('taskbar-tasks');
+  container.innerHTML = windows.map(w => `
+    <div class="taskbar-item ${w.id === activeWinId && !w.minimized ? 'active' : ''}" onclick="handleTaskbarClick('${w.id}')">
+      ${getXPSvgIcon(w.icon, 16)}
+      <span class="taskbar-item-title">${w.title}</span>
+    </div>
+  `).join('');
+}
+
+function handleTaskbarClick(id) {
+  const w = windows.find(x => x.id === id);
+  if (!w) return;
+  if (w.minimized) restoreXPWindow(id);
+  else if (activeWinId === id) minimizeXPWindow(id);
+  else focusXPWindow(id);
+}
+
+function dragXPWindow(e, id) {
+  if (e.button !== 0 || e.target.closest('.xp-win-controls')) return;
+  const w = windows.find(x => x.id === id);
+  if (!w || w.maximized) return;
+  focusXPWindow(id);
+  const el = document.getElementById(id);
+  const sx = e.clientX, sy = e.clientY, ox = w.x, oy = w.y;
+
+  function onMove(ev) {
+    w.x = Math.max(-w.width + 60, Math.min(window.innerWidth - 60, ox + (ev.clientX - sx)));
+    w.y = Math.max(0, Math.min(window.innerHeight - 58, oy + (ev.clientY - sy)));
+    el.style.left = w.x + 'px';
+    el.style.top = w.y + 'px';
+  }
+  function onUp() {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function resizeXPWindow(e, id, dir) {
+  e.stopPropagation();
+  const w = windows.find(x => x.id === id);
+  if (!w || w.maximized) return;
+  focusXPWindow(id);
+  const el = document.getElementById(id);
+  const sx = e.clientX, sy = e.clientY;
+  const ox = w.x, oy = w.y, ow = w.width, oh = w.height;
+
+  function onMove(ev) {
+    const dx = ev.clientX - sx, dy = ev.clientY - sy;
+    if (dir.includes('e')) w.width = Math.max(210, ow + dx);
+    if (dir.includes('s')) w.height = Math.max(130, oh + dy);
+    if (dir.includes('w')) {
+      const nw = Math.max(210, ow - dx);
+      w.x = ox + (ow - nw);
+      w.width = nw;
+    }
+    if (dir.includes('n')) {
+      const nh = Math.max(130, oh - dy);
+      w.y = Math.max(0, oy + (oh - nh));
+      w.height = nh;
+    }
+    el.style.left = w.x + 'px';
+    el.style.top = w.y + 'px';
+    el.style.width = w.width + 'px';
+    el.style.height = w.height + 'px';
+  }
+  function onUp() {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function closeAllMenus() {
+  document.querySelectorAll('.xp-submenu').forEach(x => x.style.display = 'none');
+  document.querySelectorAll('.xp-menu-item').forEach(x => x.classList.remove('open'));
+}
+
+function toggleXPMenu(winId, idx, e) {
+  e.stopPropagation();
+  const sub = document.getElementById(`${winId}_m_${idx}`);
+  const isOpen = sub.style.display === 'block';
+  closeAllMenus();
+  if (!isOpen) {
+    sub.style.display = 'block';
+    e.currentTarget.classList.add('open');
+  }
+}
+
+function runXPMenu(winId, mIdx, sIdx, e) {
+  e.stopPropagation();
+  const w = windows.find(x => x.id === winId);
+  if (!w) return;
+  const item = w.menus[mIdx].items[sIdx];
+  if (item.disabled) return;
+  closeAllMenus();
+  if (item.action) item.action(w);
+}
+
+/* ============================================================================
+   7. MODAL DIALOGS (MessageBox, Run, Turn Off Computer, Log Off, System Props)
+   ============================================================================ */
+function showXPMessage(title, html, type = 'info', buttons = [{ label: 'OK', primary: true }]) {
+  if (type === 'error') playXPSound('error');
+  else if (type === 'warning') playXPSound('exclamation');
+  else playXPSound('ding');
+
+  const layer = document.getElementById('modal-layer');
+  const bd = document.createElement('div');
+  bd.className = 'xp-modal-backdrop';
+  const badge = type === 'error'
+    ? `<div style="width:30px;height:30px;border-radius:50%;background:#d92616;color:#fff;font-weight:bold;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</div>`
+    : `<div style="width:30px;height:30px;border-radius:50%;background:#2468d6;color:#fff;font-weight:bold;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">i</div>`;
+
+  bd.innerHTML = `
+    <div class="xp-dialog">
+      <div class="xp-titlebar" style="background:var(--title-bg); color:var(--title-text);">
+        <div class="xp-title-left"><span class="xp-title-text">${title}</span></div>
+        <div class="xp-win-controls">
+          <div class="xp-ctrl-btn close-btn" onclick="this.closest('.xp-modal-backdrop').remove()">
+            <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 2 L8 8 M8 2 L2 8" stroke="#fff" stroke-width="1.8"/></svg>
+          </div>
+        </div>
+      </div>
+      <div style="padding:18px 20px;">
+        <div style="display:flex; gap:14px; align-items:center;">
+          ${badge}
+          <div style="line-height:1.45;">${html}</div>
+        </div>
+        <div style="margin-top:18px; display:flex; justify-content:center; gap:10px;" class="dlg-btns"></div>
+      </div>
+    </div>
+  `;
+  layer.appendChild(bd);
+  const btnRow = bd.querySelector('.dlg-btns');
+  buttons.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'xp-btn' + (b.primary ? ' default' : '');
+    btn.textContent = b.label;
+    btn.style.minWidth = '72px';
+    btn.onclick = () => {
+      if (b.action) b.action();
+      bd.remove();
+    };
+    btnRow.appendChild(btn);
+  });
+  return bd;
+}
+
+function showTurnOffDialog(fromWelcome = false) {
+  if (!fromWelcome) document.getElementById('xp-desktop').classList.add('desaturate');
+  const layer = document.getElementById('modal-layer');
+  const bd = document.createElement('div');
+  bd.className = 'xp-modal-backdrop';
+  bd.innerHTML = `
+    <div style="width:330px; border:2px solid #00309c; border-radius:8px; overflow:hidden; box-shadow:0 8px 28px rgba(0,0,0,0.7); background:#5a7edc; color:#fff;">
+      <div style="background:#00309c; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #f59b25;">
+        <span style="font-size:15px; font-weight:bold;">Turn off computer</span>
+        <span style="font-weight:bold; font-style:italic;">Windows XP</span>
+      </div>
+      <div style="padding:24px 16px; display:flex; justify-content:space-around; text-align:center;">
+        <div style="cursor:pointer;" onclick="execPowerAction('standby', this)">
+          <div style="width:38px;height:38px;margin:0 auto 6px;border-radius:6px;background:linear-gradient(180deg,#ffbe3d,#d97b00);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:18px;">🌙</div>
+          <div>Stand By</div>
+        </div>
+        <div style="cursor:pointer;" onclick="execPowerAction('turnoff', this)">
+          <div style="width:38px;height:38px;margin:0 auto 6px;border-radius:6px;background:linear-gradient(180deg,#ff6a4d,#c9260e);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:18px;">⏻</div>
+          <div>Turn Off</div>
+        </div>
+        <div style="cursor:pointer;" onclick="execPowerAction('restart', this)">
+          <div style="width:38px;height:38px;margin:0 auto 6px;border-radius:6px;background:linear-gradient(180deg,#52c452,#248a24);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:18px;">↻</div>
+          <div>Restart</div>
+        </div>
+      </div>
+      <div style="background:#00309c; padding:8px 14px; text-align:right; border-top:2px solid #f59b25;">
+        <button class="xp-btn" onclick="cancelPowerDialog(this)">Cancel</button>
+      </div>
+    </div>
+  `;
+  layer.appendChild(bd);
+}
+
+function cancelPowerDialog(btn) {
+  document.getElementById('xp-desktop').classList.remove('desaturate');
+  btn.closest('.xp-modal-backdrop').remove();
+}
+
+function execPowerAction(mode, el) {
+  el.closest('.xp-modal-backdrop').remove();
+  playXPSound('shutdown');
+  document.getElementById('xp-desktop').classList.remove('desaturate');
+  if (mode === 'restart') {
+    document.getElementById('xp-welcome-screen').style.display = 'none';
+    document.getElementById('bios-screen').style.display = 'flex';
+    startBiosPost();
+  } else if (mode === 'standby') {
+    showWelcomeScreen();
+  } else {
+    document.getElementById('modal-layer').innerHTML = `
+      <div style="position:fixed;inset:0;background:#000;color:#ff8c00;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:99999;pointer-events:auto;">
+        <div style="font-size:22px;font-weight:bold;">It is now safe to turn off your computer.</div>
+        <button class="xp-btn" onclick="document.getElementById('modal-layer').innerHTML=''; document.getElementById('bios-screen').style.display='flex'; startBiosPost();">Power On PC</button>
+      </div>
+    `;
+  }
+}
+
+function showLogOffDialog() {
+  document.getElementById('xp-desktop').classList.add('desaturate');
+  showXPMessage('Log Off Windows', 'Are you sure you want to log off?', 'warning', [
+    { label: 'Log Off', primary: true, action: () => {
+      playXPSound('shutdown');
+      document.getElementById('xp-desktop').classList.remove('desaturate');
+      showWelcomeScreen();
+    }},
+    { label: 'Cancel', action: () => document.getElementById('xp-desktop').classList.remove('desaturate') }
+  ]);
+}
+
+function openRunDialog() {
+  const bd = showXPMessage('Run', `
+    <div style="min-width:290px;">
+      <div style="margin-bottom:8px;">Type the name of a program, folder, document, or Internet resource, and Windows will open it for you.</div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <label>Open:</label>
+        <input type="text" id="xp-run-input" class="xp-input" style="flex:1;" placeholder="cmd, notepad, mspaint, calc, winmine, sol, pinball, dxdiag">
+      </div>
+    </div>
+  `, 'info', [
+    { label: 'OK', primary: true, action: () => {
+      const v = document.getElementById('xp-run-input').value.trim();
+      if (v) executeRunCommand(v);
+    }},
+    { label: 'Cancel' }
+  ]);
+  setTimeout(() => {
+    const inp = document.getElementById('xp-run-input');
+    if (inp) {
+      inp.focus();
+      inp.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          const v = inp.value.trim();
+          bd.remove();
+          if (v) executeRunCommand(v);
+        }
+      };
+    }
+  }, 30);
+}
+
+function executeRunCommand(raw) {
+  const cmd = raw.toLowerCase().replace(/\.exe$/, '').trim();
+  const routes = {
+    'cmd': () => openCmdPrompt(),
+    'command': () => openCmdPrompt(),
+    'notepad': () => openNotepad(),
+    'mspaint': () => openPaint(),
+    'paint': () => openPaint(),
+    'calc': () => openCalculator(),
+    'winmine': () => openMinesweeper(),
+    'sol': () => openSolitaire(),
+    'pinball': () => openPinball(),
+    'explorer': () => openExplorer('My Computer'),
+    'iexplore': () => openIE6(),
+    'winamp': () => openWinamp(),
+    'wmplayer': () => openWMP9(),
+    'taskmgr': () => openTaskManager(),
+    'control': () => openControlPanel(),
+    'dxdiag': () => openDxDiag(),
+    'winver': () => openSystemProperties(),
+    'sysdm.cpl': () => openSystemProperties(),
+    'desk.cpl': () => openDisplayProperties(),
+    'wordpad': () => openWordPad()
+  };
+  if (routes[cmd]) routes[cmd]();
+  else showXPMessage(raw, `Windows cannot find '${raw}'. Make sure you typed the name correctly, and then try again.`, 'error');
+}
+
+function openOutlookModal() {
+  showXPMessage('Outlook Express 6', 'Microsoft Outlook Express 6.00.2900.5512<br>No POP3/IMAP mail accounts configured on this workstation.', 'info');
+}
+
+function openSearchDialog() {
+  openExplorer('C:\\Documents and Settings\\Administrator\\My Documents');
+}
+
+function openDateTimeDialog() {
+  showXPMessage('Date and Time Properties', `
+    <div style="min-width:250px;">
+      <div style="font-weight:bold; color:#003399; margin-bottom:6px;">Current System Date & Time:</div>
+      <div>${new Date().toString()}</div>
+      <div style="margin-top:8px; color:#555;">Time Zone: (GMT-04:00) Atlantic Time (Canada)</div>
+    </div>
+  `);
+}
+
+/* ============================================================================
+   8. MY COMPUTER & WINDOWS EXPLORER (With XP Left Task Pane)
+   ============================================================================ */
+function openExplorer(startPath = 'My Computer') {
+  let history = [startPath];
+  let histIdx = 0;
+
+  createXPWindow({
+    title: startPath,
+    icon: startPath === 'My Computer' ? 'mycomp' : 'folder',
+    width: 640,
+    height: 430,
+    menus: [
+      { label: 'File', items: [{ label: 'Close', action: (w) => closeXPWindow(w.id) }] },
+      { label: 'View', items: [{ label: 'Refresh', shortcut: 'F5', action: () => renderExp() }] },
+      { label: 'Tools', items: [{ label: 'Folder Options...', action: () => {} }] },
+      { label: 'Help', items: [{ label: 'About Windows', action: () => openSystemProperties() }] }
+    ],
+    render: (container, winObj) => {
+      function navigate(path) {
+        history = history.slice(0, histIdx + 1);
+        history.push(path);
+        histIdx++;
+        renderExp();
+      }
+
+      window.renderExp = () => {
+        const cur = history[histIdx];
+        document.getElementById(winObj.id + '_title').textContent = cur;
+
+        let itemsHTML = '';
+        if (cur === 'My Computer') {
+          itemsHTML = `
+            <div style="font-weight:bold; color:#003399; border-bottom:1px solid #8ba1c7; padding-bottom:3px; margin-bottom:10px;">Files Stored on This Computer</div>
+            <div style="display:flex; gap:18px; flex-wrap:wrap; margin-bottom:18px;">
+              <div class="exp-item" data-nav="C:\\Documents and Settings\\Administrator\\My Documents" style="width:125px; display:flex; align-items:center; gap:8px; cursor:pointer; padding:4px;">
+                ${getXPSvgIcon('mydocs', 32)}<span>Shared Documents</span>
+              </div>
+              <div class="exp-item" data-nav="C:\\Documents and Settings\\Administrator\\My Documents" style="width:135px; display:flex; align-items:center; gap:8px; cursor:pointer; padding:4px;">
+                ${getXPSvgIcon('mydocs', 32)}<span>Administrator's Documents</span>
+              </div>
+            </div>
+            <div style="font-weight:bold; color:#003399; border-bottom:1px solid #8ba1c7; padding-bottom:3px; margin-bottom:10px;">Hard Disk Drives</div>
+            <div style="display:flex; gap:18px; flex-wrap:wrap; margin-bottom:18px;">
+              <div class="exp-item" data-nav="C:\\" style="width:155px; display:flex; align-items:center; gap:8px; cursor:pointer; padding:4px;">
+                ${getXPSvgIcon('drive', 32)}
+                <div><div>Local Disk (C:)</div><div style="font-size:10px; color:#666;">37.2 GB (Maxtor)</div></div>
+              </div>
+            </div>
+            <div style="font-weight:bold; color:#003399; border-bottom:1px solid #8ba1c7; padding-bottom:3px; margin-bottom:10px;">Devices with Removable Storage</div>
+            <div style="display:flex; gap:18px; flex-wrap:wrap;">
+              <div class="exp-item" data-nav="D:\\" style="width:165px; display:flex; align-items:center; gap:8px; cursor:pointer; padding:4px;">
+                ${getXPSvgIcon('cdrom', 32)}
+                <div><div>CD-RW Drive (D:)</div><div style="font-size:10px; color:#666;">WXPVOL_EN</div></div>
+              </div>
+            </div>
+          `;
+        } else if (cur === 'Recycle Bin') {
+          itemsHTML = `<div style="color:#666; padding:12px;">The Recycle Bin is empty.</div>`;
+        } else if (cur === 'My Network Places') {
+          itemsHTML = `
+            <div style="display:flex; gap:18px; flex-wrap:wrap;">
+              <div style="width:160px; display:flex; align-items:center; gap:8px; padding:4px;">
+                ${getXPSvgIcon('mynet', 32)}<span>SharedDocs on WORKGROUP-PC</span>
+              </div>
+            </div>
+          `;
+        } else {
+          const list = vfs[cur] || [];
+          itemsHTML = `<div style="display:flex; flex-wrap:wrap; gap:14px;">` + list.map((it, idx) => {
+            const ic = it.type === 'folder' ? 'folder' : (it.app || 'notepad');
+            return `
+              <div class="exp-item" data-idx="${idx}" style="width:92px; display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer; padding:4px;">
+                ${getXPSvgIcon(ic, 32)}
+                <span style="margin-top:4px; word-break:break-word;">${it.name}</span>
+              </div>
+            `;
+          }).join('') + `</div>`;
+        }
+
+        container.innerHTML = `
+          <!-- Navigation Toolbar -->
+          <div style="background:var(--win-face); border-bottom:1px solid #aca899; padding:3px 6px; display:flex; align-items:center; gap:6px;">
+            <button class="xp-btn" id="exp-back" ${histIdx === 0 ? 'disabled' : ''}>◀ Back</button>
+            <button class="xp-btn" id="exp-fwd" ${histIdx >= history.length - 1 ? 'disabled' : ''}>▶</button>
+            <button class="xp-btn" id="exp-up">⬆ Up</button>
+            <span style="margin-left:6px; color:#555;">Address</span>
+            <input type="text" class="xp-input" id="exp-addr" style="flex:1;" value="${cur}">
+            <button class="xp-btn" id="exp-go">Go</button>
+          </div>
+          <!-- Split Body -->
+          <div style="flex:1; display:flex; overflow:hidden; background:#ffffff;">
+            <div class="exp-left-pane">
+              <div class="exp-card">
+                <div class="exp-card-head"><span>System Tasks</span><span>⌃</span></div>
+                <div class="exp-card-body">
+                  <div class="exp-link" onclick="openSystemProperties()">🖥️ View system information</div>
+                  <div class="exp-link" onclick="openControlPanel()">⚙️ Add or remove programs</div>
+                  <div class="exp-link" onclick="openDisplayProperties()">🎨 Change a setting</div>
+                </div>
+              </div>
+              <div class="exp-card">
+                <div class="exp-card-head"><span>Other Places</span><span>⌃</span></div>
+                <div class="exp-card-body">
+                  <div class="exp-link" id="exp-nav-mycomp">💻 My Computer</div>
+                  <div class="exp-link" id="exp-nav-mydocs">📁 My Documents</div>
+                  <div class="exp-link" id="exp-nav-mynet">🌐 My Network Places</div>
+                </div>
+              </div>
+              <div class="exp-card">
+                <div class="exp-card-head"><span>Details</span><span>⌃</span></div>
+                <div class="exp-card-body" style="color:#000;">
+                  <div style="font-weight:bold;">${cur}</div>
+                  <div>System Folder</div>
+                  <div style="margin-top:4px; color:#333;">Intel Pentium III 800MHz<br>3.00 GB of RAM</div>
+                </div>
+              </div>
+            </div>
+            <div style="flex:1; padding:14px; overflow-y:auto;">
+              ${itemsHTML}
+            </div>
+          </div>
+        `;
+
+        container.querySelector('#exp-back').onclick = () => { if (histIdx > 0) { histIdx--; renderExp(); } };
+        container.querySelector('#exp-fwd').onclick = () => { if (histIdx < history.length - 1) { histIdx++; renderExp(); } };
+        container.querySelector('#exp-up').onclick = () => {
+          if (cur === 'My Computer') return;
+          if (cur === 'C:\\' || cur === 'D:\\' || cur === 'Recycle Bin' || cur === 'My Network Places') navigate('My Computer');
+          else {
+            const last = cur.lastIndexOf('\\');
+            navigate(last <= 2 ? 'C:\\' : cur.substring(0, last));
+          }
+        };
+        container.querySelector('#exp-go').onclick = () => {
+          const val = container.querySelector('#exp-addr').value.trim();
+          if (val === 'My Computer' || vfs[val]) navigate(val);
+        };
+        container.querySelector('#exp-nav-mycomp').onclick = () => navigate('My Computer');
+        container.querySelector('#exp-nav-mydocs').onclick = () => navigate('C:\\Documents and Settings\\Administrator\\My Documents');
+        container.querySelector('#exp-nav-mynet').onclick = () => navigate('My Network Places');
+
+        container.querySelectorAll('.exp-item').forEach(el => {
+          el.onclick = () => {
+            container.querySelectorAll('.exp-item').forEach(x => x.style.background = '');
+            el.style.background = '#d8e8ff';
+          };
+          el.ondblclick = () => {
+            if (el.dataset.nav) {
+              navigate(el.dataset.nav);
+            } else if (el.dataset.idx !== undefined) {
+              const item = vfs[cur][parseInt(el.dataset.idx)];
+              if (item.type === 'folder') navigate(item.path);
+              else if (item.app) executeRunCommand(item.app);
+              else openNotepad(`${cur}\\${item.name}`);
+            }
+          };
+        });
+      };
+
+      renderExp();
+    }
+  });
+}
+
+/* ============================================================================
+   9. SYSTEM PROPERTIES & DIRECTX DIAGNOSTIC TOOL (P3-800MHz, 3.00GB RAM)
+   ============================================================================ */
+function openSystemProperties() {
+  createXPWindow({
+    singletonId: 'sysprop',
+    title: 'System Properties',
+    icon: 'mycomp',
+    width: 420,
+    height: 430,
+    resizable: false,
+    render: (container, winObj) => {
+      container.innerHTML = `
+        <div style="padding:12px; display:flex; flex-direction:column; flex:1; justify-content:space-between;">
+          <div>
+            <div style="display:flex; border-bottom:1px solid #999; margin-bottom:12px;">
+              <div style="background:#fff; border:1px solid #999; border-bottom:none; padding:4px 10px; font-weight:bold;">General</div>
+              <div style="padding:4px 10px; color:#555;">Computer Name</div>
+              <div style="padding:4px 10px; color:#555;">Hardware</div>
+              <div style="padding:4px 10px; color:#555;">Advanced</div>
+            </div>
+            <div style="display:flex; gap:18px; align-items:flex-start; padding:6px;">
+              ${getXPSvgIcon('mycomp', 64)}
+              <div style="line-height:1.55;">
+                <div style="font-weight:bold;">System:</div>
+                <div style="padding-left:10px;">
+                  Microsoft Windows XP<br>
+                  Professional<br>
+                  Version 2002<br>
+                  Service Pack 3
+                </div>
+                <div style="font-weight:bold; margin-top:10px;">Registered to:</div>
+                <div style="padding-left:10px;">
+                  Administrator<br>
+                  Workgroup PC<br>
+                  55274-640-2673064-23941
+                </div>
+                <div style="font-weight:bold; margin-top:10px;">Computer:</div>
+                <div style="padding-left:10px;">
+                  Intel(R) Pentium(R) III processor<br>
+                  800 MHz<br>
+                  798 MHz, 3.00 GB of RAM<br>
+                  Physical Address Extension
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <button class="xp-btn default" style="min-width:75px;" onclick="closeXPWindow('${winObj.id}')">OK</button>
+          </div>
+        </div>
+      `;
+    }
+  });
+}
+
+function openDxDiag() {
+  createXPWindow({
+    singletonId: 'dxdiag',
+    title: 'DirectX Diagnostic Tool',
+    icon: 'cp',
+    width: 470,
+    height: 390,
+    resizable: false,
+    render: (container, winObj) => {
+      container.innerHTML = `
+        <div style="padding:12px; display:flex; flex-direction:column; flex:1; justify-content:space-between;">
+          <div>
+            <div style="margin-bottom:8px;">This tool reports detailed information about the DirectX components and drivers installed on your system.</div>
+            <div class="xp-groupbox">
+              <div class="xp-groupbox-title">System Information</div>
+              <div style="line-height:1.6; font-family:var(--font-ui);">
+                <div>Current Date/Time: ${new Date().toLocaleString()}</div>
+                <div>Computer Name: WXP-P3-800</div>
+                <div>Operating System: Microsoft Windows XP Professional (5.1, Build 2600)</div>
+                <div>Language: English (Regional Setting: English)</div>
+                <div>System Manufacturer: ASUSTeK Computer INC.</div>
+                <div>System Model: CUSL2-C (Intel i815EP)</div>
+                <div>BIOS: Award Modular BIOS v6.00PG</div>
+                <div>Processor: Intel(R) Pentium(R) III processor, ~800MHz</div>
+                <div>Memory: 3072MB RAM</div>
+                <div>Page File: 248MB used, 4694MB available</div>
+                <div>DirectX Version: DirectX 9.0c (4.09.0000.0904)</div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:right; margin-top:10px;">
+            <button class="xp-btn default" onclick="closeXPWindow('${winObj.id}')">Exit</button>
+          </div>
+        </div>
+      `;
+    }
+  });
+}
+
+/* ============================================================================
+   10. INTERNET EXPLORER 6 (Built-in Retro Pages: MSN 2003, Google 2003, Space Jam)
+   ============================================================================ */
+function openIE6() {
+  const sites = {
+    'http://www.msn.com/': `
+      <div style="font-family:Arial,sans-serif; padding:12px; background:#fff;">
+        <div style="background:linear-gradient(90deg,#003399,#3399ff); color:#fff; padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:22px; font-weight:bold;">msn<span style="color:#ffcc00;">.</span></span>
+          <span style="font-size:11px;">Welcome to MSN.com &bull; Windows XP Home Portal</span>
+        </div>
+        <div style="background:#eef4ff; border:1px solid #99bbee; padding:8px; margin-top:8px; display:flex; gap:8px;">
+          <input id="msn-q" type="text" style="flex:1; padding:4px; border:1px solid #336699;" placeholder="Search the Web with MSN Search...">
+          <button onclick="ieNavigate('http://www.google.com/')" style="background:#ff9900; border:1px solid #995500; color:#fff; font-weight:bold; padding:4px 12px; cursor:pointer;">Search</button>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
+          <div style="border:1px solid #ccc; padding:8px;">
+            <div style="font-weight:bold; color:#003399; border-bottom:1px solid #ccc; padding-bottom:4px;">Top Headlines</div>
+            <ul style="margin:6px 0; padding-left:18px; line-height:1.6;">
+              <li><a href="#" onclick="ieNavigate('http://www.google.com/'); return false;">Google Classic 2003 Search Engine</a></li>
+              <li><a href="#" onclick="ieNavigate('http://www.spacejam.com/'); return false;">Space Jam (1996 Official Archive)</a></li>
+              <li><a href="#" onclick="ieNavigate('http://windowsupdate.microsoft.com/'); return false;">Microsoft Windows Update v4</a></li>
+            </ul>
+          </div>
+          <div style="border:1px solid #ccc; padding:8px; background:#f9fbff;">
+            <div style="font-weight:bold; color:#003399; border-bottom:1px solid #ccc; padding-bottom:4px;">System Specs Detected</div>
+            <div style="margin-top:6px; line-height:1.5;">
+              Browser: MSIE 6.0; Windows NT 5.1<br>
+              CPU: Intel Pentium III 800MHz<br>
+              Memory: 3,072 MB SDRAM
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+    'http://www.google.com/': `
+      <div style="font-family:Arial,sans-serif; padding:34px 16px; text-align:center; background:#fff;">
+        <div style="font-size:48px; font-weight:bold; letter-spacing:-2px; margin-bottom:14px;">
+          <span style="color:#1849d6;">G</span><span style="color:#e62e1e;">o</span><span style="color:#f5b800;">o</span><span style="color:#1849d6;">g</span><span style="color:#2ca834;">l</span><span style="color:#e62e1e;">e</span>
+        </div>
+        <input id="g2003-in" type="text" style="width:320px; max-width:85%; padding:5px; border:1px solid #7f9db9; font-size:13px;" value="Pentium III 800MHz Windows XP">
+        <div style="margin-top:10px; display:flex; justify-content:center; gap:8px;">
+          <button onclick="document.getElementById('g2003-res').innerHTML = '<b>Showing 1 - 3 of about 1,420,000 results (0.14 seconds)</b><br><br><a href=\'#\' onclick=\'ieNavigate(\\'http://www.msn.com/\\');return false;\'>MSN.com - Windows XP Portal</a><br>Official start page for Internet Explorer 6.<br><br><a href=\'#\' onclick=\'ieNavigate(\\'http://www.spacejam.com/\\');return false;\'>Space Jam (1996)</a><br>Classic Warner Bros. interactive web site.'" style="padding:4px 12px;">Google Search</button>
+          <button onclick="ieNavigate('http://www.spacejam.com/')" style="padding:4px 12px;">I'm Feeling Lucky</button>
+        </div>
+        <div id="g2003-res" style="max-width:440px; margin:20px auto 0; text-align:left; font-size:12px; line-height:1.5;"></div>
+      </div>
+    `,
+    'http://www.spacejam.com/': `
+      <div style="background:#000018; color:#ffff00; font-family:'Times New Roman',serif; padding:24px; text-align:center; min-height:100%;">
+        <div style="font-size:32px; font-weight:bold; color:#ff3333; text-shadow:2px 2px #0000ff;">SPACE JAM</div>
+        <div style="margin:12px 0; color:#55ffff;">Warner Bros. Interactive (1996) &bull; Preserved for IE6</div>
+        <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin-top:18px;">
+          <div style="border:2px solid #ff00ff; padding:10px 14px; border-radius:50%;">Planet B-Ball</div>
+          <div style="border:2px solid #00ff00; padding:10px 14px; border-radius:50%;">Jam Central</div>
+          <div style="border:2px solid #ffff00; padding:10px 14px; border-radius:50%;">Lunar Tunes</div>
+          <div style="border:2px solid #00ffff; padding:10px 14px; border-radius:50%;">Junior Jam</div>
+        </div>
+      </div>
+    `,
+    'http://windowsupdate.microsoft.com/': `
+      <div style="font-family:Tahoma,sans-serif; padding:16px; background:#fff;">
+        <h2 style="color:#003399; margin-top:0;">Microsoft Windows Update</h2>
+        <div style="background:#e8f4e8; border:1px solid #3c9b3c; padding:10px; color:#1f5e1f;">
+          <b>Your computer is up to date!</b><br>
+          Windows XP Professional Service Pack 3 (Build 2600) is installed. No critical updates are needed at this time.
+        </div>
+      </div>
+    `
+  };
+
+  createXPWindow({
+    singletonId: 'ie6',
+    title: 'MSN.com - Microsoft Internet Explorer',
+    icon: 'ie',
+    width: 650,
+    height: 450,
+    menus: [
+      { label: 'File', items: [{ label: 'Close', action: (w) => closeXPWindow(w.id) }] },
+      { label: 'Favorites', items: [
+        { label: 'MSN.com', action: () => ieNavigate('http://www.msn.com/') },
+        { label: 'Google (2003)', action: () => ieNavigate('http://www.google.com/') },
+        { label: 'Space Jam (1996)', action: () => ieNavigate('http://www.spacejam.com/') },
+        { label: 'Windows Update', action: () => ieNavigate('http://windowsupdate.microsoft.com/') }
+      ]},
+      { label: 'Help', items: [{ label: 'About Internet Explorer', action: () => showXPMessage('About Internet Explorer', 'Microsoft Internet Explorer 6.0.2900.5512.xpsp_sp3<br>Cipher Strength: 128-bit') }] }
+    ],
+    render: (container, winObj) => {
+      container.innerHTML = `
+        <div style="background:var(--win-face); border-bottom:1px solid #aca899; padding:3px 6px; display:flex; gap:5px; align-items:center;">
+          <button class="xp-btn" onclick="ieNavigate('http://www.msn.com/')">🏠 Home</button>
+          <button class="xp-btn" onclick="ieNavigate('http://www.google.com/')">🔍 Google</button>
+          <button class="xp-btn" onclick="ieNavigate('http://www.spacejam.com/')">🏀 Space Jam</button>
+          <span style="margin-left:4px; color:#555;">Address</span>
+          <input type="text" class="xp-input" id="ie-url" style="flex:1;" value="http://www.msn.com/">
+          <button class="xp-btn" onclick="ieNavigate(document.getElementById('ie-url').value)">Go</button>
+        </div>
+        <div id="ie-viewport" style="flex:1; overflow-y:auto; background:#ffffff; user-select:text; -webkit-user-select:text;"></div>
+      `;
+
+      window.ieNavigate = (url) => {
+        const u = url.trim().toLowerCase();
+        const urlBox = document.getElementById('ie-url');
+        const vp = document.getElementById('ie-viewport');
+        if (urlBox) urlBox.value = url;
+
+        let key = Object.keys(sites).find(k => u.includes(k.replace('http://www.', '').replace('/', '')));
+        if (!key && u.includes('windowsupdate')) key = 'http://windowsupdate.microsoft.com/';
+        if (key) {
+          vp.innerHTML = sites[key];
+          document.getElementById(winObj.id + '_title').textContent = `${key} - Microsoft Internet Explorer`;
+        } else {
+          vp.innerHTML = `
+            <div style="padding:24px; font-family:Arial,sans-serif;">
+              <h3 style="color:#003399;">The page cannot be displayed</h3>
+              <p>The page you are looking for (${url}) is currently unavailable in offline demo mode.</p>
+              <p>Try visiting <a href="#" onclick="ieNavigate('http://www.msn.com/');return false;">MSN.com</a> or <a href="#" onclick="ieNavigate('http://www.google.com/');return false;">Google.com</a>.</p>
+            </div>
+          `;
+        }
+      };
+
+      ieNavigate('http://www.msn.com/');
+    }
+  });
+}
+
+/* ============================================================================
+   11. WINAMP 2.91 (Classic Metallic Skin + Web Audio Chiptune Synthesizer)
+   ============================================================================ */
+function openWinamp() {
+  const playlist = [
+    { title: "1. DJ Mike Llama - Llama Whippin' Intro (0:15)", notes: [330, 392, 493.88, 659.25, 587.33, 659.25, 783.99, 659.25], tempo: 140 },
+    { title: "2. Pentium III 800MHz - Coppermine Synth (1:20)", notes: [261.63, 329.63, 392.00, 523.25, 493.88, 392.00, 329.63, 293.66], tempo: 170 },
+    { title: "3. Bliss Hills - Luna Chiptune Mix (1:45)", notes: [349.23, 440.00, 523.25, 659.25, 587.33, 523.25, 440.00, 392.00], tempo: 190 }
+  ];
+
+  let curTrack = 0;
+  let playing = false;
+  let step = 0;
+  let playTimer = null;
+  let vizTimer = null;
+  let volume = 0.7;
+
+  createXPWindow({
+    singletonId: 'winamp',
+    title: 'Winamp 2.91',
+    icon: 'winamp',
+    width: 340,
+    height: 295,
+    resizable: false,
+    onClose: () => { stopWinamp(); if (vizTimer) clearInterval(vizTimer); },
+    render: (container) => {
+      container.innerHTML = `
+        <div class="winamp-shell">
+          <div style="background:linear-gradient(90deg,#1a2440,#4a5d8a,#1a2440); color:#fff; font-size:10px; font-weight:bold; padding:2px 6px; text-align:center; letter-spacing:2px;">WINAMP 2.91</div>
+          <div class="winamp-lcd">
+            <div style="width:95px;">
+              <div id="wa-time" style="font-size:20px; font-weight:bold; color:#00ff00;">00:00</div>
+              <canvas id="wa-viz" width="92" height="26" style="background:#000; border:1px solid #222; margin-top:3px;"></canvas>
+            </div>
+            <div style="flex:1; overflow:hidden;">
+              <div id="wa-marquee" style="background:#001800; border:1px solid #004400; padding:3px 5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:11px;">
+                ${playlist[curTrack].title}
+              </div>
+              <div style="display:flex; gap:6px; margin-top:4px; font-size:10px; color:#00cc00;">
+                <span style="border:1px solid #005500; padding:0 3px;">128 kbps</span>
+                <span style="border:1px solid #005500; padding:0 3px;">44 kHz</span>
+                <span style="color:#00ff00;">STEREO</span>
+              </div>
+              <div style="margin-top:5px; display:flex; align-items:center; gap:5px; font-size:10px;">
+                <span>VOL</span>
+                <input type="range" min="0" max="1" step="0.05" value="${volume}" style="flex:1; height:10px;" oninput="waSetVol(this.value)">
+              </div>
+            </div>
+          </div>
+
+          <!-- Transport Controls -->
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:2px 4px;">
+            <div style="display:flex; gap:3px;">
+              <button class="winamp-btn" onclick="waPrev()">|◀</button>
+              <button class="winamp-btn" onclick="waPlay()">▶</button>
+              <button class="winamp-btn" onclick="waPause()">||</button>
+              <button class="winamp-btn" onclick="waStop()">■</button>
+              <button class="winamp-btn" onclick="waNext()">▶|</button>
+            </div>
+            <span style="font-size:10px; color:#aaa;">EQ: ON</span>
+          </div>
+
+          <!-- Playlist Editor -->
+          <div style="background:#000; border:2px inset #383a4a; flex:1; padding:4px; overflow-y:auto; font-size:11px;" id="wa-playlist"></div>
+        </div>
+      `;
+
+      const vizCanvas = container.querySelector('#wa-viz');
+      const vCtx = vizCanvas.getContext('2d');
+
+      function renderPlaylist() {
+        const pl = container.querySelector('#wa-playlist');
+        pl.innerHTML = playlist.map((t, i) => `
+          <div onclick="waSelectTrack(${i})" style="padding:2px 4px; cursor:pointer; ${i === curTrack ? 'background:#000088; color:#ffffff;' : 'color:#00dd00;'}">
+            ${t.title}
+          </div>
+        `).join('');
+        container.querySelector('#wa-marquee').textContent = playlist[curTrack].title;
+      }
+
+      window.waSetVol = (v) => { volume = parseFloat(v); };
+      window.waSelectTrack = (i) => { curTrack = i; step = 0; renderPlaylist(); if (playing) waPlay(); };
+      window.waPrev = () => { curTrack = (curTrack - 1 + playlist.length) % playlist.length; step = 0; renderPlaylist(); if (playing) waPlay(); };
+      window.waNext = () => { curTrack = (curTrack + 1) % playlist.length; step = 0; renderPlaylist(); if (playing) waPlay(); };
+
+      window.waPlay = () => {
+        stopWinamp();
+        playing = true;
+        const tr = playlist[curTrack];
+        playTimer = setInterval(() => {
+          if (!playing) return;
+          const freq = tr.notes[step % tr.notes.length];
+          if (audioEnabled && volume > 0) {
+            try {
+              const ctx = ensureAudio();
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = 'sawtooth';
+              osc.frequency.setValueAtTime(freq, ctx.currentTime);
+              gain.gain.setValueAtTime(0.05 * volume, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.14);
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+              osc.start();
+              osc.stop(ctx.currentTime + 0.15);
+            } catch (e) {}
+          }
+          step++;
+          const secs = Math.floor((step * tr.tempo) / 1000);
+          const tEl = container.querySelector('#wa-time');
+          if (tEl) tEl.textContent = `${String(Math.floor(secs/60)).padStart(2,'0')}:${String(secs%60).padStart(2,'0')}`;
+        }, tr.tempo);
+      };
+
+      window.waPause = () => { playing = false; if (playTimer) clearInterval(playTimer); };
+      window.stopWinamp = () => { playing = false; step = 0; if (playTimer) clearInterval(playTimer); };
+      window.waStop = () => { stopWinamp(); const tEl = container.querySelector('#wa-time'); if (tEl) tEl.textContent = '00:00'; };
+
+      vizTimer = setInterval(() => {
+        vCtx.fillStyle = '#000';
+        vCtx.fillRect(0, 0, vizCanvas.width, vizCanvas.height);
+        for (let b = 0; b < 14; b++) {
+          const h = playing ? Math.floor(Math.random() * 22) + 2 : 2;
+          vCtx.fillStyle = h > 16 ? '#ff3300' : (h > 10 ? '#ffff00' : '#00ff00');
+          vCtx.fillRect(b * 6 + 2, 25 - h, 4, h);
+        }
+      }, 90);
+
+      renderPlaylist();
+    }
+  });
+}
+
+/* ============================================================================
+   12. WINDOWS MEDIA PLAYER 9
+   ============================================================================ */
+function openWMP9() {
+  let active = false;
+  let anim = null;
+
+  createXPWindow({
+    singletonId: 'wmp9',
+    title: 'Windows Media Player',
+    icon: 'wmp',
+    width: 440,
+    height: 320,
+    onClose: () => { if (anim) cancelAnimationFrame(anim); },
+    render: (container) => {
+      container.innerHTML = `
+        <div style="flex:1; background:linear-gradient(180deg,#2c4d8a,#16274a); display:flex; flex-direction:column; color:#fff;">
+          <div style="padding:6px 10px; font-weight:bold; background:rgba(0,0,0,0.3); display:flex; justify-content:space-between;">
+            <span>Now Playing: Windows XP Title.wma</span>
+            <span style="color:#88ccff;">Bars and Waves</span>
+          </div>
+          <div style="flex:1; background:#000; display:flex; align-items:center; justify-content:center; padding:6px;">
+            <canvas id="wmp-canvas" width="390" height="175" style="width:100%; height:100%;"></canvas>
+          </div>
+          <div style="height:44px; background:linear-gradient(180deg,#5982c9,#274785); display:flex; align-items:center; justify-content:center; gap:12px;">
+            <button class="xp-btn" onclick="wmpToggle(true)">▶ Play</button>
+            <button class="xp-btn" onclick="wmpToggle(false)">■ Stop</button>
+            <button class="xp-btn" onclick="playXPSound('startup')">🎵 Play XP Chime</button>
+          </div>
+        </div>
+      `;
+
+      const cv = container.querySelector('#wmp-canvas');
+      const cx = cv.getContext('2d');
+      let phase = 0;
+
+      window.wmpToggle = (state) => {
+        active = state;
+        if (state) playXPSound('startup');
+      };
+
+      function loop() {
+        cx.fillStyle = 'rgba(0, 0, 15, 0.25)';
+        cx.fillRect(0, 0, cv.width, cv.height);
+        phase += active ? 0.08 : 0.015;
+        cx.strokeStyle = active ? '#00ffcc' : '#225588';
+        cx.lineWidth = 2;
+        cx.beginPath();
+        for (let x = 0; x < cv.width; x += 4) {
+          const amp = active ? 48 * Math.sin(x * 0.02 + phase) : 6;
+          const y = cv.height / 2 + Math.sin(x * 0.04 - phase * 1.5) * amp;
+          if (x === 0) cx.moveTo(x, y);
+          else cx.lineTo(x, y);
+        }
+        cx.stroke();
+        anim = requestAnimationFrame(loop);
+      }
+      loop();
+    }
+  });
+}
+
+/* ============================================================================
+   13. 3D PINBALL - SPACE CADET (Playable Canvas Arcade Mini-Game)
+   ============================================================================ */
+function openPinball() {
+  let animId = null;
+
+  createXPWindow({
+    singletonId: 'pinball',
+    title: '3D Pinball for Windows - Space Cadet',
+    icon: 'pinball',
+    width: 460,
+    height: 510,
+    resizable: false,
+    onClose: () => { if (animId) cancelAnimationFrame(animId); },
+    render: (container) => {
+      container.innerHTML = `
+        <div style="flex:1; background:#090919; display:flex; color:#fff; overflow:hidden;">
+          <canvas id="pb-game-cv" width="300" height="475" style="background:#0c0c24; border-right:2px solid #334;"></canvas>
+          <div style="flex:1; padding:12px; display:flex; flex-direction:column; justify-content:space-between; background:linear-gradient(180deg,#1a1f3d,#0d1024);">
+            <div>
+              <div style="color:#ff9900; font-weight:bold; font-size:14px; text-align:center; border-bottom:1px solid #446; padding-bottom:6px;">SPACE CADET</div>
+              <div style="margin-top:14px;">
+                <div style="color:#88aaff; font-size:10px;">SCORE</div>
+                <div id="pb-score" style="font-family:var(--font-mono); font-size:20px; color:#00ff66; background:#000; padding:4px 6px; border:1px solid #335;">0</div>
+              </div>
+              <div style="margin-top:12px;">
+                <div style="color:#88aaff; font-size:10px;">BALL</div>
+                <div id="pb-balls" style="font-family:var(--font-mono); font-size:18px; color:#ffff00; background:#000; padding:4px 6px; border:1px solid #335;">1 / 3</div>
+              </div>
+              <div style="margin-top:14px; font-size:11px; line-height:1.5; color:#ccd;">
+                <b>Controls:</b><br>
+                • <b>Space</b>: Launch Ball<br>
+                • <b>Z / Left</b>: Left Flipper<br>
+                • <b>/ / Right</b>: Right Flipper
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <button class="xp-btn" onclick="pbLaunch()">Launch Ball [Space]</button>
+              <button class="xp-btn" onclick="pbReset()">New Game [F2]</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const cv = container.querySelector('#pb-game-cv');
+      const ctx = cv.getContext('2d');
+
+      let score = 0;
+      let ballNum = 1;
+      let ball = { x: 282, y: 410, vx: 0, vy: 0, r: 7, inLane: true };
+      let leftFlip = false, rightFlip = false;
+      const bumpers = [
+        { x: 110, y: 120, r: 18, pts: 500, flash: 0, col: '#ff3366' },
+        { x: 180, y: 120, r: 18, pts: 500, flash: 0, col: '#00ccff' },
+        { x: 145, y: 175, r: 18, pts: 750, flash: 0, col: '#ffcc00' }
+      ];
+
+      window.pbReset = () => {
+        score = 0;
+        ballNum = 1;
+        resetBall();
+        updateHud();
+      };
+
+      function resetBall() {
+        ball = { x: 282, y: 410, vx: 0, vy: 0, r: 7, inLane: true };
+      }
+
+      window.pbLaunch = () => {
+        if (ball.inLane) {
+          ball.vy = -13.5 - Math.random() * 2;
+          ball.vx = -1.2;
+          playXPSound('balloon');
+        }
+      };
+
+      function updateHud() {
+        const sEl = container.querySelector('#pb-score');
+        const bEl = container.querySelector('#pb-balls');
+        if (sEl) sEl.textContent = score.toLocaleString();
+        if (bEl) bEl.textContent = ballNum <= 3 ? `${ballNum} / 3` : 'GAME OVER';
+      }
+
+      const keyDownHandler = (e) => {
+        if (e.key === 'z' || e.key === 'Z' || e.key === 'ArrowLeft') leftFlip = true;
+        if (e.key === '/' || e.key === 'ArrowRight') rightFlip = true;
+        if (e.code === 'Space' && activeWinId && windows.find(w => w.id === activeWinId)?.singletonId === 'pinball') {
+          e.preventDefault();
+          pbLaunch();
+        }
+      };
+      const keyUpHandler = (e) => {
+        if (e.key === 'z' || e.key === 'Z' || e.key === 'ArrowLeft') leftFlip = false;
+        if (e.key === '/' || e.key === 'ArrowRight') rightFlip = false;
+      };
+      window.addEventListener('keydown', keyDownHandler);
+      window.addEventListener('keyup', keyUpHandler);
+
+      function step() {
+        ctx.fillStyle = '#0c0c24';
+        ctx.fillRect(0, 0, cv.width, cv.height);
+
+        // Draw Table Borders & Plunger Lane
+        ctx.strokeStyle = '#3366ff';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(8, 8, 284, 460);
+        ctx.beginPath();
+        ctx.moveTo(270, 95);
+        ctx.lineTo(270, 468);
+        ctx.stroke();
+
+        // Top Arch
+        ctx.beginPath();
+        ctx.arc(145, 95, 137, Math.PI, 0);
+        ctx.stroke();
+
+        // Gravity & Movement
+        if (ballNum <= 3) {
+          ball.vy += 0.22;
+          ball.x += ball.vx;
+          ball.y += ball.vy;
+
+          // Top arch collision
+          if (ball.y < 32) {
+            ball.y = 32;
+            ball.vy = Math.abs(ball.vy) * 0.85;
+            if (ball.inLane) {
+              ball.inLane = false;
+              ball.vx = -3.5;
+            }
+          }
+
+          // Walls
+          if (ball.x < 16) { ball.x = 16; ball.vx = Math.abs(ball.vx) * 0.85; }
+          if (!ball.inLane && ball.x > 262) { ball.x = 262; ball.vx = -Math.abs(ball.vx) * 0.85; }
+          if (ball.inLane && ball.x > 284) { ball.x = 284; ball.vx = -Math.abs(ball.vx); }
+          if (ball.inLane && ball.y > 410) { ball.y = 410; ball.vy = 0; ball.vx = 0; }
+
+          // Bumpers
+          bumpers.forEach(b => {
+            if (b.flash > 0) b.flash--;
+            const dx = ball.x - b.x;
+            const dy = ball.y - b.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < ball.r + b.r) {
+              const ang = Math.atan2(dy, dx);
+              ball.vx = Math.cos(ang) * 7.5;
+              ball.vy = Math.sin(ang) * 7.5;
+              b.flash = 8;
+              score += b.pts;
+              updateHud();
+              playXPSound('ding');
+            }
+          });
+
+          // Flippers collision zone
+          const flipY = 425;
+          if (!ball.inLane && ball.y > flipY - 12 && ball.y < flipY + 14) {
+            if (ball.x > 65 && ball.x < 130) {
+              ball.y = flipY - 12;
+              ball.vy = leftFlip ? -11.5 : -4.2;
+              ball.vx += leftFlip ? 2.5 : 0.6;
+              score += 50;
+              updateHud();
+            } else if (ball.x > 150 && ball.x < 215) {
+              ball.y = flipY - 12;
+              ball.vy = rightFlip ? -11.5 : -4.2;
+              ball.vx += rightFlip ? -2.5 : -0.6;
+              score += 50;
+              updateHud();
+            }
+          }
+
+          // Gutter drain
+          if (!ball.inLane && ball.y > 475) {
+            ballNum++;
+            updateHud();
+            if (ballNum <= 3) resetBall();
+          }
+        }
+
+        // Draw Bumpers
+        bumpers.forEach(b => {
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, b.r + (b.flash > 0 ? 3 : 0), 0, Math.PI * 2);
+          ctx.fillStyle = b.flash > 0 ? '#ffffff' : b.col;
+          ctx.fill();
+          ctx.strokeStyle = '#fff';
+          ctx.stroke();
+        });
+
+        // Draw Flippers
+        ctx.lineWidth = 7;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#ff6600';
+        // Left
+        ctx.beginPath();
+        ctx.moveTo(68, 425);
+        ctx.lineTo(126, leftFlip ? 405 : 440);
+        ctx.stroke();
+        // Right
+        ctx.beginPath();
+        ctx.moveTo(212, 425);
+        ctx.lineTo(154, rightFlip ? 405 : 440);
+        ctx.stroke();
+
+        // Draw Silver Pinball
+        if (ballNum <= 3) {
+          ctx.beginPath();
+          ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+          ctx.fillStyle = '#e6eeff';
+          ctx.fill();
+        }
+
+        animId = requestAnimationFrame(step);
+      }
+
+      step();
+    }
+  });
+}
+
+/* ============================================================================
+   14. MINESWEEPER (XP Edition)
+   ============================================================================ */
+function openMinesweeper() {
+  let rows = 9, cols = 9, mines = 10;
+  let board = [], over = false, first = true, flags = 0, secs = 0, timer = null;
+
+  const win = createXPWindow({
+    singletonId: 'mine',
+    title: 'Minesweeper',
+    icon: 'mine',
+    width: 225,
+    height: 300,
+    resizable: false,
+    onClose: () => { if (timer) clearInterval(timer); },
+    menus: [
+      { label: 'Game', items: [
+        { label: 'New', shortcut: 'F2', action: () => initMine() },
+        { sep: true },
+        { label: 'Beginner', action: () => { rows=9; cols=9; mines=10; resizeMine(225,300); initMine(); } },
+        { label: 'Intermediate', action: () => { rows=16; cols=16; mines=40; resizeMine(365,440); initMine(); } },
+        { label: 'Expert', action: () => { rows=16; cols=30; mines=99; resizeMine(645,440); initMine(); } },
+        { sep: true },
+        { label: 'Exit', action: (w) => closeXPWindow(w.id) }
+      ]}
+    ],
+    render: (container) => {
+      function resizeMine(w, h) {
+        const el = document.getElementById(win.id);
+        if (el) { el.style.width = w + 'px'; el.style.height = h + 'px'; }
+      }
+
+      window.initMine = () => {
+        if (timer) clearInterval(timer);
+        timer = null; secs = 0; flags = 0; over = false; first = true;
+        board = Array.from({length: rows}, () => Array.from({length: cols}, () => ({ m: false, open: false, flag: false, cnt: 0, boom: false })));
+        drawMine('🙂');
+      };
+
+      function seed(er, ec) {
+        let p = 0;
+        while (p < mines) {
+          const r = Math.floor(Math.random() * rows), c = Math.floor(Math.random() * cols);
+          if (!board[r][c].m && !(Math.abs(r - er) <= 1 && Math.abs(c - ec) <= 1)) {
+            board[r][c].m = true; p++;
+          }
+        }
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            if (board[r][c].m) continue;
+            let k = 0;
+            for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+              if (board[r+dr]?.[c+dc]?.m) k++;
+            }
+            board[r][c].cnt = k;
+          }
+        }
+      }
+
+      function openCell(r, c) {
+        const cell = board[r]?.[c];
+        if (!cell || cell.open || cell.flag || over) return;
+        if (first) {
+          first = false;
+          seed(r, c);
+          timer = setInterval(() => {
+            if (!over && secs < 999) {
+              secs++;
+              const tEl = container.querySelector('#xm-time');
+              if (tEl) tEl.textContent = String(secs).padStart(3, '0');
+            }
+          }, 1000);
+        }
+        cell.open = true;
+        if (cell.m) {
+          cell.boom = true; over = true; clearInterval(timer);
+          playXPSound('error');
+          board.forEach(row => row.forEach(x => { if (x.m) x.open = true; }));
+          drawMine('😵');
+          return;
+        }
+        if (cell.cnt === 0) {
+          for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) openCell(r+dr, c+dc);
+        }
+        if (board.every(row => row.every(x => x.m || x.open))) {
+          over = true; clearInterval(timer); playXPSound('startup'); drawMine('😎');
+        }
+      }
+
+      function drawMine(face) {
+        const colors = ['','#0000ff','#008000','#ff0000','#000080','#800000','#008080','#000','#808080'];
+        container.innerHTML = `
+          <div style="background:#c0c0c0; padding:8px; flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="width:100%; display:flex; justify-content:space-between; align-items:center; border:2px inset #808080; padding:4px 6px;">
+              <div class="mine-led">${String(Math.max(0, mines - flags)).padStart(3, '0')}</div>
+              <button class="xp-btn" style="padding:2px 6px; font-size:15px;" onclick="initMine()">${face}</button>
+              <div class="mine-led" id="xm-time">${String(secs).padStart(3, '0')}</div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(${cols}, 20px); border:3px inset #808080;">
+              ${board.map((row, r) => row.map((cell, c) => `
+                <div class="mine-cell ${cell.open ? 'open' : ''} ${cell.boom ? 'boom' : ''}" data-r="${r}" data-c="${c}" style="color:${colors[cell.cnt]};">
+                  ${cell.open ? (cell.m ? '💣' : (cell.cnt || '')) : (cell.flag ? '🚩' : '')}
+                </div>
+              `).join('')).join('')}
+            </div>
+          </div>
+        `;
+        container.querySelectorAll('.mine-cell').forEach(el => {
+          const r = +el.dataset.r, c = +el.dataset.c;
+          el.onclick = () => { openCell(r, c); if (!over) drawMine('🙂'); };
+          el.oncontextmenu = (e) => {
+            e.preventDefault();
+            if (over || board[r][c].open) return;
+            board[r][c].flag = !board[r][c].flag;
+            flags += board[r][c].flag ? 1 : -1;
+            drawMine('🙂');
+          };
+        });
+      }
+      initMine();
+    }
+  });
+}
+
+/* ============================================================================
+   15. SOLITAIRE (Klondike)
+   ============================================================================ */
+function openSolitaire() {
+  const suits = [
+    { name: 'hearts', sym: '♥', color: '#e60000', red: true },
+    { name: 'diamonds', sym: '♦', color: '#e60000', red: true },
+    { name: 'clubs', sym: '♣', color: '#000000', red: false },
+    { name: 'spades', sym: '♠', color: '#000000', red: false }
+  ];
+  const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  let stock = [], waste = [], found = [[],[],[],[]], tab = [[],[],[],[],[],[],[]], sel = null, back = 'back-castle';
+
+  function deal() {
+    let deck = [];
+    suits.forEach(s => ranks.forEach((r, i) => deck.push({ s, r, val: i + 1, up: false })));
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+    tab = [[],[],[],[],[],[],[]];
+    for (let c = 0; c < 7; c++) {
+      for (let r = 0; r <= c; r++) {
+        const card = deck.pop();
+        if (r === c) card.up = true;
+        tab[c].push(card);
+      }
+    }
+    stock = deck; waste = []; found = [[],[],[],[]]; sel = null;
+  }
+
+  createXPWindow({
+    singletonId: 'sol',
+    title: 'Solitaire',
+    icon: 'sol',
+    width: 560,
+    height: 440,
+    menus: [
+      { label: 'Game', items: [
+        { label: 'Deal', shortcut: 'F2', action: () => { deal(); renderSolXP(); } },
+        { label: 'Deck: Castle', action: () => { back = 'back-castle'; renderSolXP(); } },
+        { label: 'Deck: Beach', action: () => { back = 'back-beach'; renderSolXP(); } },
+        { label: 'Deck: Robot', action: () => { back = 'back-robot'; renderSolXP(); } },
+        { sep: true },
+        { label: 'Exit', action: (w) => closeXPWindow(w.id) }
+      ]}
+    ],
+    render: (container) => {
+      deal();
+
+      window.renderSolXP = () => {
+        container.innerHTML = `
+          <div class="sol-felt">
+            <div style="display:flex; justify-content:space-between;">
+              <div style="display:flex; gap:12px;">
+                <div class="sol-pile" id="xs-stock" style="display:flex;align-items:center;justify-content:center;color:#00ff00;font-size:20px;cursor:pointer;">
+                  ${stock.length ? `<div class="sol-card ${back}" style="top:0;"></div>` : '↻'}
+                </div>
+                <div class="sol-pile" id="xs-waste">
+                  ${waste.length ? cardHTML(waste[waste.length - 1], 0, sel?.src === 'waste') : ''}
+                </div>
+              </div>
+              <div style="display:flex; gap:10px;">
+                ${found.map((f, i) => `
+                  <div class="sol-pile xs-found" data-f="${i}" style="display:flex;align-items:center;justify-content:center;color:#004400;font-size:22px;">
+                    ${f.length ? cardHTML(f[f.length - 1], 0, false) : suits[i].sym}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; gap:8px; flex:1;">
+              ${tab.map((col, c) => `
+                <div class="sol-pile xs-col" data-c="${c}" style="min-height:220px; border-color:transparent; background:rgba(0,0,0,0.12);">
+                  ${col.map((card, i) => cardHTML(card, i * 18, sel?.src === 'tab' && sel.c === c && i >= sel.i, c, i)).join('')}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+
+        container.querySelector('#xs-stock').onclick = () => {
+          sel = null;
+          if (stock.length) { const c = stock.pop(); c.up = true; waste.push(c); }
+          else { stock = waste.reverse().map(c => ({ ...c, up: false })); waste = []; }
+          renderSolXP();
+        };
+
+        const wCard = container.querySelector('#xs-waste .sol-card');
+        if (wCard) {
+          wCard.onclick = (e) => { e.stopPropagation(); sel = sel?.src === 'waste' ? null : { src: 'waste' }; renderSolXP(); };
+          wCard.ondblclick = (e) => { e.stopPropagation(); sendToFound(waste[waste.length - 1], () => waste.pop()); };
+        }
+
+        container.querySelectorAll('.xs-found').forEach(fEl => {
+          fEl.onclick = () => {
+            if (!sel) return;
+            const fi = +fEl.dataset.f;
+            const card = sel.src === 'waste' ? waste[waste.length - 1] : tab[sel.c][sel.i];
+            if (sel.src === 'tab' && sel.i !== tab[sel.c].length - 1) return;
+            const pile = found[fi];
+            if ((pile.length === 0 && card.val === 1) || (pile.length > 0 && pile[pile.length - 1].s.name === card.s.name && card.val === pile[pile.length - 1].val + 1)) {
+              popSelected(); pile.push(card); sel = null; playXPSound('ding'); renderSolXP();
+            }
+          };
+        });
+
+        container.querySelectorAll('.xs-col').forEach(colEl => {
+          const c = +colEl.dataset.c;
+          colEl.onclick = () => {
+            if (!sel) return;
+            const moving = getMoving();
+            const lead = moving[0];
+            const dest = tab[c];
+            if ((dest.length === 0 && lead.val === 13) || (dest.length > 0 && dest[dest.length - 1].up && dest[dest.length - 1].s.red !== lead.s.red && lead.val === dest[dest.length - 1].val - 1)) {
+              popSelected(); tab[c].push(...moving); sel = null; renderSolXP();
+            }
+          };
+
+          colEl.querySelectorAll('.sol-card').forEach(cEl => {
+            const i = +cEl.dataset.i;
+            const card = tab[c][i];
+            cEl.onclick = (e) => {
+              e.stopPropagation();
+              if (!card.up) {
+                if (i === tab[c].length - 1) { card.up = true; renderSolXP(); }
+                return;
+              }
+              if (sel) {
+                const moving = getMoving();
+                const lead = moving[0];
+                const top = tab[c][tab[c].length - 1];
+                if (top && top.s.red !== lead.s.red && lead.val === top.val - 1) {
+                  popSelected(); tab[c].push(...moving); sel = null; renderSolXP(); return;
+                }
+              }
+              sel = (sel?.src === 'tab' && sel.c === c && sel.i === i) ? null : { src: 'tab', c, i };
+              renderSolXP();
+            };
+            cEl.ondblclick = (e) => {
+              e.stopPropagation();
+              if (card.up && i === tab[c].length - 1) {
+                sendToFound(card, () => {
+                  tab[c].pop();
+                  if (tab[c].length && !tab[c][tab[c].length - 1].up) tab[c][tab[c].length - 1].up = true;
+                });
+              }
+            };
+          });
+        });
+      };
+
+      function getMoving() {
+        return sel.src === 'waste' ? [waste[waste.length - 1]] : tab[sel.c].slice(sel.i);
+      }
+
+      function popSelected() {
+        if (sel.src === 'waste') waste.pop();
+        else {
+          tab[sel.c].splice(sel.i);
+          if (tab[sel.c].length && !tab[sel.c][tab[sel.c].length - 1].up) tab[sel.c][tab[sel.c].length - 1].up = true;
+        }
+      }
+
+      function sendToFound(card, popFn) {
+        for (let i = 0; i < 4; i++) {
+          const p = found[i];
+          if ((p.length === 0 && card.val === 1) || (p.length > 0 && p[p.length - 1].s.name === card.s.name && card.val === p[p.length - 1].val + 1)) {
+            popFn(); p.push(card); sel = null; playXPSound('ding'); renderSolXP(); return;
+          }
+        }
+      }
+
+      function cardHTML(card, top, isSel, c = -1, i = -1) {
+        if (!card.up) return `<div class="sol-card ${back}" data-c="${c}" data-i="${i}" style="top:${top}px;"></div>`;
+        return `<div class="sol-card ${isSel ? 'sel' : ''}" data-c="${c}" data-i="${i}" style="top:${top}px; color:${card.s.color};">
+          <div>${card.r}${card.s.sym}</div>
+          <div style="font-size:22px; text-align:center;">${card.s.sym}</div>
+          <div style="text-align:right; transform:rotate(180deg);">${card.r}${card.s.sym}</div>
+        </div>`;
+      }
+
+      renderSolXP();
+    }
+  });
+}
+
+/* ============================================================================
+   16. PAINT (MS Paint)
+   ============================================================================ */
+function openPaint() {
+  const colors = ['#000000','#808080','#800000','#808000','#008000','#008080','#000080','#800080','#ffffff','#c0c0c0','#ff0000','#ffff00','#00ff00','#00ffff','#0000ff','#ff00ff'];
+  let fg = '#000000', tool = 'brush', sz = 3;
+
+  createXPWindow({
+    singletonId: 'paint',
+    title: 'untitled - Paint',
+    icon: 'paint',
+    width: 580,
+    height: 410,
+    menus: [
+      { label: 'File', items: [
+        { label: 'New', action: () => { const c = document.getElementById('xp-paint-cv'); if (c) { const x = c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); } } },
+        { label: 'Save as PNG...', action: () => { const c = document.getElementById('xp-paint-cv'); if (c) { const a = document.createElement('a'); a.download='XP_Paint.png'; a.href=c.toDataURL(); a.click(); } } },
+        { sep: true },
+        { label: 'Exit', action: (w) => closeXPWindow(w.id) }
+      ]},
+      { label: 'Image', items: [
+        { label: 'Invert Colors', action: () => {
+          const c = document.getElementById('xp-paint-cv');
+          if (!c) return;
+          const x = c.getContext('2d');
+          const img = x.getImageData(0, 0, c.width, c.height);
+          for (let i = 0; i < img.data.length; i += 4) {
+            img.data[i] = 255 - img.data[i];
+            img.data[i+1] = 255 - img.data[i+1];
+            img.data[i+2] = 255 - img.data[i+2];
+          }
+          x.putImageData(img, 0, 0);
+        }}
+      ]}
+    ],
+    render: (container) => {
+      container.innerHTML = `
+        <div style="flex:1; display:flex; overflow:hidden;">
+          <div style="width:52px; padding:4px; border-right:1px solid #aca899; display:flex; flex-direction:column; gap:4px; align-items:center;">
+            ${['brush','pencil','eraser','line','rect','circle'].map(t => `
+              <button class="xp-btn" style="width:38px; padding:3px 0; font-size:10px;" onclick="setPaintTool('${t}')">${t}</button>
+            `).join('')}
+          </div>
+          <div style="flex:1; background:#808080; padding:6px; overflow:auto;">
+            <canvas id="xp-paint-cv" width="480" height="290" style="background:#fff; cursor:crosshair; display:block;"></canvas>
+          </div>
+        </div>
+        <div style="height:34px; border-top:1px solid #aca899; padding:3px 8px; display:flex; align-items:center; gap:8px;">
+          <div id="xp-paint-fg" style="width:22px; height:22px; background:${fg}; border:1px solid #000;"></div>
+          <div style="display:flex; gap:2px;">
+            ${colors.map(c => `<div onclick="setPaintCol('${c}')" style="width:18px; height:18px; background:${c}; border:1px solid #555; cursor:pointer;"></div>`).join('')}
+          </div>
+        </div>
+      `;
+
+      const cv = container.querySelector('#xp-paint-cv');
+      const ctx = cv.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      window.setPaintTool = (t) => { tool = t; };
+      window.setPaintCol = (c) => { fg = c; container.querySelector('#xp-paint-fg').style.background = c; };
+
+      let drawing = false, sx = 0, sy = 0, snap = null;
+      cv.onmousedown = (e) => {
+        drawing = true;
+        const r = cv.getBoundingClientRect();
+        sx = e.clientX - r.left; sy = e.clientY - r.top;
+        snap = ctx.getImageData(0, 0, cv.width, cv.height);
+        ctx.beginPath(); ctx.moveTo(sx, sy);
+        ctx.strokeStyle = tool === 'eraser' ? '#ffffff' : fg;
+        ctx.lineWidth = tool === 'pencil' ? 1 : (tool === 'eraser' ? 12 : sz);
+        ctx.lineCap = 'round';
+      };
+      cv.onmousemove = (e) => {
+        if (!drawing) return;
+        const r = cv.getBoundingClientRect();
+        const x = e.clientX - r.left, y = e.clientY - r.top;
+        if (['brush','pencil','eraser'].includes(tool)) {
+          ctx.lineTo(x, y); ctx.stroke();
+        } else {
+          ctx.putImageData(snap, 0, 0);
+          ctx.strokeStyle = fg; ctx.lineWidth = sz;
+          if (tool === 'line') { ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(x, y); ctx.stroke(); }
+          if (tool === 'rect') ctx.strokeRect(sx, sy, x - sx, y - sy);
+          if (tool === 'circle') {
+            ctx.beginPath();
+            ctx.ellipse((sx+x)/2, (sy+y)/2, Math.abs(x-sx)/2, Math.abs(y-sy)/2, 0, 0, Math.PI*2);
+            ctx.stroke();
+          }
+        }
+      };
+      window.addEventListener('mouseup', () => { drawing = false; });
+    }
+  });
+}
+
+/* ============================================================================
+   17. NOTEPAD & WORDPAD
+   ============================================================================ */
+function openNotepad(filePath = null) {
+  let content = '';
+  let fname = 'Untitled';
+  if (filePath) {
+    const idx = filePath.lastIndexOf('\\');
+    const dir = idx <= 2 ? 'C:\\' : filePath.substring(0, idx);
+    fname = filePath.substring(idx + 1);
+    const fObj = vfs[dir]?.find(f => f.name.toLowerCase() === fname.toLowerCase());
+    if (fObj) content = fObj.content || '';
+  }
+
+  createXPWindow({
+    title: `${fname} - Notepad`,
+    icon: 'notepad',
+    width: 450,
+    height: 310,
+    menus: [
+      { label: 'File', items: [
+        { label: 'New', action: (w) => { const t = document.getElementById(w.id+'_ta'); if (t) t.value=''; } },
+        { label: 'Save', action: () => playXPSound('ding') },
+        { sep: true },
+        { label: 'Exit', action: (w) => closeXPWindow(w.id) }
+      ]},
+      { label: 'Edit', items: [
+        { label: 'Time/Date', shortcut: 'F5', action: (w) => { const t = document.getElementById(w.id+'_ta'); if (t) t.value += new Date().toLocaleString(); } }
+      ]}
+    ],
+    render: (container, winObj) => {
+      container.innerHTML = `<textarea id="${winObj.id}_ta" style="flex:1; border:none; outline:none; resize:none; padding:6px; font-family:var(--font-mono); font-size:13px; user-select:text; -webkit-user-select:text;"></textarea>`;
+      container.querySelector('textarea').value = content;
+    }
+  });
+}
+
+function openWordPad() {
+  createXPWindow({
+    singletonId: 'wordpad',
+    title: 'Document - WordPad',
+    icon: 'notepad',
+    width: 500,
+    height: 350,
+    render: (container) => {
+      container.innerHTML = `
+        <div style="padding:4px 8px; border-bottom:1px solid #aca899; display:flex; gap:6px;">
+          <button class="xp-btn" style="font-weight:bold;" onclick="document.execCommand('bold')">B</button>
+          <button class="xp-btn" style="font-style:italic;" onclick="document.execCommand('italic')">I</button>
+          <button class="xp-btn" style="text-decoration:underline;" onclick="document.execCommand('underline')">U</button>
+        </div>
+        <div contenteditable="true" style="flex:1; background:#fff; padding:12px; outline:none; font-family:'Times New Roman',serif; font-size:15px; user-select:text; -webkit-user-select:text;">
+          <b>Windows XP WordPad</b><br><br>Ready for rich text editing.
+        </div>
+      `;
+    }
+  });
+}
+
+/* ============================================================================
+   18. CALCULATOR (CALC.EXE)
+   ============================================================================ */
+function openCalculator() {
+  let disp = '0', prev = null, op = null, reset = false;
+
+  createXPWindow({
+    singletonId: 'calc',
+    title: 'Calculator',
+    icon: 'calc',
+    width: 260,
+    height: 265,
+    resizable: false,
+    render: (container) => {
+      const keys = ['7','8','9','/','4','5','6','*','1','2','3','-','0','.','=','+'];
+      container.innerHTML = `
+        <div style="padding:8px; display:flex; flex-direction:column; gap:8px; flex:1;">
+          <div id="xc-disp" style="background:#fff; border:1px solid #7f9db9; padding:4px 8px; text-align:right; font-family:var(--font-mono); font-size:16px;">0</div>
+          <div style="display:flex; gap:6px;">
+            <button class="xp-btn" style="flex:1; color:#800000;" onclick="xcPress('Back')">Backspace</button>
+            <button class="xp-btn" style="flex:1; color:#800000;" onclick="xcPress('C')">C</button>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:5px; flex:1;">
+            ${keys.map(k => `<button class="xp-btn" style="font-weight:bold; color:${'/*-+='.includes(k)?'#d92616':'#003399'};" onclick="xcPress('${k}')">${k}</button>`).join('')}
+          </div>
+        </div>
+      `;
+
+      window.xcPress = (k) => {
+        if (/^[0-9]$/.test(k)) {
+          disp = (disp === '0' || reset) ? k : disp + k;
+          reset = false;
+        } else if (k === '.') {
+          if (reset) { disp = '0.'; reset = false; }
+          else if (!disp.includes('.')) disp += '.';
+        } else if (k === 'C') {
+          disp = '0'; prev = null; op = null;
+        } else if (k === 'Back') {
+          disp = disp.length > 1 ? disp.slice(0, -1) : '0';
+        } else if (['+','-','*','/'].includes(k)) {
+          prev = parseFloat(disp); op = k; reset = true;
+        } else if (k === '=' && prev !== null && op) {
+          const cur = parseFloat(disp);
+          let r = 0;
+          if (op === '+') r = prev + cur;
+          if (op === '-') r = prev - cur;
+          if (op === '*') r = prev * cur;
+          if (op === '/') r = cur === 0 ? 'Cannot divide by zero' : prev / cur;
+          disp = String(r); prev = null; op = null; reset = true;
+        }
+        const dEl = container.querySelector('#xc-disp');
+        if (dEl) dEl.textContent = disp;
+      };
+    }
+  });
+}
+
+/* ============================================================================
+   19. COMMAND PROMPT (CMD.EXE)
+   ============================================================================ */
+function openCmdPrompt() {
+  let cwd = 'C:\\Documents and Settings\\Administrator';
+
+  createXPWindow({
+    title: 'Command Prompt',
+    icon: 'cmd',
+    width: 560,
+    height: 340,
+    render: (container, winObj) => {
+      container.innerHTML = `
+        <div id="${winObj.id}_cli" style="flex:1; background:#000; color:#c0c0c0; font-family:var(--font-mono); font-size:13px; padding:8px; overflow-y:auto; cursor:text;">
+          <div id="${winObj.id}_out" style="white-space:pre-wrap; line-height:1.3;">Microsoft Windows XP [Version 5.1.2600]\n(C) Copyright 1985-2001 Microsoft Corp.\n\n</div>
+          <div style="display:flex;">
+            <span id="${winObj.id}_pr">${cwd}&gt;</span>
+            <input id="${winObj.id}_in" type="text" autocomplete="off" spellcheck="false" style="flex:1; background:transparent; border:none; outline:none; color:#c0c0c0; font-family:var(--font-mono); font-size:13px; user-select:text; -webkit-user-select:text;">
+          </div>
+        </div>
+      `;
+
+      const cli = document.getElementById(winObj.id + '_cli');
+      const out = document.getElementById(winObj.id + '_out');
+      const pr = document.getElementById(winObj.id + '_pr');
+      const inp = document.getElementById(winObj.id + '_in');
+      cli.onclick = () => inp.focus();
+      setTimeout(() => inp.focus(), 40);
+
+      function println(s) { out.textContent += s + '\n'; cli.scrollTop = cli.scrollHeight; }
+
+      inp.onkeydown = (e) => {
+        if (e.key !== 'Enter') return;
+        const raw = inp.value;
+        inp.value = '';
+        println(`${cwd}>${raw}`);
+        const parts = raw.trim().split(/\s+/);
+        const cmd = (parts[0] || '').toUpperCase();
+        const arg = parts.slice(1).join(' ');
+
+        if (!cmd) return;
+        if (cmd === 'HELP') {
+          println('Supported Commands: DIR, CD, TYPE, CLS, VER, SYSTEMINFO, IPCONFIG, PING, TASKLIST, ECHO, EXIT');
+        } else if (cmd === 'CLS') {
+          out.textContent = '';
+        } else if (cmd === 'VER') {
+          println('\nMicrosoft Windows XP [Version 5.1.2600]\n');
+        } else if (cmd === 'SYSTEMINFO') {
+          println('\nHost Name:                 WXP-P3-800\nOS Name:                   Microsoft Windows XP Professional\nOS Version:                5.1.2600 Service Pack 3 Build 2600\nSystem Manufacturer:       ASUSTeK Computer INC.\nSystem Model:              CUSL2-C\nProcessor(s):              1 Processor(s) Installed.\n                           [01]: x86 Family 6 Model 8 Stepping 6 GenuineIntel ~800 Mhz\nBIOS Version:              Award Modular BIOS v6.00PG\nTotal Physical Memory:     3,072 MB\nAvailable Physical Memory: 2,824 MB\n');
+        } else if (cmd === 'IPCONFIG') {
+          println('\nWindows IP Configuration\n\nEthernet adapter Local Area Connection:\n   Connection-specific DNS Suffix  . : workgroup.local\n   IP Address. . . . . . . . . . . . : 192.168.1.103\n   Subnet Mask . . . . . . . . . . . : 255.255.255.0\n   Default Gateway . . . . . . . . . : 192.168.1.1\n');
+        } else if (cmd === 'PING') {
+          const host = arg || '127.0.0.1';
+          println(`\nPinging ${host} with 32 bytes of data:\nReply from ${host}: bytes=32 time<1ms TTL=128\nReply from ${host}: bytes=32 time<1ms TTL=128\n`);
+        } else if (cmd === 'TASKLIST') {
+          println('\nImage Name                   PID Session Name     Mem Usage\n========================= ====== ================ ============\nSystem Idle Process            0 Console                  16 K\nsmss.exe                     368 Console                 388 K\ncsrss.exe                    424 Console               3,840 K\nwinlogon.exe                 448 Console               4,120 K\nsvchost.exe                  684 Console              14,200 K\nexplorer.exe                1024 Console              22,480 K\n');
+        } else if (cmd === 'ECHO') {
+          println(arg);
+        } else if (cmd === 'DIR') {
+          const list = vfs[cwd] || [];
+          println(`\n Volume in drive C has no label.\n Directory of ${cwd}\n`);
+          list.forEach(item => {
+            println(`11/20/2003  08:43 AM    ${item.type === 'folder' ? '<DIR>         ' : (item.size || '1,024').padStart(14)} ${item.name}`);
+          });
+          println(`               ${list.length} item(s)     28,412,928,000 bytes free\n`);
+        } else if (cmd === 'CD') {
+          if (!arg) println(cwd);
+          else if (arg === '\\') cwd = 'C:\\';
+          else if (arg === '..') {
+            if (cwd !== 'C:\\') {
+              const i = cwd.lastIndexOf('\\');
+              cwd = i <= 2 ? 'C:\\' : cwd.substring(0, i);
+            }
+          } else {
+            const target = arg.includes(':\\') ? arg : (cwd === 'C:\\' ? 'C:\\' + arg : cwd + '\\' + arg);
+            const match = Object.keys(vfs).find(k => k.toLowerCase() === target.toLowerCase());
+            if (match) cwd = match;
+            else println('The system cannot find the path specified.');
+          }
+          pr.textContent = `${cwd}>`;
+        } else if (cmd === 'TYPE') {
+          const f = (vfs[cwd] || []).find(x => x.name.toLowerCase() === arg.toLowerCase());
+          if (f && f.content) println('\n' + f.content);
+          else println('The system cannot find the file specified.');
+        } else if (cmd === 'EXIT') {
+          closeXPWindow(winObj.id);
+        } else {
+          println(`'${parts[0]}' is not recognized as an internal or external command,\noperable program or batch file.`);
+        }
+      };
+    }
+  });
+}
+
+/* ============================================================================
+   20. WINDOWS TASK MANAGER (Ctrl+Shift+Esc)
+   ============================================================================ */
+function openTaskManager() {
+  let tab = 'apps';
+  let perfTimer = null;
+
+  createXPWindow({
+    singletonId: 'taskmgr',
+    title: 'Windows Task Manager',
+    icon: 'cp',
+    width: 420,
+    height: 410,
+    onClose: () => { if (perfTimer) clearInterval(perfTimer); },
+    render: (container) => {
+      function renderTM() {
+        if (perfTimer) clearInterval(perfTimer);
+        container.innerHTML = `
+          <div style="padding:8px; display:flex; flex-direction:column; flex:1; gap:8px;">
+            <div style="display:flex; gap:4px; border-bottom:1px solid #999;">
+              <button class="xp-btn" onclick="tmTab('apps')">Applications</button>
+              <button class="xp-btn" onclick="tmTab('proc')">Processes</button>
+              <button class="xp-btn" onclick="tmTab('perf')">Performance</button>
+            </div>
+            <div id="tm-body" style="flex:1; background:#fff; border:1px solid #7f9db9; padding:8px; overflow-y:auto;"></div>
+          </div>
+        `;
+        const body = container.querySelector('#tm-body');
+
+        if (tab === 'apps') {
+          body.innerHTML = windows.map(w => `
+            <div style="display:flex; justify-content:space-between; padding:4px; border-bottom:1px solid #eee;">
+              <span>${w.title}</span>
+              <span style="color:#008000;">Running</span>
+            </div>
+          `).join('');
+        } else if (tab === 'proc') {
+          const procs = [
+            ['System Idle Process', 'SYSTEM', '97', '16 K'],
+            ['explorer.exe', 'Administrator', '01', '22,480 K'],
+            ['svchost.exe', 'SYSTEM', '00', '14,200 K'],
+            ['winlogon.exe', 'SYSTEM', '00', '4,120 K'],
+            ['csrss.exe', 'SYSTEM', '01', '3,840 K'],
+            ['lsass.exe', 'SYSTEM', '00', '5,610 K']
+          ];
+          body.innerHTML = `
+            <table style="width:100%; border-collapse:collapse; font-size:11px;">
+              <tr style="background:#ece9d8; text-align:left;"><th>Image Name</th><th>User</th><th>CPU</th><th>Mem Usage</th></tr>
+              ${procs.map(p => `<tr><td>${p[0]}</td><td>${p[1]}</td><td>${p[2]}</td><td>${p[3]}</td></tr>`).join('')}
+            </table>
+          `;
+        } else {
+          body.style.background = '#ece9d8';
+          body.innerHTML = `
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+              <div style="flex:1; background:#000; color:#00ff00; padding:8px; font-family:var(--font-mono);">
+                <div>CPU Usage (Pentium III 800MHz)</div>
+                <div id="tm-cpu-val" style="font-size:22px; margin-top:4px;">4%</div>
+              </div>
+              <div style="flex:1; background:#000; color:#00ff00; padding:8px; font-family:var(--font-mono);">
+                <div>PF Usage (3.00 GB RAM)</div>
+                <div style="font-size:22px; margin-top:4px;">248 MB</div>
+              </div>
+            </div>
+            <div style="font-size:11px; line-height:1.6;">
+              <b>Physical Memory (K):</b> Total: 3,145,728 | Available: 2,891,412<br>
+              <b>Handles:</b> 4,128 | <b>Threads:</b> 214 | <b>Processes:</b> 24
+            </div>
+          `;
+          perfTimer = setInterval(() => {
+            const el = container.querySelector('#tm-cpu-val');
+            if (el) el.textContent = (Math.floor(Math.random() * 8) + 2) + '%';
+          }, 900);
+        }
+      }
+
+      window.tmTab = (t) => { tab = t; renderTM(); };
+      renderTM();
+    }
+  });
+}
+
+/* ============================================================================
+   21. CONTROL PANEL & DISPLAY PROPERTIES (Wallpaper + Luna Themes)
+   ============================================================================ */
+function openControlPanel() {
+  createXPWindow({
+    singletonId: 'cp',
+    title: 'Control Panel',
+    icon: 'cp',
+    width: 480,
+    height: 330,
+    render: (container) => {
+      const applets = [
+        { label: 'Display', icon: 'mycomp', fn: () => openDisplayProperties() },
+        { label: 'System', icon: 'cp', fn: () => openSystemProperties() },
+        { label: 'Date and Time', icon: 'calc', fn: () => openDateTimeDialog() },
+        { label: 'Sounds and Audio', icon: 'wmp', fn: () => playXPSound('startup') },
+        { label: 'Network Connections', icon: 'mynet', fn: () => showBalloon('Local Area Connection', 'Connected at 100.0 Mbps') },
+        { label: 'DirectX Diagnostic', icon: 'pinball', fn: () => openDxDiag() }
+      ];
+
+      container.innerHTML = `
+        <div style="flex:1; background:#fff; padding:16px; display:flex; flex-wrap:wrap; gap:18px; align-content:flex-start;">
+          ${applets.map((a, i) => `
+            <div class="cp-app" data-i="${i}" style="width:90px; display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer; padding:4px;">
+              ${getXPSvgIcon(a.icon, 36)}
+              <span style="margin-top:4px;">${a.label}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      container.querySelectorAll('.cp-app').forEach(el => {
+        el.ondblclick = () => applets[+el.dataset.i].fn();
+        el.onclick = () => {
+          container.querySelectorAll('.cp-app').forEach(x => x.style.background = '');
+          el.style.background = '#d8e8ff';
+        };
+      });
+    }
+  });
+}
+
+function openDisplayProperties() {
+  createXPWindow({
+    singletonId: 'disp',
+    title: 'Display Properties',
+    icon: 'mycomp',
+    width: 410,
+    height: 390,
+    resizable: false,
+    render: (container, winObj) => {
+      container.innerHTML = `
+        <div style="padding:12px; display:flex; flex-direction:column; flex:1; justify-content:space-between;">
+          <div>
+            <div class="xp-groupbox">
+              <div class="xp-groupbox-title">Desktop Wallpaper</div>
+              <select id="dp-wall" class="xp-select" style="width:100%;">
+                ${Object.keys(xpWallpapers).map(w => `<option value="${w}">${w}</option>`).join('')}
+              </select>
+            </div>
+
+            <div class="xp-groupbox" style="margin-top:14px;">
+              <div class="xp-groupbox-title">Windows and buttons / Color scheme</div>
+              <select id="dp-theme" class="xp-select" style="width:100%;">
+                <option value="blue">Windows XP Style - Default (Blue)</option>
+                <option value="olive">Windows XP Style - Olive Green</option>
+                <option value="silver">Windows XP Style - Silver</option>
+                <option value="classic">Windows Classic Style</option>
+              </select>
+            </div>
+
+            <div class="xp-groupbox" style="margin-top:14px;">
+              <div class="xp-groupbox-title">Display Adapter</div>
+              <div>Plug and Play Monitor on NVIDIA GeForce2 MX 400 (32-bit True Color)</div>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:8px;">
+            <button class="xp-btn default" onclick="applyDisplaySettings(); closeXPWindow('${winObj.id}')">OK</button>
+            <button class="xp-btn" onclick="closeXPWindow('${winObj.id}')">Cancel</button>
+            <button class="xp-btn" onclick="applyDisplaySettings()">Apply</button>
+          </div>
+        </div>
+      `;
+
+      window.applyDisplaySettings = () => {
+        setWallpaper(document.getElementById('dp-wall').value);
+        setTheme(document.getElementById('dp-theme').value);
+      };
+    }
+  });
+}
+
+/* ============================================================================
+   22. KEYBOARD SHORTCUTS & BOOT LAUNCH
+   ============================================================================ */
+let altTabIdx = 0;
+
+window.addEventListener('keydown', (e) => {
+  const biosVis = document.getElementById('bios-screen').style.display !== 'none';
+  if (biosVis) {
+    if (e.key === 'Delete' || e.key === 'F2') {
+      e.preventDefault();
+      openBiosSetup();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      skipToXpBoot();
+    }
+    return;
+  }
+
+  if (document.getElementById('bios-setup-utility').style.display === 'flex') {
+    if (e.key === 'Escape') biosGoBack();
+    if (e.key === 'F10') { e.preventDefault(); saveAndExitBios(); }
+    return;
+  }
+
+  // Ctrl+Shift+Esc -> Task Manager
+  if (e.ctrlKey && e.shiftKey && e.key === 'Escape') {
+    e.preventDefault();
+    openTaskManager();
+  }
+  // Alt+F4 -> Close active window
+  if (e.altKey && e.key === 'F4') {
+    e.preventDefault();
+    if (activeWinId) closeXPWindow(activeWinId);
+    else showTurnOffDialog(false);
+  }
+  // Alt+Tab -> Window Switcher
+  if (e.altKey && e.key === 'Tab' && windows.length > 0) {
+    e.preventDefault();
+    const ov = document.getElementById('alt-tab-overlay');
+    const list = document.getElementById('alt-tab-list');
+    ov.style.display = 'flex';
+    altTabIdx = (altTabIdx + 1) % windows.length;
+    list.innerHTML = windows.map((w, i) => `
+      <div style="padding:6px; border:${i === altTabIdx ? '2px solid #0054e3' : '2px solid transparent'}; border-radius:4px; text-align:center; width:72px;">
+        ${getXPSvgIcon(w.icon, 32)}
+        <div style="font-size:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${w.title}</div>
+      </div>
+    `).join('');
+  }
+});
+
+window.addEventListener('keyup', (e) => {
+  if (e.key === 'Alt') {
+    const ov = document.getElementById('alt-tab-overlay');
+    if (ov.style.display === 'flex') {
+      ov.style.display = 'none';
+      const target = windows[altTabIdx];
+      if (target) restoreXPWindow(target.id);
+    }
+  }
+});
+
+window.onload = function() {
+  startBiosPost();
+};
+</script>
+</body>
+</html>

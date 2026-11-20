@@ -2265,7 +2265,6 @@ async function mountExternalIsoFile(file) {
     playXPSound('startup');
     showBalloon('CD-RW Drive (D:) — ISO Mounted', `Volume: ${volLabel}\nSize: ${formatBytes(file.size)}\nBrowse in My Computer or CMD (D:).`);
 
-    // Check for AUTORUN.INF or SETUP.EXE and show XP AutoPlay prompt
     const rootItems = vfs['D:\\'] || [];
     const autorunItem = rootItems.find(x => x.name.toLowerCase() === 'autorun.inf');
     const setupItem = rootItems.find(x => x.name.toLowerCase() === 'setup.exe' || x.name.toLowerCase() === 'war2.exe');
@@ -3923,7 +3922,7 @@ function openWarcraft2(initialFaction = null) {
                   <div style="font-size:13px; letter-spacing:2px; color:#9ec8ff;">TIDES OF DARKNESS</div>
                 </div>
                 <div style="color:#e6d5b8; font-size:12px; max-width:390px; line-height:1.5;">
-                  Gather Gold and Lumber, construct Barracks and Farms, and destroy the enemy Town Hall!
+                  Gather Gold and Lumber, construct Barracks and Farms, and destroy the enemy Town Hall! (Arrow keys or click minimap to scroll camera)
                 </div>
                 <div style="display:flex; gap:16px;">
                   <button class="wc2-cmd-btn" style="width:155px; height:54px; font-size:12px; border-color:#4aa3ff;" onclick="wc2StartSkirmish('human')">
@@ -3963,6 +3962,7 @@ function openWarcraft2(initialFaction = null) {
       let selectedIds = [];
       let buildMode = null;
       let aiTick = 0;
+      const keysDown = {};
 
       const UNIT_DEFS = {
         worker: {
@@ -4032,6 +4032,27 @@ function openWarcraft2(initialFaction = null) {
         }
       }
 
+      function updateFog() {
+        if (!fogGrid.length) return;
+        for (let r = 0; r < ROWS; r++) {
+          for (let c = 0; c < COLS; c++) {
+            if (fogGrid[r][c] === 2) fogGrid[r][c] = 1;
+          }
+        }
+        entities.filter(e => e.team === 'player').forEach(e => {
+          const cr = Math.floor(e.y / TILE);
+          const cc = Math.floor(e.x / TILE);
+          const sight = e.kind === 'bldg' ? 8 : 6;
+          for (let dr = -sight; dr <= sight; dr++) {
+            for (let dc = -sight; dc <= sight; dc++) {
+              if (dr * dr + dc * dc <= sight * sight && fogGrid[cr + dr]?.[cc + dc] !== undefined) {
+                fogGrid[cr + dr][cc + dc] = 2;
+              }
+            }
+          }
+        });
+      }
+
       function spawnEntity(props) {
         const ent = {
           id: 'e_' + Math.random().toString(36).slice(2, 9),
@@ -4078,11 +4099,15 @@ function openWarcraft2(initialFaction = null) {
         spawnEntity({ kind: 'unit', unitType: 'melee', team: 'enemy', fac: enemyFaction, name: UNIT_DEFS.melee[enemyFaction].name, x: 870, y: 675, maxHp: 60, atk: 10, range: 30, speed: 2.2, col: UNIT_DEFS.melee[enemyFaction].col });
         spawnEntity({ kind: 'unit', unitType: 'ranged', team: 'enemy', fac: enemyFaction, name: UNIT_DEFS.ranged[enemyFaction].name, x: 920, y: 665, maxHp: 40, atk: 9, range: 135, speed: 2.3, col: UNIT_DEFS.ranged[enemyFaction].col });
 
+        // Reveal starting base area immediately so frame 1 is never black
+        updateFog();
+
         container.querySelector('#wc2-title-overlay').style.display = 'none';
         gameActive = true;
         selectedIds = [pHall.id];
         playXPSound('startup');
         setWc2Status(faction === 'human' ? 'FOR LORDAERON! Defeat the Horde!' : 'FOR THE HORDE! Crush the Alliance!');
+        updateResourceHud();
         updateSelectionUI();
       };
 
@@ -4202,6 +4227,7 @@ function openWarcraft2(initialFaction = null) {
           speed: def.speed,
           col: def.col
         });
+        updateFog();
         playXPSound('balloon');
         setWc2Status(`${def.name} ready!`);
         updateResourceHud();
@@ -4251,6 +4277,9 @@ function openWarcraft2(initialFaction = null) {
         }, 30);
       };
 
+      window.addEventListener('keydown', (e) => { keysDown[e.key] = true; });
+      window.addEventListener('keyup', (e) => { keysDown[e.key] = false; });
+
       let dragBox = null;
       mapCv.onmousedown = (e) => {
         if (!gameActive) return;
@@ -4282,6 +4311,7 @@ function openWarcraft2(initialFaction = null) {
               atk: bDef.atk || 0,
               range: bDef.range || 0
             });
+            updateFog();
             buildMode = null;
             playXPSound('ding');
             setWc2Status(`${bDef.name} constructed!`);
@@ -4380,23 +4410,15 @@ function openWarcraft2(initialFaction = null) {
         if (!gameActive) return;
         aiTick++;
 
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
-            if (fogGrid[r][c] === 2) fogGrid[r][c] = 1;
-          }
+        // Smooth arrow-key camera scrolling when Warcraft II is focused
+        if (activeWinId && windows.find(w => w.id === activeWinId)?.singletonId === 'war2' && !document.querySelector('.xp-modal-backdrop')) {
+          if (keysDown['ArrowLeft']) camX = Math.max(0, camX - 16);
+          if (keysDown['ArrowRight']) camX = Math.min(COLS * TILE - mapCv.width, camX + 16);
+          if (keysDown['ArrowUp']) camY = Math.max(0, camY - 16);
+          if (keysDown['ArrowDown']) camY = Math.min(ROWS * TILE - mapCv.height, camY + 16);
         }
-        entities.filter(e => e.team === 'player').forEach(e => {
-          const cr = Math.floor(e.y / TILE);
-          const cc = Math.floor(e.x / TILE);
-          const sight = e.kind === 'bldg' ? 6 : 5;
-          for (let dr = -sight; dr <= sight; dr++) {
-            for (let dc = -sight; dc <= sight; dc++) {
-              if (dr * dr + dc * dc <= sight * sight && fogGrid[cr + dr]?.[cc + dc] !== undefined) {
-                fogGrid[cr + dr][cc + dc] = 2;
-              }
-            }
-          }
-        });
+
+        updateFog();
 
         if (aiTick % 260 === 0) {
           const enemyFac = faction === 'human' ? 'orc' : 'human';

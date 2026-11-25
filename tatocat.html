@@ -1,0 +1,2812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pip & Barnaby: The Tomato Hat Quest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #17231b;
+            font-family: 'Nunito', sans-serif;
+        }
+        h1, h2, h3, .font-display {
+            font-family: 'Fredoka', sans-serif;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        /* Storybook Zelda/Pokémon Parchment Frame */
+        .parchment-box {
+            background: linear-gradient(155deg, #fffef9 0%, #f5ebd6 100%);
+            border: 3px solid #6e4a2e;
+            box-shadow: 0 6px 0 #452c19, 0 10px 22px rgba(0,0,0,0.4);
+            color: #382212;
+        }
+        .wood-btn {
+            background: linear-gradient(180deg, #eba04b 0%, #c7691c 100%);
+            border: 2px solid #5e2c06;
+            box-shadow: 0 4px 0 #5e2c06;
+            color: #fffef9;
+            text-shadow: 0 1px 2px rgba(60, 25, 0, 0.7);
+            transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+        }
+        .wood-btn:hover:not(:disabled) {
+            filter: brightness(1.07);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 0 #5e2c06;
+        }
+        .wood-btn:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #5e2c06;
+        }
+        .wood-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+        .tomato-btn {
+            background: linear-gradient(180deg, #ff5d4d 0%, #cf2919 100%);
+            border: 2px solid #731007;
+            box-shadow: 0 4px 0 #731007;
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(70, 0, 0, 0.65);
+            transition: transform 0.08s ease, box-shadow 0.08s ease;
+        }
+        .tomato-btn:hover:not(:disabled) {
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+        }
+        .tomato-btn:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #731007;
+        }
+        .green-btn {
+            background: linear-gradient(180deg, #5cc95c 0%, #339133 100%);
+            border: 2px solid #174d17;
+            box-shadow: 0 4px 0 #174d17;
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(10, 45, 10, 0.65);
+            transition: transform 0.08s ease, box-shadow 0.08s ease;
+        }
+        .green-btn:hover:not(:disabled) {
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+        }
+        .green-btn:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #174d17;
+        }
+        /* Zelda Region Banner Fade */
+        @keyframes regionBannerAnim {
+            0% { opacity: 0; transform: translate(-50%, -14px) scale(0.95); }
+            15% { opacity: 1; transform: translate(-50%, 0px) scale(1); }
+            82% { opacity: 1; transform: translate(-50%, 0px) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -8px) scale(0.98); }
+        }
+        .region-banner-active {
+            animation: regionBannerAnim 3.2s ease-in-out forwards;
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-7px); }
+        }
+        .animate-float {
+            animation: floatSlow 3.2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="relative w-screen h-screen overflow-hidden">
+
+    <!-- 2.5D World Viewport -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Zelda / Pokémon Style HUD Overlay -->
+    <div id="hudOverlay" class="hidden absolute inset-0 pointer-events-none flex flex-col justify-between p-3 sm:p-4">
+
+        <!-- Top Bar -->
+        <div class="flex items-start justify-between gap-2">
+
+            <!-- Top-Left: Classic Zelda Heart Containers, Tomato Energy, Gems & Equipped Slots -->
+            <div class="flex flex-col gap-2 pointer-events-auto">
+                <div class="parchment-box rounded-2xl px-3 py-2 sm:px-3.5 sm:py-2.5 flex items-center gap-3">
+                    <!-- Pip & Barnaby Mini Emblem -->
+                    <div class="relative w-12 h-12 rounded-xl bg-emerald-100 border-2 border-amber-900 flex items-center justify-center flex-shrink-0 shadow-inner">
+                        <svg viewBox="0 0 64 64" class="w-11 h-11">
+                            <!-- Pip -->
+                            <circle cx="28" cy="36" r="15" fill="#ffdfc4"/>
+                            <path d="M13 32 Q13 14 28 14 Q43 14 43 32 Q45 43 39 45 Q39 26 28 24 Q17 26 17 45 Q11 43 13 32Z" fill="#7c3f1d"/>
+                            <path d="M16 25 Q28 18 40 25" stroke="#ef4444" stroke-width="3" fill="none"/>
+                            <circle cx="23" cy="35" r="2" fill="#291d12"/>
+                            <circle cx="33" cy="35" r="2" fill="#291d12"/>
+                            <path d="M26 40 Q28 42 30 40" stroke="#291d12" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+                            <!-- Barnaby with Tomato Hat -->
+                            <circle cx="48" cy="48" r="10" fill="#ffffff" stroke="#44403c" stroke-width="1.6"/>
+                            <path d="M40 41 Q48 34 56 41 Q56 45 40 45 Z" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/>
+                            <path d="M46 37 L48 33 L50 37" stroke="#16a34a" stroke-width="2" fill="none"/>
+                        </svg>
+                        <span id="hudLevelBadge" class="absolute -bottom-1.5 -right-1.5 bg-amber-500 text-white font-display font-bold text-[11px] px-1.5 py-0.2 rounded-md border border-amber-950 shadow">Lv.1</span>
+                    </div>
+
+                    <!-- Hearts & Tomato Juice Meter -->
+                    <div class="flex flex-col gap-1">
+                        <!-- Zelda Heart Containers Row -->
+                        <div id="heartsContainer" class="flex items-center gap-0.5 flex-wrap max-w-[180px] sm:max-w-[230px]">
+                            <!-- Populated dynamically with SVG full/half/empty hearts -->
+                        </div>
+
+                        <!-- Tomato Spirit / Stamina Meter + Gold Gems -->
+                        <div class="flex items-center gap-2.5 mt-0.5">
+                            <div class="relative w-28 sm:w-36 h-3.5 bg-stone-300 rounded-full border border-stone-700 overflow-hidden shadow-inner" title="Tomato Spirit Energy">
+                                <div id="hudMpBar" class="h-full bg-gradient-to-r from-rose-500 via-red-500 to-amber-400 transition-all duration-150" style="width: 100%"></div>
+                                <span id="hudMpText" class="absolute inset-0 flex items-center justify-center text-[9px] font-extrabold text-white drop-shadow">100% Spirit</span>
+                            </div>
+
+                            <!-- Gold Gems Counter -->
+                            <div class="flex items-center gap-1 bg-amber-200/80 border border-amber-800/40 px-2 py-0.5 rounded-lg text-xs font-extrabold text-amber-950">
+                                <span class="text-amber-500 drop-shadow-xs">◆</span>
+                                <span id="hudGold">25</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Classic Zelda Quick-Action Item Slots (Z/Space, X/E, Q) -->
+                <div class="hidden sm:flex items-center gap-2">
+                    <div class="parchment-box rounded-xl px-2.5 py-1 flex items-center gap-1.5 text-xs font-bold">
+                        <span class="bg-amber-800 text-white px-1.5 py-0.5 rounded text-[10px] font-display">SPACE</span>
+                        <span>🪄 Staff</span>
+                    </div>
+                    <div class="parchment-box rounded-xl px-2.5 py-1 flex items-center gap-1.5 text-xs font-bold">
+                        <span class="bg-rose-700 text-white px-1.5 py-0.5 rounded text-[10px] font-display">X</span>
+                        <span>🍅 Tomato Toss</span>
+                    </div>
+                    <div class="parchment-box rounded-xl px-2.5 py-1 flex items-center gap-1.5 text-xs font-bold">
+                        <span class="bg-emerald-700 text-white px-1.5 py-0.5 rounded text-[10px] font-display">Q</span>
+                        <span>🌿 Purr-Heal</span>
+                    </div>
+                    <div class="parchment-box rounded-xl px-2.5 py-1 flex items-center gap-1.5 text-xs font-bold">
+                        <span class="bg-sky-700 text-white px-1.5 py-0.5 rounded text-[10px] font-display">SHIFT</span>
+                        <span>💨 Roll</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top-Center: Quest Objective Pill -->
+            <div class="hidden lg:flex flex-col items-center gap-1">
+                <div id="questTracker" class="parchment-box px-4 py-1.5 rounded-full text-xs font-extrabold text-amber-950 shadow">
+                    Quest: Speak with Mayor Bramble in Willowbrook Tea-Village
+                </div>
+            </div>
+
+            <!-- Top-Right: Mini-Map & Menu Buttons -->
+            <div class="flex flex-col items-end gap-2 pointer-events-auto">
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                    <button id="btnQuickHeal" title="Drink Sunberry Juice [H]" class="green-btn px-2.5 py-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center gap-1">
+                        <span>🍓</span>
+                        <span id="hudPotionCount" class="bg-black/25 px-1.5 py-0.2 rounded text-xs">2</span>
+                    </button>
+                    <button id="btnOpenBag" title="Satchel & Upgrades [B]" class="wood-btn px-3 py-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                        <span>🎒</span>
+                        <span class="hidden sm:inline">Satchel</span>
+                    </button>
+                    <button id="btnMusic" title="Toggle Chiptune Music" class="parchment-box p-2 rounded-xl text-sm hover:bg-amber-100 transition">
+                        🎵
+                    </button>
+                    <button id="btnMute" title="Toggle Sound FX" class="parchment-box p-2 rounded-xl text-sm hover:bg-amber-100 transition">
+                        🔊
+                    </button>
+                </div>
+
+                <!-- 2.5D Overworld Radar Mini-Map -->
+                <div class="hidden sm:block parchment-box p-1.5 rounded-2xl shadow-lg">
+                    <canvas id="minimapCanvas" width="150" height="105" class="rounded-xl bg-emerald-900 block"></canvas>
+                    <div id="minimapZoneLabel" class="text-[10px] font-display font-bold text-center text-amber-950 mt-1">
+                        Willowbrook Tea-Village
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zelda-Style Region Arrival Banner -->
+        <div id="regionBanner" class="hidden fixed top-24 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+            <div class="parchment-box px-7 py-2.5 rounded-full border-2 border-amber-900 shadow-xl text-center">
+                <div id="regionBannerTitle" class="font-display font-bold text-lg sm:text-2xl text-amber-950 tracking-wide">
+                    ~ Willowbrook Tea-Village ~
+                </div>
+                <div id="regionBannerSub" class="text-xs font-bold text-amber-800">
+                    A cozy haven of teacups & cherry tomatoes
+                </div>
+            </div>
+        </div>
+
+        <!-- Pokémon / Zelda Style Bottom Dialogue Box -->
+        <div id="dialogueBox" class="hidden pointer-events-auto self-center w-full max-w-2xl mb-20 sm:mb-4 parchment-box rounded-2xl p-4 sm:p-5">
+            <div class="flex items-start gap-3.5">
+                <div id="dialogueAvatar" class="w-16 h-16 rounded-2xl bg-amber-200/90 border-2 border-amber-900 flex items-center justify-center text-4xl flex-shrink-0 shadow-inner">
+                    🦡
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2 mb-1">
+                        <h3 id="dialogueSpeaker" class="font-display font-bold text-base sm:text-lg text-amber-950 truncate">Mayor Bramble</h3>
+                        <span class="text-[11px] font-extrabold text-amber-800 bg-amber-200 px-2 py-0.5 rounded-full flex-shrink-0">[E / Space / Tap]</span>
+                    </div>
+                    <p id="dialogueText" class="text-sm sm:text-base text-stone-800 font-bold leading-relaxed min-h-[3.2rem]">
+                        Welcome, Pip!
+                    </p>
+                    <div id="dialogueActions" class="flex flex-wrap items-center justify-end gap-2 mt-2">
+                        <button id="btnDialogueNext" class="wood-btn px-4 py-1.5 rounded-xl font-display font-bold text-sm">
+                            Next ▾
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile & Touch Controls (8-Way Virtual Pad + Action Buttons) -->
+        <div id="touchControls" class="flex sm:hidden items-end justify-between w-full pointer-events-none pb-1">
+            <!-- 8-Way D-Pad -->
+            <div class="relative w-32 h-32 pointer-events-auto">
+                <button id="padUp" class="absolute top-0 left-1/2 -translate-x-1/2 w-11 h-11 parchment-box rounded-xl flex items-center justify-center font-bold text-lg active:scale-95">▲</button>
+                <button id="padDown" class="absolute bottom-0 left-1/2 -translate-x-1/2 w-11 h-11 parchment-box rounded-xl flex items-center justify-center font-bold text-lg active:scale-95">▼</button>
+                <button id="padLeft" class="absolute left-0 top-1/2 -translate-y-1/2 w-11 h-11 parchment-box rounded-xl flex items-center justify-center font-bold text-lg active:scale-95">◀</button>
+                <button id="padRight" class="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 parchment-box rounded-xl flex items-center justify-center font-bold text-lg active:scale-95">▶</button>
+            </div>
+
+            <!-- Action Cluster -->
+            <div class="grid grid-cols-2 gap-2 pointer-events-auto">
+                <button id="touchHeal" class="w-12 h-12 rounded-2xl green-btn flex items-center justify-center text-lg font-display font-bold active:scale-95">🌿</button>
+                <button id="touchSkill" class="w-12 h-12 rounded-2xl tomato-btn flex items-center justify-center text-lg font-display font-bold active:scale-95">🍅</button>
+                <button id="touchRoll" class="w-12 h-12 rounded-2xl parchment-box flex items-center justify-center text-base font-display font-bold active:scale-95">💨</button>
+                <button id="touchAttack" class="w-14 h-14 rounded-2xl wood-btn flex items-center justify-center text-xl font-display font-bold active:scale-95">🪄</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Satchel & Tomato Hat Workshop Modal -->
+    <div id="bagModal" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6">
+        <div class="parchment-box rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-3.5 bg-amber-200/70 border-b-2 border-amber-900/30">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-2xl">🎒</span>
+                    <h2 class="font-display font-bold text-xl sm:text-2xl text-amber-950">Adventurer Satchel & Hat Studio</h2>
+                </div>
+                <button id="btnCloseBag" class="w-9 h-9 rounded-xl bg-amber-900 text-white font-bold hover:bg-amber-950 transition">✕</button>
+            </div>
+
+            <div class="p-4 sm:p-5 overflow-y-auto space-y-4">
+                <!-- Equipment Status -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+                    <div class="bg-amber-100 border border-amber-800/30 rounded-xl p-2.5">
+                        <div class="text-xs font-bold text-amber-800">Pip's Staff</div>
+                        <div id="statStaffLv" class="font-display font-bold text-sm sm:text-base text-amber-950">Lv.1 Oak Wand</div>
+                    </div>
+                    <div class="bg-rose-100 border border-rose-800/30 rounded-xl p-2.5">
+                        <div class="text-xs font-bold text-rose-800">Tomato Hat</div>
+                        <div id="statHatLv" class="font-display font-bold text-sm sm:text-base text-rose-950">Lv.1 Cherry Cap</div>
+                    </div>
+                    <div class="bg-emerald-100 border border-emerald-800/30 rounded-xl p-2.5">
+                        <div class="text-xs font-bold text-emerald-800">Heart Containers</div>
+                        <div id="statHearts" class="font-display font-bold text-sm sm:text-base text-emerald-950">5 Hearts</div>
+                    </div>
+                    <div class="bg-yellow-100 border border-yellow-800/30 rounded-xl p-2.5">
+                        <div class="text-xs font-bold text-yellow-800">Gold Gems</div>
+                        <div id="statGold" class="font-display font-bold text-sm sm:text-base text-yellow-950">25 ◆</div>
+                    </div>
+                </div>
+
+                <!-- Upgrades -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="bg-white/80 border-2 border-amber-800/30 rounded-2xl p-3.5 flex flex-col justify-between gap-2.5">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-display font-bold text-base text-amber-950">🪄 Starlight Staff</span>
+                                <span id="upgStaffBadge" class="text-xs font-extrabold bg-amber-200 px-2 py-0.5 rounded-full">Lv.1</span>
+                            </div>
+                            <p class="text-xs text-stone-700 mt-1">Boosts melee arc power and cuts wide swaths of tall grass & bushes.</p>
+                        </div>
+                        <button id="btnUpgradeStaff" class="wood-btn w-full py-2 rounded-xl font-display font-bold text-sm">
+                            Upgrade (25 ◆)
+                        </button>
+                    </div>
+
+                    <div class="bg-white/80 border-2 border-rose-800/30 rounded-2xl p-3.5 flex flex-col justify-between gap-2.5">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-display font-bold text-base text-rose-950">🍅 Barnaby's Tomato Hat</span>
+                                <span id="upgHatBadge" class="text-xs font-extrabold bg-rose-200 px-2 py-0.5 rounded-full">Lv.1</span>
+                            </div>
+                            <p class="text-xs text-stone-700 mt-1">Increases Heirloom Tomato Toss [X] splash damage & Purr-Bloom [Q] healing!</p>
+                        </div>
+                        <button id="btnUpgradeHat" class="tomato-btn w-full py-2 rounded-xl font-display font-bold text-sm">
+                            Upgrade (30 ◆)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Brew Sunberry Juice -->
+                <div class="flex flex-wrap items-center justify-between gap-3 bg-white/80 border-2 border-emerald-800/30 rounded-2xl p-3.5">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">🍓</span>
+                        <div>
+                            <div class="font-display font-bold text-sm text-emerald-950">Sunberry Elixir (Owned: <span id="bagPotionCount">2</span>)</div>
+                            <div class="text-xs text-stone-600">Restores 3 full Heart Containers. Press [H] anytime.</div>
+                        </div>
+                    </div>
+                    <button id="btnBuyPotion" class="green-btn px-4 py-2 rounded-xl font-display font-bold text-sm">
+                        Brew Elixir (15 ◆)
+                    </button>
+                </div>
+
+                <!-- Controls Legend -->
+                <div class="bg-amber-100/70 border border-amber-800/25 rounded-2xl p-3 text-xs text-stone-800 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <div><b>Move:</b> WASD / Arrows</div>
+                    <div><b>Staff Slash:</b> Space / Z / Click</div>
+                    <div><b>Tomato Toss:</b> X / Right-Click</div>
+                    <div><b>Purr-Bloom Heal:</b> Q</div>
+                    <div><b>Dodge Roll:</b> Shift / C</div>
+                    <div><b>Talk / Interact:</b> E / Enter</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Title Screen Overlay -->
+    <div id="titleScreen" class="fixed inset-0 z-30 flex flex-col items-center justify-between p-5 sm:p-8 bg-gradient-to-b from-emerald-950/55 via-transparent to-stone-950/75 pointer-events-auto">
+        <div class="mt-3 sm:mt-6 text-center max-w-xl">
+            <div class="inline-block px-4 py-1 rounded-full bg-amber-100/95 border-2 border-amber-900 text-amber-950 font-display font-bold text-xs sm:text-sm mb-2.5 shadow">
+                ✨ A 2.5D Storybook Action-Adventure RPG ✨
+            </div>
+            <h1 class="font-display font-bold text-4xl sm:text-6xl text-white drop-shadow-[0_5px_0_rgba(45,25,10,0.95)] tracking-tight">
+                Pip & Barnaby
+            </h1>
+            <p class="font-display font-semibold text-xl sm:text-2xl text-rose-200 drop-shadow-[0_3px_0_rgba(75,12,8,0.95)] mt-1">
+                The Tomato Hat Quest
+            </p>
+        </div>
+
+        <div class="parchment-box rounded-3xl p-5 sm:p-6 max-w-md w-full text-center animate-float">
+            <p class="text-sm sm:text-base text-stone-700 font-bold mb-4">
+                Explore a 2.5D wonderland of tea-villages, cuttable tall grass, push-block forest shrines, and clockwork ruins alongside Barnaby and his magical Tomato Hat!
+            </p>
+            <button id="btnStartGame" class="tomato-btn w-full py-3.5 rounded-2xl font-display font-bold text-xl tracking-wide mb-3">
+                ▶ Start Adventure
+            </button>
+            <div class="grid grid-cols-2 gap-1.5 text-left text-xs text-stone-700 bg-amber-100/80 p-3 rounded-xl border border-amber-800/20">
+                <div><b class="text-amber-950">Move 8-Way:</b> WASD / Arrows</div>
+                <div><b class="text-amber-950">Staff / Cut:</b> Space / Click</div>
+                <div><b class="text-rose-800">Tomato Toss:</b> X / Right-Click</div>
+                <div><b class="text-emerald-900">Purr-Heal / Roll:</b> Q & Shift</div>
+            </div>
+        </div>
+
+        <footer class="text-center">
+            <span class="text-xs font-display tracking-widest uppercase text-amber-100/80 bg-black/35 px-3.5 py-1 rounded-full">
+                Magic Goat Studio
+            </span>
+        </footer>
+    </div>
+
+    <!-- Toast Notification Banner -->
+    <div id="toastBanner" class="hidden fixed bottom-24 sm:bottom-8 left-1/2 -translate-x-1/2 z-50 parchment-box px-5 py-2 rounded-2xl font-display font-bold text-sm text-amber-950 shadow-xl pointer-events-none">
+        Received Item!
+    </div>
+
+    <script>
+    /**
+     * ============================================================================
+     * PIP & BARNABY: THE TOMATO HAT QUEST (2.5D Zelda / Pokémon Action-RPG)
+     * Single-File HTML5 Canvas 2.5D Y-Sorted Engine
+     * Magic Goat Studio
+     * ============================================================================
+     */
+
+    // --- 1. WEB AUDIO SYNTHESIZER (Zelda/Pokémon style chimes & cozy BGM) ---
+    class SoundEngine {
+        constructor() {
+            this.ctx = null;
+            this.muted = false;
+            this.bgmPlaying = false;
+            this.bgmInterval = null;
+            this.bgmStep = 0;
+        }
+        init() {
+            if (!this.ctx) {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtx) this.ctx = new AudioCtx();
+            }
+            if (this.ctx && this.ctx.state === 'suspended') {
+                this.ctx.resume();
+            }
+        }
+        tone(freq, type = 'triangle', dur = 0.14, vol = 0.1, slide = null, delay = 0) {
+            if (this.muted) return;
+            this.init();
+            if (!this.ctx) return;
+            const t = this.ctx.currentTime + delay;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, t);
+            if (slide) osc.frequency.exponentialRampToValueAtTime(slide, t + dur);
+            gain.gain.setValueAtTime(vol, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(t);
+            osc.stop(t + dur);
+        }
+        slash() { this.tone(420, 'triangle', 0.11, 0.11, 150); }
+        bushCut() { this.tone(240, 'sawtooth', 0.08, 0.07, 110); }
+        roll() { this.tone(210, 'sine', 0.14, 0.09, 340); }
+        tomatoThrow() {
+            this.tone(480, 'sine', 0.13, 0.11, 720);
+            this.tone(260, 'triangle', 0.11, 0.08, 140, 0.05);
+        }
+        tomatoSplat() { this.tone(160, 'sawtooth', 0.18, 0.12, 60); }
+        meowHeal() {
+            this.tone(620, 'sine', 0.15, 0.11, 820);
+            this.tone(820, 'sine', 0.22, 0.11, 640, 0.11);
+        }
+        gemPickup() {
+            this.tone(987.77, 'sine', 0.07, 0.09);
+            this.tone(1318.51, 'sine', 0.15, 0.09, null, 0.06);
+        }
+        heartPickup() {
+            this.tone(523.25, 'sine', 0.09, 0.1);
+            this.tone(659.25, 'sine', 0.09, 0.1, null, 0.07);
+            this.tone(783.99, 'sine', 0.14, 0.1, null, 0.14);
+        }
+        fanfare() {
+            // Classic Zelda chest/puzzle fanfare!
+            const seq = [
+                [523.25, 0.12, 0],
+                [587.33, 0.12, 0.12],
+                [659.25, 0.12, 0.24],
+                [783.99, 0.35, 0.36]
+            ];
+            seq.forEach(([f, d, dl]) => this.tone(f, 'triangle', d, 0.13, null, dl));
+        }
+        hitEnemy() { this.tone(180, 'square', 0.1, 0.09, 85); }
+        hurt() { this.tone(145, 'sawtooth', 0.2, 0.13, 65); }
+        talkBlip() { this.tone(480 + Math.random() * 140, 'sine', 0.04, 0.05); }
+        pushBlock() { this.tone(110, 'triangle', 0.12, 0.09, 95); }
+
+        toggleBGM() {
+            this.init();
+            this.bgmPlaying = !this.bgmPlaying;
+            if (this.bgmPlaying) {
+                const melody = [
+                    392.00, 440.00, 493.88, 587.33, 523.25, 493.88, 440.00, 392.00,
+                    329.63, 392.00, 440.00, 523.25, 493.88, 440.00, 392.00, 0
+                ];
+                this.bgmInterval = setInterval(() => {
+                    if (!this.bgmPlaying || this.muted) return;
+                    const note = melody[this.bgmStep % melody.length];
+                    if (note > 0) this.tone(note, 'sine', 0.26, 0.032);
+                    this.bgmStep++;
+                }, 310);
+            } else {
+                clearInterval(this.bgmInterval);
+            }
+            return this.bgmPlaying;
+        }
+    }
+    const sfx = new SoundEngine();
+
+    // --- 2. CANVAS & CAMERA SETUP ---
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const miniCanvas = document.getElementById('minimapCanvas');
+    const miniCtx = miniCanvas.getContext('2d');
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+
+    function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // World Dimensions (3000 x 2100 2.5D interconnected overworld)
+    const WORLD_W = 3000;
+    const WORLD_H = 2100;
+
+    // --- 3. GAME STATE, PLAYER (PIP) & CAT (BARNABY) ---
+    const game = {
+        started: false,
+        paused: false,
+        time: 0,
+        hitStop: 0,
+        shakeTimer: 0,
+        shakeMag: 0,
+        camX: 0,
+        camY: 0,
+        currentRegion: '',
+        activeDialogue: null,
+        dialogueLines: [],
+        dialogueIdx: 0,
+        typewriterChar: 0,
+        questStage: 0, // 0: Talk to Mayor, 1: Clear 6 Meadow/Forest Critters, 2: Solve Forest Shrine & Defeat Boss, 3: Victory
+        crittersCleared: 0,
+        shrineUnlocked: false,
+        bossDefeated: false
+    };
+
+    const player = {
+        x: 560,
+        y: 520,
+        vx: 0,
+        vy: 0,
+        radius: 15,
+        speed: 3.6,
+        facingX: 0,
+        facingY: 1, // Default facing South toward camera
+        dirName: 'down', // 'down' | 'up' | 'left' | 'right'
+        halfHearts: 10, // 5 Full Hearts (2 half-hearts = 1 full heart)
+        maxHalfHearts: 10,
+        spirit: 100, // 0..100 Tomato Spirit Energy
+        maxSpirit: 100,
+        gold: 25,
+        potions: 2,
+        level: 1,
+        xp: 0,
+        maxXp: 60,
+        staffLevel: 1,
+        hatLevel: 1,
+        attackTimer: 0,
+        attackCooldown: 0,
+        rollTimer: 0,
+        rollCooldown: 0,
+        rollDirX: 0,
+        rollDirY: 1,
+        invulnTimer: 0,
+        walkAnim: 0
+    };
+
+    // Barnaby the Cat in his iconic Tomato Hat (follows Pip's breadcrumb path!)
+    const cat = {
+        x: 520,
+        y: 510,
+        z: 0,
+        vz: 0,
+        facingX: 0,
+        facingY: 1,
+        hopAnim: 0,
+        meowTimer: 0,
+        meowText: 'Mrrp!',
+        trail: []
+    };
+
+    // --- 4. OVERWORLD TERRAIN, COLLIDERS, INTERACTABLES & PUZZLES ---
+    // Regions for Zelda-style banner & mini-map
+    const regions = [
+        { id: 'village', name: 'Willowbrook Tea-Village', sub: 'A cozy haven of teacups & heirloom tomatoes', x: 0, y: 0, w: 1350, h: 1050 },
+        { id: 'meadow', name: 'Cloverleaf Meadow', sub: 'Rustling tall grass hides gems & dew slimes', x: 1350, y: 0, w: 1650, h: 1050 },
+        { id: 'forest', name: 'Whisperwood Glimmer-Grove', sub: 'Ancient mushroom rings & the Shrine of Switches', x: 0, y: 1050, w: 1450, h: 1050 },
+        { id: 'ruins', name: 'Clockwork Courtyard', sub: 'Brass tiles & Baron Gearsworth’s Arena', x: 1450, y: 1050, w: 1550, h: 1050 }
+    ];
+
+    // Water Streams & Bridges (water blocks movement except across wooden bridges)
+    const waterStreams = [
+        { x: 1310, y: 0, w: 75, h: 1050 },    // East-West brook between Village & Meadow
+        { x: 0, y: 1020, w: 1450, h: 65 },    // North-South stream between Village & Whisperwood
+        { x: 1420, y: 1050, w: 75, h: 1050 }  // Stream guarding Clockwork Ruins
+    ];
+
+    const bridges = [
+        { x: 1295, y: 470, w: 105, h: 90, dir: 'h' },  // Village <-> Meadow Bridge
+        { x: 620, y: 1005, w: 95, h: 95, dir: 'v' },   // Village <-> Whisperwood Bridge
+        { x: 1405, y: 1510, w: 105, h: 95, dir: 'h' }  // Whisperwood <-> Clockwork Ruins Bridge (unlocked via Shrine Gate!)
+    ];
+
+    // 2.5D Buildings (Village Cottages & Tea Pavilion)
+    const buildings = [
+        { x: 310, y: 240, w: 170, h: 115, wall: '#fef3c7', roof: '#dc2626', label: "Pip's Cottage" },
+        { x: 760, y: 220, w: 190, h: 120, wall: '#ffedd5', roof: '#ea580c', label: "Mayor's Hall" },
+        { x: 960, y: 630, w: 165, h: 110, wall: '#f3e8ff', roof: '#7e22ce', label: "Clover's Apothecary" }
+    ];
+
+    // Zelda-Style Push-Block Puzzle in Whisperwood Shrine (unlocks gate to Clockwork Ruins!)
+    const shrineGate = { x: 1385, y: 1495, w: 26, h: 125, open: false };
+    const puzzleSwitch = { x: 980, y: 1555, radius: 22, pressed: false };
+    const pushBlock = { x: 840, y: 1535, w: 44, h: 44, pushCooldown: 0 };
+
+    // Trees, Rocks, Fences & Decorative Props
+    const trees = [];
+    const bushes = []; // Cuttable tall grass & shrubs!
+    const chests = [
+        { id: 'c1', x: 1160, y: 230, opened: false, gold: 25, potion: 1, title: "Teacup Garden Chest" },
+        { id: 'c2', x: 2680, y: 260, opened: false, gold: 35, potion: 0, title: "Sunlit Overlook Chest" },
+        { id: 'c3', x: 290, y: 1840, opened: false, gold: 45, potion: 1, title: "Glimmer-Grove Chest" },
+        { id: 'c4', x: 1180, y: 1880, opened: false, gold: 50, potion: 1, title: "Shrine Reward Chest" }
+    ];
+
+    const pickups = []; // Dropped hearts, gold gems, spirit berries
+    const projectiles = [];
+    const particles = [];
+    const floatingTexts = [];
+    const pawPrints = [];
+
+    function generateOverworldProps() {
+        // Perimeter & Forest Canopy Trees
+        const treeCoords = [
+            // Village borders
+            [140, 160], [220, 140], [560, 150], [1060, 150], [1220, 160],
+            [150, 420], [140, 680], [180, 910], [420, 920], [860, 920],
+            // Meadow scattered trees
+            [1520, 180], [1890, 160], [2340, 180], [2820, 210],
+            [1580, 880], [2050, 910], [2560, 890], [2860, 740],
+            // Whisperwood dense magical trees
+            [180, 1200], [420, 1180], [920, 1180], [1240, 1210],
+            [160, 1520], [460, 1480], [210, 1820], [540, 1890],
+            [860, 1920], [1260, 1860]
+        ];
+        treeCoords.forEach(([tx, ty], i) => {
+            trees.push({
+                x: tx,
+                y: ty,
+                radius: 22,
+                autumn: i % 5 === 0,
+                glowing: ty > 1050 && i % 2 === 0
+            });
+        });
+
+        // Cuttable Tall Grass & Berry Bushes (Zelda / Pokémon style!)
+        const bushPatches = [
+            // Village garden shrubs
+            { cx: 520, cy: 360, rows: 2, cols: 4 },
+            { cx: 340, cy: 740, rows: 3, cols: 5 },
+            // Cloverleaf Meadow tall grass fields (spawn gems, hearts, or surprise Dew Slimes!)
+            { cx: 1580, cy: 360, rows: 4, cols: 7 },
+            { cx: 2150, cy: 480, rows: 5, cols: 8 },
+            { cx: 1750, cy: 720, rows: 3, cols: 6 },
+            { cx: 2520, cy: 640, rows: 4, cols: 6 },
+            // Whisperwood fern patches
+            { cx: 360, cy: 1340, rows: 3, cols: 5 },
+            { cx: 680, cy: 1720, rows: 3, cols: 6 },
+            // Clockwork Courtyard weeds
+            { cx: 1650, cy: 1260, rows: 3, cols: 4 },
+            { cx: 1720, cy: 1820, rows: 3, cols: 5 }
+        ];
+
+        bushPatches.forEach(p => {
+            for (let r = 0; r < p.rows; r++) {
+                for (let c = 0; c < p.cols; c++) {
+                    bushes.push({
+                        x: p.cx + c * 34 + (Math.random() - 0.5) * 6,
+                        y: p.cy + r * 30 + (Math.random() - 0.5) * 6,
+                        cut: false,
+                        regrowTimer: 0,
+                        isTallGrass: p.cx > 1400 && p.cy < 1000
+                    });
+                }
+            }
+        });
+    }
+    generateOverworldProps();
+
+    // --- 5. FRIENDLY NPCs (Alice-in-Wonderland meets Zelda/Pokémon Village!) ---
+    const npcs = [
+        {
+            id: 'mayor',
+            name: 'Mayor Bramble',
+            role: 'Badger Mayor',
+            x: 720,
+            y: 410,
+            avatar: '🦡',
+            bodyColor: '#5c4033',
+            hatColor: '#eab308',
+            getLines() {
+                if (game.questStage === 0) {
+                    return [
+                        "Top of the teacup to you, Pip! And look at Barnaby sporting that magnificent Heirloom Tomato Hat!",
+                        "Grumpy Mushrooms and Dew Slimes have overgrown Cloverleaf Meadow to the east.",
+                        "Please clear out 6 wild critters so our tea-carts can pass safely! Use [SPACE] to swing your staff and [X] for Barnaby's Tomato Toss!"
+                    ];
+                } else if (game.questStage === 1) {
+                    if (game.crittersCleared >= 6) {
+                        return [
+                            "Splendid heroics, Pip & Barnaby! Here are 45 Gold Gems for clearing the meadow!",
+                            "Next, head south across the brook into Whisperwood Grove. Push the heavy Stone Block onto the Sun Switch to unseal the Clockwork Courtyard!"
+                        ];
+                    }
+                    return [
+                        `Keep at it! You and Barnaby have calmed ${game.crittersCleared}/6 wild critters so far.`,
+                        "Tip: Cut tall grass in Cloverleaf Meadow to uncover hidden Heart Drops and Gold Gems!"
+                    ];
+                } else if (game.questStage === 2) {
+                    if (game.bossDefeated) {
+                        return [
+                            "Huzzah!! Baron Gearsworth has been dismantled! Barnaby's Tomato Hat will be sung about for centuries!",
+                            "Take this Royal Hero Medal and 100 Gold Gems!"
+                        ];
+                    }
+                    return [
+                        "Once you push the Whisperwood block onto its switch, cross the eastern bridge to face Baron Gearsworth!"
+                    ];
+                } else {
+                    return [
+                        "Willowbrook Tea-Village is peaceful once more thanks to Pip & Sir Barnaby of the Tomato Hat!"
+                    ];
+                }
+            },
+            onFinish() {
+                if (game.questStage === 0) {
+                    game.questStage = 1;
+                    updateQuestText();
+                    showToast("Quest Accepted: Calm 6 Wild Critters!");
+                } else if (game.questStage === 1 && game.crittersCleared >= 6) {
+                    game.questStage = 2;
+                    player.gold += 45;
+                    gainXp(45);
+                    sfx.fanfare();
+                    updateHUD();
+                    updateQuestText();
+                    showToast("Quest Complete! +45 Gems & +45 XP!");
+                } else if (game.questStage === 2 && game.bossDefeated) {
+                    game.questStage = 3;
+                    player.gold += 100;
+                    sfx.fanfare();
+                    updateHUD();
+                    updateQuestText();
+                    showToast("Grand Hero Reward: +100 Gold Gems!");
+                }
+            }
+        },
+        {
+            id: 'clover',
+            name: 'Granny Clover',
+            role: 'Wonderland Tea-Brewer',
+            x: 910,
+            y: 775,
+            avatar: '👵',
+            bodyColor: '#7e22ce',
+            hatColor: '#16a34a',
+            gifted: false,
+            getLines() {
+                return [
+                    "Why, that's a Grade-A Beefsteak Tomato perched atop Barnaby's ears! Positively brimming with life magic!",
+                    "Press [Q] anytime to have Barnaby cast Purr-Bloom Aura, restoring your Heart Containers!",
+                    "Open your Satchel [B] whenever you wish to upgrade your Staff or Barnaby's Tomato Hat."
+                ];
+            },
+            onFinish() {
+                if (!this.gifted) {
+                    this.gifted = true;
+                    player.potions++;
+                    sfx.heartPickup();
+                    updateHUD();
+                    showToast("Granny Clover gave you +1 Sunberry Elixir!");
+                }
+            }
+        },
+        {
+            id: 'hatter',
+            name: 'Tock the Timekeeper',
+            role: 'Clockwork Rabbit',
+            x: 1090,
+            y: 1470,
+            avatar: '🐇',
+            bodyColor: '#0284c7',
+            hatColor: '#f43f5e',
+            getLines() {
+                return [
+                    "Tick-tock, tick-tock! Oh dear, my gears are all in a tizzy!",
+                    "To open the iron gate to the Clockwork Courtyard, walk against that heavy Stone Block to push it onto the glowing Sun Switch!"
+                ];
+            },
+            onFinish() {}
+        }
+    ];
+
+    // --- 6. ENEMIES (2.5D Slimes, Grumpy Shrooms, Clockwork Beetles & Boss) ---
+    let enemies = [];
+
+    function createEnemy(type, x, y) {
+        if (type === 'slime') {
+            return {
+                type, name: 'Dew Slime', x, y, vx: 0, vy: 0, z: 0, vz: 0,
+                radius: 17, hp: 30, maxHp: 30, dmg: 1, xp: 18, gold: 8,
+                homeX: x, homeY: y, timer: Math.random() * 100, hurtTimer: 0, slowTimer: 0, dead: false, respawn: 0
+            };
+        } else if (type === 'mushroom') {
+            return {
+                type, name: 'Grumpy Shroom', x, y, vx: 0, vy: 0, z: 0, vz: 0,
+                radius: 19, hp: 50, maxHp: 50, dmg: 2, xp: 28, gold: 14,
+                homeX: x, homeY: y, timer: Math.random() * 100, hurtTimer: 0, slowTimer: 0, dead: false, respawn: 0
+            };
+        } else if (type === 'beetle') {
+            return {
+                type, name: 'Clockwork Beetle', x, y, vx: 0, vy: 0, z: 0, vz: 0,
+                radius: 21, hp: 72, maxHp: 72, dmg: 2, xp: 40, gold: 20,
+                homeX: x, homeY: y, timer: Math.random() * 100, hurtTimer: 0, slowTimer: 0, dead: false, respawn: 0
+            };
+        } else {
+            return {
+                type: 'boss', name: 'Baron Gearsworth', x, y, vx: 0, vy: 0, z: 0, vz: 0,
+                radius: 38, hp: 280, maxHp: 280, dmg: 3, xp: 160, gold: 90,
+                homeX: x, homeY: y, timer: 0, hurtTimer: 0, slowTimer: 0, dead: false, respawn: 0, isBoss: true
+            };
+        }
+    }
+
+    function spawnWorldEnemies() {
+        enemies = [
+            // Cloverleaf Meadow Slimes
+            createEnemy('slime', 1650, 310),
+            createEnemy('slime', 1960, 560),
+            createEnemy('slime', 2380, 380),
+            createEnemy('slime', 2620, 740),
+            // Whisperwood Shrooms
+            createEnemy('mushroom', 420, 1410),
+            createEnemy('mushroom', 720, 1340),
+            createEnemy('mushroom', 540, 1740),
+            // Clockwork Courtyard Beetles
+            createEnemy('beetle', 1780, 1420),
+            createEnemy('beetle', 1950, 1740),
+            createEnemy('beetle', 2180, 1340),
+            // Boss Arena: Baron Gearsworth
+            createEnemy('boss', 2520, 1550)
+        ];
+    }
+    spawnWorldEnemies();
+
+    // --- 7. INPUT HANDLING (Keyboard, Mouse, Touch) ---
+    const keys = {};
+
+    window.addEventListener('keydown', (e) => {
+        const code = e.code;
+        keys[code] = true;
+
+        if (!game.started) {
+            if (code === 'Enter' || code === 'Space') startGame();
+            return;
+        }
+
+        if (code === 'KeyB' || code === 'KeyI') {
+            toggleBagModal();
+            return;
+        }
+
+        if (code === 'Escape') {
+            if (!document.getElementById('bagModal').classList.contains('hidden')) {
+                toggleBagModal(false);
+            }
+            return;
+        }
+
+        if (game.activeDialogue) {
+            if (code === 'KeyE' || code === 'Enter' || code === 'Space') {
+                e.preventDefault();
+                advanceDialogue();
+            }
+            return;
+        }
+
+        if (game.paused) return;
+
+        if (code === 'Space' || code === 'KeyZ') {
+            e.preventDefault();
+            tryStaffSlash();
+        }
+        if (code === 'KeyX') {
+            tryTomatoToss();
+        }
+        if (code === 'KeyQ') {
+            tryPurrHeal();
+        }
+        if (code === 'ShiftLeft' || code === 'ShiftRight' || code === 'KeyC') {
+            tryDodgeRoll();
+        }
+        if (code === 'KeyE' || code === 'Enter') {
+            tryInteract();
+        }
+        if (code === 'KeyH') {
+            drinkPotion();
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        keys[e.code] = false;
+    });
+
+    // Mouse Click Attack / Tomato Toss on Canvas
+    canvas.addEventListener('mousedown', (e) => {
+        if (!game.started || game.paused) return;
+        if (game.activeDialogue) {
+            advanceDialogue();
+            return;
+        }
+        // Aim Pip toward mouse click
+        const worldMouseX = e.clientX + game.camX;
+        const worldMouseY = e.clientY + game.camY;
+        const dx = worldMouseX - player.x;
+        const dy = worldMouseY - player.y;
+        const len = Math.hypot(dx, dy);
+        if (len > 4) {
+            player.facingX = dx / len;
+            player.facingY = dy / len;
+            updateFacingDirName();
+        }
+
+        if (e.button === 0) tryStaffSlash();
+        else if (e.button === 2) tryTomatoToss();
+    });
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    // Mobile Touch Controls
+    function bindPad(id, code) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const on = (e) => { e.preventDefault(); sfx.init(); keys[code] = true; };
+        const off = (e) => { e.preventDefault(); keys[code] = false; };
+        el.addEventListener('touchstart', on, { passive: false });
+        el.addEventListener('touchend', off, { passive: false });
+        el.addEventListener('mousedown', on);
+        el.addEventListener('mouseup', off);
+        el.addEventListener('mouseleave', off);
+    }
+    bindPad('padUp', 'ArrowUp');
+    bindPad('padDown', 'ArrowDown');
+    bindPad('padLeft', 'ArrowLeft');
+    bindPad('padRight', 'ArrowRight');
+
+    document.getElementById('touchAttack').addEventListener('click', () => {
+        if (game.activeDialogue) advanceDialogue();
+        else if (!game.paused) { tryInteract(); tryStaffSlash(); }
+    });
+    document.getElementById('touchSkill').addEventListener('click', () => { if (!game.paused && !game.activeDialogue) tryTomatoToss(); });
+    document.getElementById('touchHeal').addEventListener('click', () => { if (!game.paused && !game.activeDialogue) tryPurrHeal(); });
+    document.getElementById('touchRoll').addEventListener('click', () => { if (!game.paused && !game.activeDialogue) tryDodgeRoll(); });
+
+    // --- 8. PLAYER & BARNABY SKILLS ---
+    function updateFacingDirName() {
+        if (Math.abs(player.facingX) > Math.abs(player.facingY)) {
+            player.dirName = player.facingX > 0 ? 'right' : 'left';
+        } else {
+            player.dirName = player.facingY > 0 ? 'down' : 'up';
+        }
+    }
+
+    function getStaffPower() {
+        return 12 + player.level * 3 + (player.staffLevel - 1) * 9;
+    }
+
+    function getTomatoPower() {
+        return 18 + player.level * 4 + (player.hatLevel - 1) * 12;
+    }
+
+    function tryStaffSlash() {
+        if (player.attackCooldown > 0 || player.rollTimer > 0) return;
+        player.attackTimer = 13;
+        player.attackCooldown = 20;
+        sfx.slash();
+
+        const reach = 54 + (player.staffLevel - 1) * 10;
+        const slashX = player.x + player.facingX * (reach * 0.65);
+        const slashY = player.y + player.facingY * (reach * 0.65);
+
+        // Sparkle arc particles
+        for (let i = 0; i < 9; i++) {
+            const ang = Math.atan2(player.facingY, player.facingX) + (Math.random() - 0.5) * 1.6;
+            const dist = 20 + Math.random() * (reach * 0.7);
+            particles.push({
+                x: player.x + Math.cos(ang) * dist,
+                y: player.y + Math.sin(ang) * dist - 10,
+                vx: Math.cos(ang) * 2,
+                vy: Math.sin(ang) * 2 - 1,
+                life: 14,
+                maxLife: 14,
+                size: 3.5,
+                color: player.staffLevel > 1 ? '#fde047' : '#ffffff'
+            });
+        }
+
+        // 1. Cut Bushes / Tall Grass (Zelda / Pokémon style!)
+        for (const b of bushes) {
+            if (!b.cut && Math.hypot(b.x - slashX, b.y - slashY) <= reach * 0.85) {
+                b.cut = true;
+                b.regrowTimer = 1100;
+                sfx.bushCut();
+                for (let k = 0; k < 6; k++) {
+                    particles.push({
+                        x: b.x,
+                        y: b.y - 8,
+                        vx: (Math.random() - 0.5) * 4.5,
+                        vy: -1.5 - Math.random() * 3,
+                        life: 20,
+                        maxLife: 20,
+                        size: 4,
+                        color: '#22c55e'
+                    });
+                }
+                // Loot roll from cut grass!
+                const roll = Math.random();
+                if (roll < 0.24) {
+                    pickups.push({ type: 'gem', x: b.x, y: b.y, z: 8, vz: 3.5, val: 5, life: 900 });
+                } else if (roll < 0.36) {
+                    pickups.push({ type: 'heart', x: b.x, y: b.y, z: 8, vz: 3.5, val: 2, life: 900 });
+                } else if (b.isTallGrass && roll < 0.44 && enemies.length < 18) {
+                    // Wild Dew Slime pops out of Pokémon tall grass!
+                    const wildSlime = createEnemy('slime', b.x, b.y);
+                    wildSlime.vz = 5;
+                    enemies.push(wildSlime);
+                    showToast("A wild Dew Slime sprang from the tall grass!");
+                }
+            }
+        }
+
+        // 2. Hit Enemies in front cone
+        const dmg = getStaffPower();
+        for (const en of enemies) {
+            if (!en.dead && Math.hypot(en.x - slashX, en.y - slashY) <= reach * 0.85 + en.radius) {
+                const kbLen = Math.max(0.1, Math.hypot(en.x - player.x, en.y - player.y));
+                damageEnemy(
+                    en,
+                    dmg,
+                    ((en.x - player.x) / kbLen) * 6.5,
+                    ((en.y - player.y) / kbLen) * 6.5,
+                    false
+                );
+            }
+        }
+    }
+
+    function tryDodgeRoll() {
+        if (player.rollCooldown > 0 || player.rollTimer > 0) return;
+        player.rollTimer = 14;
+        player.rollCooldown = 34;
+        player.invulnTimer = 18;
+        player.rollDirX = player.facingX;
+        player.rollDirY = player.facingY;
+        sfx.roll();
+        spawnDust(player.x, player.y, 7);
+    }
+
+    function tryTomatoToss() {
+        const cost = 22;
+        if (player.spirit < cost) {
+            showToast("Need more Tomato Spirit! Wait a moment or collect berries.");
+            return;
+        }
+        player.spirit -= cost;
+        cat.vz = 4.5;
+        cat.meowText = "Tomato Toss!";
+        cat.meowTimer = 50;
+        sfx.tomatoThrow();
+
+        // Barnaby launches an arcing 2.5D Heirloom Tomato!
+        projectiles.push({
+            x: cat.x,
+            y: cat.y,
+            z: 24,
+            vx: player.facingX * 7.2,
+            vy: player.facingY * 7.2,
+            vz: 4.4,
+            radius: 10 + (player.hatLevel - 1) * 2,
+            dmg: getTomatoPower(),
+            rot: 0
+        });
+        updateHUD();
+    }
+
+    function tryPurrHeal() {
+        const cost = 35;
+        if (player.spirit < cost) {
+            showToast("Not enough Tomato Spirit for Purr-Bloom!");
+            return;
+        }
+        player.spirit -= cost;
+        cat.vz = 5.2;
+        cat.meowText = "Purrrr~ ♥";
+        cat.meowTimer = 60;
+        sfx.meowHeal();
+
+        const healHalfHearts = 2 + player.hatLevel; // 1.5 to 3.5 full hearts
+        player.halfHearts = Math.min(player.maxHalfHearts, player.halfHearts + healHalfHearts);
+        addFloatingText(player.x, player.y - 32, `+${(healHalfHearts / 2).toFixed(1)} ♥`, '#4ade80');
+
+        // Expanding ring of hearts & leaves + knockback
+        for (let i = 0; i < 20; i++) {
+            const ang = (Math.PI * 2 * i) / 20;
+            particles.push({
+                x: cat.x,
+                y: cat.y - 10,
+                vx: Math.cos(ang) * 4.5,
+                vy: Math.sin(ang) * 4.5,
+                life: 24,
+                maxLife: 24,
+                size: 5,
+                color: i % 2 === 0 ? '#4ade80' : '#fb7185'
+            });
+        }
+
+        for (const en of enemies) {
+            if (!en.dead && Math.hypot(en.x - cat.x, en.y - cat.y) < 135) {
+                const dist = Math.max(1, Math.hypot(en.x - cat.x, en.y - cat.y));
+                damageEnemy(en, Math.floor(getTomatoPower() * 0.6), ((en.x - cat.x) / dist) * 9, ((en.y - cat.y) / dist) * 9, true);
+            }
+        }
+        updateHUD();
+    }
+
+    function drinkPotion() {
+        if (player.potions <= 0) {
+            showToast("No Sunberry Elixir left! Brew some in your Satchel [B].");
+            return;
+        }
+        if (player.halfHearts >= player.maxHalfHearts) {
+            showToast("Your Heart Containers are already full!");
+            return;
+        }
+        player.potions--;
+        player.halfHearts = Math.min(player.maxHalfHearts, player.halfHearts + 6);
+        sfx.heartPickup();
+        addFloatingText(player.x, player.y - 30, "+3 Hearts!", '#4ade80');
+        updateHUD();
+    }
+
+    function damageEnemy(en, dmg, kbx, kby, isTomato) {
+        en.hp -= dmg;
+        en.hurtTimer = 10;
+        en.vx = kbx;
+        en.vy = kby;
+        en.vz = 3.2;
+        if (isTomato) en.slowTimer = 150; // Tomato juice slows enemies!
+        game.hitStop = 2; // Crisp Zelda hit-stop!
+        sfx.hitEnemy();
+
+        addFloatingText(en.x, en.y - 26, `-${dmg}`, isTomato ? '#ff5947' : '#fde047');
+
+        for (let i = 0; i < 7; i++) {
+            particles.push({
+                x: en.x,
+                y: en.y - 12,
+                vx: (Math.random() - 0.5) * 5,
+                vy: (Math.random() - 0.5) * 5 - 2,
+                life: 16,
+                maxLife: 16,
+                size: 4,
+                color: isTomato ? '#ef4444' : '#fde047'
+            });
+        }
+
+        if (en.hp <= 0) {
+            en.dead = true;
+            en.respawn = en.isBoss ? 999999 : 1100;
+            triggerShake(en.isBoss ? 9 : 4, en.isBoss ? 22 : 8);
+            gainXp(en.xp);
+
+            if (en.isBoss) {
+                game.bossDefeated = true;
+                sfx.fanfare();
+                showToast("VICTORY! Baron Gearsworth Defeated!");
+                updateQuestText();
+            } else {
+                game.crittersCleared++;
+                if (game.questStage === 1) {
+                    updateQuestText();
+                    if (game.crittersCleared === 6) {
+                        showToast("Meadow Cleared! Return to Mayor Bramble!");
+                    }
+                }
+            }
+
+            // Spawn Gold Gems & occasional Heart
+            const gemCount = Math.max(2, Math.floor(en.gold / 4));
+            for (let g = 0; g < gemCount; g++) {
+                pickups.push({
+                    type: 'gem',
+                    x: en.x + (Math.random() - 0.5) * 24,
+                    y: en.y + (Math.random() - 0.5) * 24,
+                    z: 10,
+                    vz: 4 + Math.random() * 2,
+                    val: Math.ceil(en.gold / gemCount),
+                    life: 1200
+                });
+            }
+            if (Math.random() < 0.45) {
+                pickups.push({
+                    type: 'heart',
+                    x: en.x,
+                    y: en.y,
+                    z: 12,
+                    vz: 4.5,
+                    val: 2,
+                    life: 1200
+                });
+            }
+        }
+    }
+
+    function gainXp(amt) {
+        player.xp += amt;
+        while (player.xp >= player.maxXp) {
+            player.xp -= player.maxXp;
+            player.level++;
+            player.maxXp = Math.floor(player.maxXp * 1.4);
+            player.maxHalfHearts += 2; // +1 Full Zelda Heart Container on level up!
+            player.halfHearts = player.maxHalfHearts;
+            player.spirit = player.maxSpirit;
+            sfx.fanfare();
+            showToast(`✨ Level Up! Lv.${player.level} & +1 Heart Container! ✨`);
+        }
+        updateHUD();
+    }
+
+    function tryInteract() {
+        // 1. Check NPCs
+        for (const npc of npcs) {
+            if (Math.hypot(player.x - npc.x, player.y - npc.y) < 68) {
+                openDialogue(npc);
+                return;
+            }
+        }
+        // 2. Check Treasure Chests
+        for (const ch of chests) {
+            if (!ch.opened && Math.hypot(player.x - ch.x, player.y - ch.y) < 62) {
+                ch.opened = true;
+                player.gold += ch.gold;
+                player.potions += ch.potion;
+                sfx.fanfare();
+                let msg = `Opened ${ch.title}: +${ch.gold} Gold Gems`;
+                if (ch.potion > 0) msg += ` & +${ch.potion} Sunberry Elixir`;
+                showToast(msg + "!");
+                addFloatingText(ch.x, ch.y - 26, `+${ch.gold} ◆`, '#fde047');
+                updateHUD();
+                return;
+            }
+        }
+    }
+
+    // --- 9. DIALOGUE, HUD & SATCHEL UI ---
+    function openDialogue(npc) {
+        game.activeDialogue = npc;
+        game.dialogueLines = npc.getLines();
+        game.dialogueIdx = 0;
+        game.typewriterChar = 0;
+        document.getElementById('dialogueAvatar').textContent = npc.avatar;
+        document.getElementById('dialogueSpeaker').textContent = `${npc.name} — ${npc.role}`;
+        document.getElementById('dialogueText').textContent = '';
+        document.getElementById('dialogueBox').classList.remove('hidden');
+        sfx.talkBlip();
+    }
+
+    function advanceDialogue() {
+        if (!game.activeDialogue) return;
+        const fullLine = game.dialogueLines[game.dialogueIdx];
+        if (game.typewriterChar < fullLine.length) {
+            // Instant finish typewriter on tap
+            game.typewriterChar = fullLine.length;
+            document.getElementById('dialogueText').textContent = fullLine;
+            return;
+        }
+        game.dialogueIdx++;
+        if (game.dialogueIdx < game.dialogueLines.length) {
+            game.typewriterChar = 0;
+            document.getElementById('dialogueText').textContent = '';
+            sfx.talkBlip();
+        } else {
+            const finishedNpc = game.activeDialogue;
+            game.activeDialogue = null;
+            document.getElementById('dialogueBox').classList.add('hidden');
+            if (finishedNpc.onFinish) finishedNpc.onFinish();
+        }
+    }
+    document.getElementById('btnDialogueNext').addEventListener('click', advanceDialogue);
+
+    function renderZeldaHearts() {
+        const container = document.getElementById('heartsContainer');
+        const totalHearts = Math.floor(player.maxHalfHearts / 2);
+        let html = '';
+        for (let i = 0; i < totalHearts; i++) {
+            const heartVal = player.halfHearts - i * 2;
+            let fill = '#57534e'; // Empty
+            if (heartVal >= 2) fill = '#ef4444'; // Full
+            else if (heartVal === 1) fill = 'url(#halfHeartGrad)'; // Half
+
+            html += `
+            <svg viewBox="0 0 24 24" class="w-5 h-5 sm:w-5.5 sm:h-5.5 drop-shadow-xs">
+                <defs>
+                    <linearGradient id="halfHeartGrad" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="50%" stop-color="#ef4444"/>
+                        <stop offset="50%" stop-color="#57534e"/>
+                    </linearGradient>
+                </defs>
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                      fill="${fill}" stroke="#450a0a" stroke-width="1.8"/>
+            </svg>`;
+        }
+        container.innerHTML = html;
+    }
+
+    function updateHUD() {
+        renderZeldaHearts();
+        document.getElementById('hudLevelBadge').textContent = `Lv.${player.level}`;
+        document.getElementById('hudGold').textContent = player.gold;
+        document.getElementById('hudPotionCount').textContent = player.potions;
+        document.getElementById('hudMpBar').style.width = `${Math.floor((player.spirit / player.maxSpirit) * 100)}%`;
+        document.getElementById('hudMpText').textContent = `${Math.floor(player.spirit)}% Spirit`;
+
+        // Update Satchel values
+        const staffNames = ["Oak Wand", "Clover Rod", "Sunbeam Staff", "Starlight Scepter", "Astral Branch"];
+        const hatNames = ["Cherry Cap", "Roma Beret", "Beefsteak Crown", "Heirloom Royal Hat", "Solar Tomato Halo"];
+        document.getElementById('statStaffLv').textContent = `Lv.${player.staffLevel} ${staffNames[Math.min(4, player.staffLevel - 1)]}`;
+        document.getElementById('statHatLv').textContent = `Lv.${player.hatLevel} ${hatNames[Math.min(4, player.hatLevel - 1)]}`;
+        document.getElementById('statHearts').textContent = `${player.maxHalfHearts / 2} Hearts`;
+        document.getElementById('statGold').textContent = `${player.gold} ◆`;
+        document.getElementById('upgStaffBadge').textContent = `Lv.${player.staffLevel}`;
+        document.getElementById('upgHatBadge').textContent = `Lv.${player.hatLevel}`;
+        document.getElementById('bagPotionCount').textContent = player.potions;
+
+        const staffCost = player.staffLevel * 25;
+        const hatCost = player.hatLevel * 30;
+        const bStaff = document.getElementById('btnUpgradeStaff');
+        const bHat = document.getElementById('btnUpgradeHat');
+
+        if (player.staffLevel >= 5) { bStaff.textContent = "Max Level"; bStaff.disabled = true; }
+        else { bStaff.textContent = `Upgrade (${staffCost} ◆)`; bStaff.disabled = player.gold < staffCost; }
+
+        if (player.hatLevel >= 5) { bHat.textContent = "Max Level"; bHat.disabled = true; }
+        else { bHat.textContent = `Upgrade (${hatCost} ◆)`; bHat.disabled = player.gold < hatCost; }
+
+        document.getElementById('btnBuyPotion').disabled = player.gold < 15;
+    }
+
+    function updateQuestText() {
+        let txt = "";
+        if (game.questStage === 0) txt = "Quest: Speak with Mayor Bramble in Willowbrook Tea-Village";
+        else if (game.questStage === 1) {
+            txt = game.crittersCleared >= 6
+                ? "Quest: Return to Mayor Bramble for your reward!"
+                : `Quest: Calm wild critters in Cloverleaf Meadow (${game.crittersCleared}/6)`;
+        } else if (game.questStage === 2) {
+            if (!game.shrineUnlocked) txt = "Quest: Push the Whisperwood Stone Block onto the Sun Switch";
+            else if (!game.bossDefeated) txt = "Quest: Defeat Baron Gearsworth in the Clockwork Courtyard";
+            else txt = "Quest: Return to Mayor Bramble to celebrate!";
+        } else {
+            txt = "Quest Complete: Heroes of Willowbrook & Whisperwood!";
+        }
+        document.getElementById('questTracker').textContent = txt;
+    }
+
+    function toggleBagModal(force = null) {
+        const modal = document.getElementById('bagModal');
+        const open = force !== null ? force : modal.classList.contains('hidden');
+        if (open) {
+            updateHUD();
+            modal.classList.remove('hidden');
+            game.paused = true;
+        } else {
+            modal.classList.add('hidden');
+            game.paused = false;
+        }
+    }
+
+    document.getElementById('btnOpenBag').addEventListener('click', () => toggleBagModal(true));
+    document.getElementById('btnCloseBag').addEventListener('click', () => toggleBagModal(false));
+    document.getElementById('btnQuickHeal').addEventListener('click', drinkPotion);
+
+    document.getElementById('btnUpgradeStaff').addEventListener('click', () => {
+        const cost = player.staffLevel * 25;
+        if (player.gold >= cost && player.staffLevel < 5) {
+            player.gold -= cost;
+            player.staffLevel++;
+            sfx.fanfare();
+            updateHUD();
+            showToast(`Upgraded Starlight Staff to Lv.${player.staffLevel}!`);
+        }
+    });
+
+    document.getElementById('btnUpgradeHat').addEventListener('click', () => {
+        const cost = player.hatLevel * 30;
+        if (player.gold >= cost && player.hatLevel < 5) {
+            player.gold -= cost;
+            player.hatLevel++;
+            sfx.fanfare();
+            updateHUD();
+            showToast(`Barnaby's Tomato Hat upgraded to Lv.${player.hatLevel}!`);
+        }
+    });
+
+    document.getElementById('btnBuyPotion').addEventListener('click', () => {
+        if (player.gold >= 15) {
+            player.gold -= 15;
+            player.potions++;
+            sfx.gemPickup();
+            updateHUD();
+        }
+    });
+
+    document.getElementById('btnMute').addEventListener('click', (e) => {
+        sfx.muted = !sfx.muted;
+        e.currentTarget.textContent = sfx.muted ? '🔇' : '🔊';
+    });
+
+    document.getElementById('btnMusic').addEventListener('click', (e) => {
+        const on = sfx.toggleBGM();
+        e.currentTarget.textContent = on ? '🎶' : '🎵';
+    });
+
+    let toastTimer = null;
+    function showToast(msg) {
+        const el = document.getElementById('toastBanner');
+        el.textContent = msg;
+        el.classList.remove('hidden');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.add('hidden'), 2800);
+    }
+
+    function addFloatingText(x, y, text, color) {
+        floatingTexts.push({ x, y, text, color, life: 42, maxLife: 42 });
+    }
+
+    function spawnDust(x, y, count) {
+        for (let i = 0; i < count; i++) {
+            particles.push({
+                x: x + (Math.random() - 0.5) * 14,
+                y: y + (Math.random() - 0.5) * 10,
+                vx: (Math.random() - 0.5) * 2.2,
+                vy: -Math.random() * 1.6,
+                life: 16,
+                maxLife: 16,
+                size: 3.5,
+                color: '#e7e5e4'
+            });
+        }
+    }
+
+    function triggerShake(mag, dur) {
+        game.shakeMag = mag;
+        game.shakeTimer = dur;
+    }
+
+    // --- 10. 2.5D COLLISION & PHYSICS ---
+    function canOccupy(nx, ny, radius, isPlayer = false) {
+        if (nx < radius + 24 || nx > WORLD_W - radius - 24 || ny < radius + 24 || ny > WORLD_H - radius - 24) {
+            return false;
+        }
+
+        // Check Water Streams (allowed if on a Wooden Bridge!)
+        let onBridge = false;
+        for (const br of bridges) {
+            if (nx > br.x && nx < br.x + br.w && ny > br.y && ny < br.y + br.h) {
+                onBridge = true;
+                break;
+            }
+        }
+        if (!onBridge) {
+            for (const ws of waterStreams) {
+                if (nx + radius * 0.7 > ws.x && nx - radius * 0.7 < ws.x + ws.w &&
+                    ny + radius * 0.7 > ws.y && ny - radius * 0.7 < ws.y + ws.h) {
+                    return false;
+                }
+            }
+        }
+
+        // Check Shrine Iron Gate
+        if (!shrineGate.open) {
+            if (nx + radius > shrineGate.x && nx - radius < shrineGate.x + shrineGate.w &&
+                ny + radius > shrineGate.y && ny - radius < shrineGate.y + shrineGate.h) {
+                return false;
+            }
+        }
+
+        // Check Buildings (solid base footprints)
+        for (const b of buildings) {
+            if (nx + radius > b.x && nx - radius < b.x + b.w &&
+                ny + radius > b.y + 30 && ny - radius < b.y + b.h) {
+                return false;
+            }
+        }
+
+        // Check Tree Trunks
+        for (const t of trees) {
+            if (Math.hypot(nx - t.x, ny - t.y) < radius + t.radius * 0.75) {
+                return false;
+            }
+        }
+
+        // Check Zelda Push-Block
+        if (nx + radius > pushBlock.x && nx - radius < pushBlock.x + pushBlock.w &&
+            ny + radius > pushBlock.y && ny - radius < pushBlock.y + pushBlock.h) {
+            if (isPlayer && pushBlock.pushCooldown <= 0) {
+                // Push block in cardinal direction!
+                const dx = (pushBlock.x + pushBlock.w / 2) - player.x;
+                const dy = (pushBlock.y + pushBlock.h / 2) - player.y;
+                let px = 0, py = 0;
+                if (Math.abs(dx) > Math.abs(dy)) px = dx > 0 ? 3.2 : -3.2;
+                else py = dy > 0 ? 3.2 : -3.2;
+
+                const nextBx = pushBlock.x + px;
+                const nextBy = pushBlock.y + py;
+                if (nextBx > 720 && nextBx < 1180 && nextBy > 1380 && nextBy < 1720) {
+                    pushBlock.x = nextBx;
+                    pushBlock.y = nextBy;
+                    if (game.time % 8 === 0) sfx.pushBlock();
+                }
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    // --- 11. MAIN SIMULATION UPDATE ---
+    function update() {
+        game.time++;
+
+        if (game.hitStop > 0) {
+            game.hitStop--;
+            return;
+        }
+        if (game.shakeTimer > 0) game.shakeTimer--;
+
+        // Ambient title screen pan
+        if (!game.started) {
+            game.camX = 340 + Math.sin(game.time * 0.007) * 180;
+            game.camY = 260 + Math.cos(game.time * 0.007) * 90;
+            player.x = game.camX + width * 0.45;
+            player.y = game.camY + height * 0.52;
+            cat.x = player.x - 36;
+            cat.y = player.y + 8;
+            cat.hopAnim += 0.14;
+            return;
+        }
+
+        if (game.paused) return;
+
+        // Typewriter Dialogue Progression
+        if (game.activeDialogue) {
+            const fullLine = game.dialogueLines[game.dialogueIdx] || '';
+            if (game.typewriterChar < fullLine.length) {
+                game.typewriterChar += 1.4;
+                document.getElementById('dialogueText').textContent = fullLine.slice(0, Math.floor(game.typewriterChar));
+                if (Math.floor(game.typewriterChar) % 4 === 0) sfx.talkBlip();
+            }
+        }
+
+        // Regenerate Tomato Spirit smoothly
+        if (player.spirit < player.maxSpirit) {
+            player.spirit = Math.min(player.maxSpirit, player.spirit + 0.14);
+            if (game.time % 6 === 0) updateHUD();
+        }
+
+        if (player.attackTimer > 0) player.attackTimer--;
+        if (player.attackCooldown > 0) player.attackCooldown--;
+        if (player.rollCooldown > 0) player.rollCooldown--;
+        if (player.invulnTimer > 0) player.invulnTimer--;
+        if (cat.meowTimer > 0) cat.meowTimer--;
+
+        // --- Player 8-Directional Movement ---
+        let ix = 0, iy = 0;
+        if (!game.activeDialogue) {
+            if (keys['ArrowLeft'] || keys['KeyA']) ix -= 1;
+            if (keys['ArrowRight'] || keys['KeyD']) ix += 1;
+            if (keys['ArrowUp'] || keys['KeyW']) iy -= 1;
+            if (keys['ArrowDown'] || keys['KeyS']) iy += 1;
+        }
+
+        if (player.rollTimer > 0) {
+            player.rollTimer--;
+            const rx = player.x + player.rollDirX * 7.2;
+            const ry = player.y + player.rollDirY * 7.2;
+            if (canOccupy(rx, player.y, player.radius)) player.x = rx;
+            if (canOccupy(player.x, ry, player.radius)) player.y = ry;
+            if (player.rollTimer % 3 === 0) spawnDust(player.x, player.y, 1);
+        } else if (ix !== 0 || iy !== 0) {
+            const len = Math.hypot(ix, iy);
+            const nx = ix / len;
+            const ny = iy / len;
+            player.facingX = nx;
+            player.facingY = ny;
+            updateFacingDirName();
+
+            const stepX = player.x + nx * player.speed;
+            const stepY = player.y + ny * player.speed;
+            if (canOccupy(stepX, player.y, player.radius, true)) player.x = stepX;
+            if (canOccupy(player.x, stepY, player.radius, true)) player.y = stepY;
+
+            player.walkAnim += 0.24;
+        } else {
+            player.walkAnim = 0;
+        }
+
+        // --- Check Whisperwood Push-Block Switch ---
+        if (!puzzleSwitch.pressed) {
+            const blockCenterX = pushBlock.x + pushBlock.w / 2;
+            const blockCenterY = pushBlock.y + pushBlock.h / 2;
+            if (Math.hypot(blockCenterX - puzzleSwitch.x, blockCenterY - puzzleSwitch.y) < 28) {
+                puzzleSwitch.pressed = true;
+                shrineGate.open = true;
+                game.shrineUnlocked = true;
+                sfx.fanfare();
+                triggerShake(6, 16);
+                updateQuestText();
+                showToast("✨ Sun Switch Activated! The Clockwork Courtyard Gate opened! ✨");
+            }
+        }
+
+        // --- Barnaby the Cat Breadcrumb Trail Follower ---
+        const lastTrail = cat.trail[cat.trail.length - 1];
+        if (!lastTrail || Math.hypot(player.x - lastTrail.x, player.y - lastTrail.y) > 5) {
+            cat.trail.push({ x: player.x, y: player.y });
+            if (cat.trail.length > 14) cat.trail.shift();
+        }
+        const targetPos = cat.trail[0] || { x: player.x - 32, y: player.y };
+        const cdx = targetPos.x - cat.x;
+        const cdy = targetPos.y - cat.y;
+        const cdist = Math.hypot(cdx, cdy);
+        if (cdist > 10) {
+            cat.x += cdx * 0.14;
+            cat.y += cdy * 0.14;
+            cat.facingX = cdx / cdist;
+            cat.facingY = cdy / cdist;
+            cat.hopAnim += 0.28;
+            if (game.time % 14 === 0) {
+                pawPrints.push({ x: cat.x, y: cat.y + 4, life: 90 });
+            }
+        } else {
+            cat.hopAnim = 0;
+            cat.facingX = player.facingX;
+            cat.facingY = player.facingY;
+        }
+        if (cat.z > 0 || cat.vz !== 0) {
+            cat.z += cat.vz;
+            cat.vz -= 0.42;
+            if (cat.z <= 0) { cat.z = 0; cat.vz = 0; }
+        }
+
+        // --- Projectiles (2.5D Arcing Heirloom Tomatoes!) ---
+        for (let i = projectiles.length - 1; i >= 0; i--) {
+            const p = projectiles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.z += p.vz;
+            p.vz -= 0.26;
+            p.rot += 0.25;
+
+            let hit = p.z <= 0;
+            if (!hit) {
+                for (const en of enemies) {
+                    if (!en.dead && Math.hypot(en.x - p.x, en.y - p.y) < en.radius + p.radius) {
+                        hit = true;
+                        break;
+                    }
+                }
+            }
+
+            if (hit) {
+                sfx.tomatoSplat();
+                triggerShake(4, 8);
+                const splashR = 72 + player.hatLevel * 12;
+                for (const en of enemies) {
+                    if (!en.dead && Math.hypot(en.x - p.x, en.y - p.y) <= splashR) {
+                        const d = Math.max(1, Math.hypot(en.x - p.x, en.y - p.y));
+                        damageEnemy(en, p.dmg, ((en.x - p.x) / d) * 6, ((en.y - p.y) / d) * 6, true);
+                    }
+                }
+                for (let s = 0; s < 16; s++) {
+                    particles.push({
+                        x: p.x,
+                        y: p.y - 6,
+                        vx: (Math.random() - 0.5) * 7,
+                        vy: (Math.random() - 0.5) * 7 - 1.5,
+                        life: 22,
+                        maxLife: 22,
+                        size: 4.5,
+                        color: s % 3 === 0 ? '#22c55e' : '#ef4444'
+                    });
+                }
+                projectiles.splice(i, 1);
+            }
+        }
+
+        // --- Enemies 2.5D AI ---
+        for (const en of enemies) {
+            if (en.dead) {
+                en.respawn--;
+                if (en.respawn <= 0) {
+                    en.dead = false;
+                    en.hp = en.maxHp;
+                    en.x = en.homeX;
+                    en.y = en.homeY;
+                }
+                continue;
+            }
+            if (en.hurtTimer > 0) en.hurtTimer--;
+            if (en.slowTimer > 0) en.slowTimer--;
+            en.timer++;
+
+            if (en.z > 0 || en.vz !== 0) {
+                en.z += en.vz;
+                en.vz -= 0.4;
+                if (en.z <= 0) { en.z = 0; en.vz = 0; }
+            }
+
+            const dx = player.x - en.x;
+            const dy = player.y - en.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (en.hurtTimer === 0) {
+                const aggroRange = en.isBoss ? 340 : 210;
+                const slowMult = en.slowTimer > 0 ? 0.45 : 1;
+                if (dist < aggroRange && dist > 4) {
+                    const spd = (en.type === 'beetle' ? 2.1 : en.isBoss ? 1.8 : 1.35) * slowMult;
+                    en.vx = (dx / dist) * spd;
+                    en.vy = (dy / dist) * spd;
+                } else {
+                    // Gentle patrol orbit around home
+                    const ang = en.timer * 0.02;
+                    const tx = en.homeX + Math.cos(ang) * 45;
+                    const ty = en.homeY + Math.sin(ang) * 45;
+                    en.vx = (tx - en.x) * 0.03;
+                    en.vy = (ty - en.y) * 0.03;
+                }
+            } else {
+                en.vx *= 0.82;
+                en.vy *= 0.82;
+            }
+
+            const nextEx = en.x + en.vx;
+            const nextEy = en.y + en.vy;
+            if (canOccupy(nextEx, en.y, en.radius)) en.x = nextEx;
+            if (canOccupy(en.x, nextEy, en.radius)) en.y = nextEy;
+
+            // Slimes hop
+            if (en.type === 'slime' && en.timer % 85 === 0 && en.z === 0) {
+                en.vz = 4.6;
+            }
+
+            // Enemy damages Pip on contact
+            if (player.invulnTimer === 0 && !game.activeDialogue && dist < player.radius + en.radius - 2) {
+                player.halfHearts = Math.max(0, player.halfHearts - en.dmg);
+                player.invulnTimer = 55;
+                sfx.hurt();
+                triggerShake(6, 12);
+                addFloatingText(player.x, player.y - 28, `-${(en.dmg / 2).toFixed(1)} ♥`, '#f43f5e');
+                updateHUD();
+
+                if (player.halfHearts <= 0) {
+                    player.halfHearts = player.maxHalfHearts;
+                    player.spirit = player.maxSpirit;
+                    player.x = 560;
+                    player.y = 520;
+                    cat.x = 520;
+                    cat.y = 510;
+                    cat.trail = [];
+                    updateHUD();
+                    showToast("Pip & Barnaby rested back in Willowbrook Tea-Village!");
+                }
+            }
+        }
+
+        // --- Pickups (Hearts & Gold Gems) ---
+        for (let i = pickups.length - 1; i >= 0; i--) {
+            const pk = pickups[i];
+            pk.life--;
+            if (pk.z > 0 || pk.vz !== 0) {
+                pk.z += pk.vz;
+                pk.vz -= 0.35;
+                if (pk.z <= 0) { pk.z = 0; pk.vz = 0; }
+            }
+            const d = Math.hypot(player.x - pk.x, player.y - pk.y);
+            if (d < 85) {
+                pk.x += ((player.x - pk.x) / Math.max(1, d)) * 4.5;
+                pk.y += ((player.y - pk.y) / Math.max(1, d)) * 4.5;
+            }
+            if (d < 24) {
+                if (pk.type === 'gem') {
+                    player.gold += pk.val;
+                    sfx.gemPickup();
+                    addFloatingText(player.x, player.y - 26, `+${pk.val} ◆`, '#fde047');
+                } else if (pk.type === 'heart') {
+                    player.halfHearts = Math.min(player.maxHalfHearts, player.halfHearts + pk.val);
+                    sfx.heartPickup();
+                    addFloatingText(player.x, player.y - 26, "+1 ♥", '#fb7185');
+                }
+                updateHUD();
+                pickups.splice(i, 1);
+                continue;
+            }
+            if (pk.life <= 0) pickups.splice(i, 1);
+        }
+
+        // --- Regrow Cut Bushes & Fade Effects ---
+        for (const b of bushes) {
+            if (b.cut) {
+                b.regrowTimer--;
+                if (b.regrowTimer <= 0) b.cut = false;
+            }
+        }
+        for (let i = pawPrints.length - 1; i >= 0; i--) {
+            pawPrints[i].life--;
+            if (pawPrints[i].life <= 0) pawPrints.splice(i, 1);
+        }
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const pt = particles[i];
+            pt.x += pt.vx;
+            pt.y += pt.vy;
+            pt.life--;
+            if (pt.life <= 0) particles.splice(i, 1);
+        }
+        for (let i = floatingTexts.length - 1; i >= 0; i--) {
+            const ft = floatingTexts[i];
+            ft.y -= 0.85;
+            ft.life--;
+            if (ft.life <= 0) floatingTexts.splice(i, 1);
+        }
+
+        // --- Smooth 2.5D Camera Follow ---
+        const targetCamX = Math.max(0, Math.min(WORLD_W - width, player.x - width * 0.5));
+        const targetCamY = Math.max(0, Math.min(WORLD_H - height, player.y - height * 0.5));
+        game.camX += (targetCamX - game.camX) * 0.12;
+        game.camY += (targetCamY - game.camY) * 0.12;
+
+        checkRegionBanner();
+    }
+
+    function checkRegionBanner() {
+        for (const r of regions) {
+            if (player.x >= r.x && player.x < r.x + r.w && player.y >= r.y && player.y < r.y + r.h) {
+                if (game.currentRegion !== r.id) {
+                    game.currentRegion = r.id;
+                    document.getElementById('minimapZoneLabel').textContent = r.name;
+                    const banner = document.getElementById('regionBanner');
+                    document.getElementById('regionBannerTitle').textContent = `~ ${r.name} ~`;
+                    document.getElementById('regionBannerSub').textContent = r.sub;
+                    banner.classList.remove('hidden', 'region-banner-active');
+                    void banner.offsetWidth; // reflow
+                    banner.classList.add('region-banner-active');
+                }
+                break;
+            }
+        }
+    }
+
+    // --- 12. 2.5D Y-SORTED RENDERING ENGINE ---
+    function draw() {
+        ctx.clearRect(0, 0, width, height);
+
+        ctx.save();
+        if (game.shakeTimer > 0) {
+            ctx.translate((Math.random() - 0.5) * game.shakeMag, (Math.random() - 0.5) * game.shakeMag);
+        }
+        ctx.translate(-game.camX, -game.camY);
+
+        // 1. Ground Biome Tiles (Village Cobbles, Meadow Grass, Forest Moss, Brass Ruins)
+        drawGroundBiomes();
+
+        // 2. Animated Sparkling Water Streams, Bridges & Shrine Switch
+        drawWaterAndBridges();
+        drawPuzzleSwitchAndPawPrints();
+
+        // 3. Collect all 2.5D Entities & Props into a Y-Sorted Render List!
+        const renderQueue = [];
+
+        // Buildings
+        for (const b of buildings) {
+            renderQueue.push({ sortY: b.y + b.h, draw: () => drawBuilding25D(b) });
+        }
+        // Trees
+        for (const t of trees) {
+            renderQueue.push({ sortY: t.y, draw: () => drawTree25D(t) });
+        }
+        // Cuttable Bushes & Tall Grass
+        for (const b of bushes) {
+            renderQueue.push({ sortY: b.y, draw: () => drawBush25D(b) });
+        }
+        // Treasure Chests
+        for (const c of chests) {
+            renderQueue.push({ sortY: c.y, draw: () => drawChest25D(c) });
+        }
+        // Zelda Push-Block & Iron Gate
+        renderQueue.push({ sortY: pushBlock.y + pushBlock.h, draw: () => drawPushBlock25D() });
+        if (!shrineGate.open) {
+            renderQueue.push({ sortY: shrineGate.y + shrineGate.h, draw: () => drawShrineGate25D() });
+        }
+        // Friendly NPCs
+        for (const npc of npcs) {
+            renderQueue.push({ sortY: npc.y, draw: () => drawNPC25D(npc) });
+        }
+        // Enemies
+        for (const en of enemies) {
+            if (!en.dead) {
+                renderQueue.push({ sortY: en.y, draw: () => drawEnemy25D(en) });
+            }
+        }
+        // Pickups
+        for (const pk of pickups) {
+            renderQueue.push({ sortY: pk.y, draw: () => drawPickup25D(pk) });
+        }
+        // Barnaby the Cat (with his iconic Tomato Hat!)
+        renderQueue.push({ sortY: cat.y, draw: () => drawBarnaby25D() });
+        // Pip the Heroine
+        renderQueue.push({ sortY: player.y, draw: () => drawPip25D() });
+        // Projectiles
+        for (const p of projectiles) {
+            renderQueue.push({ sortY: p.y, draw: () => drawTomatoProjectile25D(p) });
+        }
+
+        // Depth-sort by Y coordinate so entities smoothly walk behind & in front of roofs, trees, and each other!
+        renderQueue.sort((a, b) => a.sortY - b.sortY);
+        for (const item of renderQueue) {
+            item.draw();
+        }
+
+        // 4. Particles & Floating Combat/Loot Text
+        drawParticlesAndTexts();
+
+        ctx.restore();
+
+        // 5. Render Overworld Radar Mini-Map
+        drawMinimap();
+    }
+
+    function drawGroundBiomes() {
+        // Base Cloverleaf Meadow & Village Grass
+        ctx.fillStyle = '#58b358';
+        ctx.fillRect(0, 0, WORLD_W, WORLD_H);
+
+        // Whisperwood Glimmer-Grove (Bottom-Left)
+        ctx.fillStyle = '#387d4b';
+        ctx.fillRect(0, 1050, 1450, 1050);
+
+        // Clockwork Courtyard Brass & Stone Tiles (Bottom-Right)
+        ctx.fillStyle = '#78716c';
+        ctx.fillRect(1450, 1050, 1550, 1050);
+        ctx.strokeStyle = '#57534e';
+        ctx.lineWidth = 2;
+        const startX = Math.max(1472, Math.floor(game.camX / 64) * 64);
+        const endX = Math.min(WORLD_W, game.camX + width + 64);
+        const startY = Math.max(1088, Math.floor(game.camY / 64) * 64);
+        const endY = Math.min(WORLD_H, game.camY + height + 64);
+        for (let gx = startX; gx < endX; gx += 64) {
+            for (let gy = startY; gy < endY; gy += 64) {
+                ctx.strokeRect(gx, gy, 64, 64);
+            }
+        }
+
+        // Willowbrook Tea-Village Cobblestone Paths
+        ctx.fillStyle = '#e7d5b8';
+        ctx.beginPath();
+        ctx.roundRect(280, 460, 1020, 95, 36);
+        ctx.roundRect(615, 340, 105, 680, 36);
+        ctx.roundRect(620, 770, 420, 80, 30);
+        ctx.fill();
+
+        // Whisperwood Forest Dirt Trail
+        ctx.fillStyle = '#9c7853';
+        ctx.beginPath();
+        ctx.roundRect(625, 1080, 85, 480, 30);
+        ctx.roundRect(625, 1515, 790, 85, 30);
+        ctx.fill();
+
+        // Decorative wildflowers & glowing forest mushrooms
+        for (let fx = 120; fx < WORLD_W; fx += 190) {
+            for (let fy = 120; fy < WORLD_H; fy += 190) {
+                if (fx > 1450 && fy > 1050) continue;
+                if (fy > 1050) {
+                    // Glowing Glimmer-Grove mushroom dots
+                    ctx.fillStyle = 'rgba(103, 232, 249, 0.55)';
+                    ctx.beginPath();
+                    ctx.arc(fx + 20, fy + 15, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    ctx.fillStyle = (fx + fy) % 380 === 0 ? '#fda4af' : '#fef08a';
+                    ctx.beginPath();
+                    ctx.arc(fx, fy, 3.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+    }
+
+    function drawWaterAndBridges() {
+        for (const ws of waterStreams) {
+            ctx.fillStyle = '#0ea5e9';
+            ctx.fillRect(ws.x, ws.y, ws.w, ws.h);
+            // Animated water ripples
+            ctx.strokeStyle = 'rgba(224, 242, 254, 0.6)';
+            ctx.lineWidth = 2.5;
+            const shift = (game.time * 1.1) % 48;
+            if (ws.w < ws.h) {
+                for (let wy = ws.y + shift; wy < ws.y + ws.h; wy += 48) {
+                    ctx.beginPath();
+                    ctx.moveTo(ws.x + 14, wy);
+                    ctx.lineTo(ws.x + ws.w - 14, wy + 10);
+                    ctx.stroke();
+                }
+            } else {
+                for (let wx = ws.x + shift; wx < ws.x + ws.w; wx += 48) {
+                    ctx.beginPath();
+                    ctx.moveTo(wx, ws.y + 14);
+                    ctx.lineTo(wx + 12, ws.y + ws.h - 14);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Wooden Plank Bridges
+        for (const br of bridges) {
+            ctx.fillStyle = '#92400e';
+            ctx.strokeStyle = '#451a03';
+            ctx.lineWidth = 3;
+            ctx.fillRect(br.x, br.y, br.w, br.h);
+            ctx.strokeRect(br.x, br.y, br.w, br.h);
+
+            ctx.strokeStyle = '#b45309';
+            ctx.lineWidth = 2;
+            if (br.dir === 'h') {
+                for (let px = br.x + 12; px < br.x + br.w; px += 14) {
+                    ctx.beginPath();
+                    ctx.moveTo(px, br.y + 4);
+                    ctx.lineTo(px, br.y + br.h - 4);
+                    ctx.stroke();
+                }
+            } else {
+                for (let py = br.y + 12; py < br.y + br.h; py += 14) {
+                    ctx.beginPath();
+                    ctx.moveTo(br.x + 4, py);
+                    ctx.lineTo(br.x + br.w - 4, py);
+                    ctx.stroke();
+                }
+            }
+        }
+    }
+
+    function drawPuzzleSwitchAndPawPrints() {
+        // Barnaby's cute little paw-prints
+        for (const pp of pawPrints) {
+            ctx.fillStyle = `rgba(60, 40, 20, ${Math.min(0.28, pp.life / 180)})`;
+            ctx.beginPath();
+            ctx.arc(pp.x - 3, pp.y, 2, 0, Math.PI * 2);
+            ctx.arc(pp.x + 3, pp.y + 2, 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Whisperwood Sun Floor Switch
+        ctx.fillStyle = puzzleSwitch.pressed ? '#4ade80' : '#facc15';
+        ctx.strokeStyle = '#713f12';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(puzzleSwitch.x, puzzleSwitch.y, puzzleSwitch.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+    }
+
+    function drawBuilding25D(b) {
+        // Drop Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.22)';
+        ctx.beginPath();
+        ctx.roundRect(b.x - 6, b.y + 34, b.w + 14, b.h - 22, 12);
+        ctx.fill();
+
+        // Extruded Front Wall
+        ctx.fillStyle = b.wall;
+        ctx.strokeStyle = '#451a03';
+        ctx.lineWidth = 3;
+        ctx.fillRect(b.x, b.y + 26, b.w, b.h - 26);
+        ctx.strokeRect(b.x, b.y + 26, b.w, b.h - 26);
+
+        // Door & Warm Windows
+        ctx.fillStyle = '#78350f';
+        ctx.beginPath();
+        ctx.roundRect(b.x + b.w / 2 - 16, b.y + b.h - 42, 32, 42, [14, 14, 0, 0]);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(b.x + 22, b.y + 52, 24, 22);
+        ctx.strokeRect(b.x + 22, b.y + 52, 24, 22);
+        ctx.fillRect(b.x + b.w - 46, b.y + 52, 24, 22);
+        ctx.strokeRect(b.x + b.w - 46, b.y + 52, 24, 22);
+
+        // 2.5D Angled Pitched Roof
+        ctx.fillStyle = b.roof;
+        ctx.beginPath();
+        ctx.moveTo(b.x - 14, b.y + 34);
+        ctx.lineTo(b.x + 16, b.y - 38);
+        ctx.lineTo(b.x + b.w - 16, b.y - 38);
+        ctx.lineTo(b.x + b.w + 14, b.y + 34);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+    }
+
+    function drawTree25D(t) {
+        // Ground Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.24)';
+        ctx.beginPath();
+        ctx.ellipse(t.x + 6, t.y + 8, 36, 16, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Trunk
+        ctx.fillStyle = '#78350f';
+        ctx.strokeStyle = '#3f1d06';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.roundRect(t.x - 11, t.y - 48, 22, 52, 5);
+        ctx.fill();
+        ctx.stroke();
+
+        // 2.5D Layered Canopy
+        const mainLeaf = t.autumn ? '#ea580c' : t.glowing ? '#0d9488' : '#16a34a';
+        const topLeaf = t.autumn ? '#fb923c' : t.glowing ? '#2dd4bf' : '#4ade80';
+
+        ctx.fillStyle = mainLeaf;
+        ctx.beginPath();
+        ctx.arc(t.x, t.y - 68, 42, 0, Math.PI * 2);
+        ctx.arc(t.x - 28, t.y - 54, 30, 0, Math.PI * 2);
+        ctx.arc(t.x + 28, t.y - 54, 30, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = topLeaf;
+        ctx.beginPath();
+        ctx.arc(t.x - 8, t.y - 78, 24, 0, Math.PI * 2);
+        ctx.arc(t.x + 14, t.y - 68, 20, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    function drawBush25D(b) {
+        if (b.cut) {
+            // Cut grass stubble
+            ctx.strokeStyle = '#15803d';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(b.x - 5, b.y);
+            ctx.lineTo(b.x - 7, b.y - 5);
+            ctx.moveTo(b.x + 4, b.y);
+            ctx.lineTo(b.x + 6, b.y - 5);
+            ctx.stroke();
+            return;
+        }
+
+        // Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.18)';
+        ctx.beginPath();
+        ctx.ellipse(b.x, b.y + 4, 15, 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (b.isTallGrass) {
+            // Pokémon-style swaying tall grass blades
+            const sway = Math.sin(game.time * 0.08 + b.x * 0.1) * 2.5;
+            ctx.fillStyle = '#16a34a';
+            ctx.strokeStyle = '#14532d';
+            ctx.lineWidth = 1.8;
+            for (let i = -1; i <= 1; i++) {
+                ctx.beginPath();
+                ctx.moveTo(b.x + i * 6 - 3, b.y + 2);
+                ctx.lineTo(b.x + i * 7 + sway, b.y - 18);
+                ctx.lineTo(b.x + i * 6 + 3, b.y + 2);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+        } else {
+            // Zelda cuttable round shrub
+            ctx.fillStyle = '#22c55e';
+            ctx.strokeStyle = '#14532d';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(b.x, b.y - 7, 14, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#86efac';
+            ctx.beginPath();
+            ctx.arc(b.x - 4, b.y - 11, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function drawPushBlock25D() {
+        ctx.fillStyle = 'rgba(0,0,0,0.25)';
+        ctx.fillRect(pushBlock.x + 3, pushBlock.y + 6, pushBlock.w, pushBlock.h);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.roundRect(pushBlock.x, pushBlock.y - 12, pushBlock.w, pushBlock.h + 12, 6);
+        ctx.fill();
+        ctx.stroke();
+
+        // Top face
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(pushBlock.x + 4, pushBlock.y - 9, pushBlock.w - 8, pushBlock.h - 8);
+    }
+
+    function drawShrineGate25D() {
+        ctx.fillStyle = '#475569';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 3;
+        ctx.fillRect(shrineGate.x, shrineGate.y - 26, shrineGate.w, shrineGate.h + 26);
+        ctx.strokeRect(shrineGate.x, shrineGate.y - 26, shrineGate.w, shrineGate.h + 26);
+    }
+
+    function drawChest25D(c) {
+        ctx.fillStyle = 'rgba(0,0,0,0.22)';
+        ctx.beginPath();
+        ctx.ellipse(c.x, c.y + 4, 20, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = c.opened ? '#78716c' : '#d97706';
+        ctx.strokeStyle = '#451a03';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.roundRect(c.x - 18, c.y - 22, 36, 24, 5);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = c.opened ? '#a8a29e' : '#fde047';
+        ctx.fillRect(c.x - 18, c.y - 12, 36, 4);
+        ctx.fillRect(c.x - 4, c.y - 15, 8, 10);
+
+        if (!c.opened && Math.hypot(player.x - c.x, player.y - c.y) < 62) {
+            drawPromptPill(c.x, c.y - 34, "[E] Open");
+        }
+    }
+
+    function drawNPC25D(npc) {
+        const bob = Math.sin(game.time * 0.08 + npc.x) * 2;
+        ctx.fillStyle = 'rgba(0,0,0,0.22)';
+        ctx.beginPath();
+        ctx.ellipse(npc.x, npc.y + 4, 15, 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = npc.bodyColor;
+        ctx.strokeStyle = '#291d12';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.roundRect(npc.x - 13, npc.y - 28 + bob, 26, 30, 10);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#fde68a';
+        ctx.beginPath();
+        ctx.arc(npc.x, npc.y - 34 + bob, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = npc.hatColor;
+        ctx.beginPath();
+        ctx.ellipse(npc.x, npc.y - 43 + bob, 16, 4.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#1c1917';
+        ctx.beginPath();
+        ctx.arc(npc.x - 4, npc.y - 34 + bob, 1.8, 0, Math.PI * 2);
+        ctx.arc(npc.x + 4, npc.y - 34 + bob, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (Math.hypot(player.x - npc.x, player.y - npc.y) < 68) {
+            drawPromptPill(npc.x, npc.y - 58, `[E] ${npc.name}`);
+        } else if (npc.id === 'mayor' && game.questStage < 3) {
+            drawPromptPill(npc.x, npc.y - 56, "!");
+        }
+    }
+
+    // --- 2.5D SPRITE: BARNABY THE CAT IN HIS TOMATO HAT ---
+    function drawBarnaby25D() {
+        const hopZ = Math.abs(Math.sin(cat.hopAnim)) * 4 + cat.z;
+        const cx = cat.x;
+        const cy = cat.y - hopZ;
+        const flip = cat.facingX < -0.15 ? -1 : 1;
+
+        // Ground Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.22)';
+        ctx.beginPath();
+        ctx.ellipse(cat.x, cat.y + 5, 13, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(flip, 1);
+
+        // Wagging Tail
+        const wag = Math.sin(game.time * 0.16) * 0.35;
+        ctx.save();
+        ctx.translate(-9, -4);
+        ctx.rotate(wag);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(-10, -8, -7, -15);
+        ctx.stroke();
+        ctx.strokeStyle = '#44403c';
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+        ctx.restore();
+
+        // Plump White Cat Body
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#44403c';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(0, -4, 11, 9, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Head
+        ctx.beginPath();
+        ctx.arc(3, -13, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Ears peeking out beneath Tomato Hat
+        ctx.beginPath();
+        ctx.moveTo(-4, -18); ctx.lineTo(-6, -26); ctx.lineTo(0, -21); ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(7, -19); ctx.lineTo(11, -26); ctx.lineTo(11, -18); ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        // Eyes & Rosy Cheeks
+        ctx.fillStyle = '#1c1917';
+        ctx.beginPath();
+        ctx.arc(6, -13, 1.8, 0, Math.PI * 2);
+        ctx.arc(0, -13, 1.7, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(244, 63, 94, 0.45)';
+        ctx.beginPath();
+        ctx.arc(8, -10, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // === BARNABY'S BRIGHT RED TOMATO HAT ===
+        const hatScale = 1 + (player.hatLevel - 1) * 0.06;
+        ctx.save();
+        ctx.translate(3, -21);
+        ctx.scale(hatScale, hatScale);
+
+        const grad = ctx.createRadialGradient(-2, -3, 2, 0, 0, 12);
+        grad.addColorStop(0, '#ff8780');
+        grad.addColorStop(0.6, '#ef4444');
+        grad.addColorStop(1, '#b91c1c');
+        ctx.fillStyle = grad;
+        ctx.strokeStyle = '#7f1d1d';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 11.5, 7.5, 0, Math.PI, Math.PI * 2);
+        ctx.quadraticCurveTo(11.5, 3.5, 0, 3);
+        ctx.quadraticCurveTo(-11.5, 3.5, -11.5, 0);
+        ctx.fill();
+        ctx.stroke();
+
+        // Glossy Shine
+        ctx.fillStyle = 'rgba(255,255,255,0.55)';
+        ctx.beginPath();
+        ctx.ellipse(-4, -3, 3, 1.4, -0.4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Green Leafy Calyx & Stem
+        ctx.fillStyle = '#16a34a';
+        ctx.strokeStyle = '#14532d';
+        ctx.lineWidth = 1.3;
+        ctx.beginPath();
+        ctx.moveTo(0, -7); ctx.lineTo(-6, -4); ctx.lineTo(-2, -6);
+        ctx.lineTo(0, -11); ctx.lineTo(2, -6); ctx.lineTo(6, -4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.restore();
+
+        if (cat.meowTimer > 0) {
+            drawPromptPill(cx, cy - 38, cat.meowText);
+        }
+    }
+
+    // --- 2.5D SPRITE: PIP THE ADVENTUROUS GIRL ---
+    function drawPip25D() {
+        if (player.invulnTimer > 0 && Math.floor(game.time / 3) % 2 === 0) return;
+
+        const bob = Math.abs(Math.sin(player.walkAnim)) * 3;
+        const px = player.x;
+        const py = player.y - bob;
+
+        // Ground Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.24)';
+        ctx.beginPath();
+        ctx.ellipse(player.x, player.y + 6, 15, 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(px, py);
+        if (player.rollTimer > 0) {
+            ctx.rotate(((14 - player.rollTimer) / 14) * Math.PI * 2);
+        }
+
+        // Little Boots
+        const legOff = Math.sin(player.walkAnim) * 4;
+        ctx.fillStyle = '#5c3a21';
+        ctx.strokeStyle = '#291d12';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(-8, -4 + legOff * 0.5, 6, 9, 3);
+        ctx.roundRect(2, -4 - legOff * 0.5, 6, 9, 3);
+        ctx.fill();
+        ctx.stroke();
+
+        // Teal Adventurer Tunic
+        ctx.fillStyle = '#0d9488';
+        ctx.beginPath();
+        ctx.moveTo(-10, -22);
+        ctx.lineTo(10, -22);
+        ctx.lineTo(13, -3);
+        ctx.lineTo(-13, -3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Back Hair (if facing up, covers back of head)
+        ctx.fillStyle = '#7c3f1d';
+        ctx.beginPath();
+        ctx.arc(0, -31, 13, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        if (player.dirName !== 'up') {
+            // Face
+            ctx.fillStyle = '#ffdfc4';
+            ctx.beginPath();
+            ctx.arc(0, -30, 11.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Front Bangs
+            ctx.fillStyle = '#7c3f1d';
+            ctx.beginPath();
+            ctx.arc(0, -32, 12, Math.PI, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Red Ribbon Headband (matches Barnaby's Tomato Hat!)
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(0, -31, 11.5, Math.PI * 1.15, Math.PI * 1.85);
+            ctx.stroke();
+
+            // Eyes
+            const eyeShiftX = player.facingX * 3.5;
+            ctx.fillStyle = '#1c1917';
+            ctx.beginPath();
+            ctx.arc(-3.5 + eyeShiftX, -29, 1.9, 0, Math.PI * 2);
+            ctx.arc(3.5 + eyeShiftX, -29, 1.9, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Magic Staff & Zelda Slash Arc
+        const aimAngle = Math.atan2(player.facingY, player.facingX);
+        ctx.save();
+        ctx.translate(0, -14);
+        const swingOffset = player.attackTimer > 0
+            ? -1.1 + ((13 - player.attackTimer) / 13) * 2.2
+            : 0.45;
+        ctx.rotate(aimAngle + swingOffset);
+
+        ctx.strokeStyle = '#78350f';
+        ctx.lineWidth = 3.8;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(4, 0);
+        ctx.lineTo(32, 0);
+        ctx.stroke();
+
+        ctx.fillStyle = player.staffLevel > 1 ? '#fde047' : '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(34, 0, 4.5 + player.staffLevel * 0.6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        if (player.attackTimer > 0) {
+            ctx.strokeStyle = 'rgba(254, 240, 138, 0.85)';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.arc(0, 0, 44 + player.staffLevel * 7, -0.75, 0.75);
+            ctx.stroke();
+        }
+        ctx.restore();
+
+        ctx.restore();
+    }
+
+    function drawEnemy25D(en) {
+        const ey = en.y - en.z;
+
+        // Ground Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.22)';
+        ctx.beginPath();
+        ctx.ellipse(en.x, en.y + 5, en.radius, en.radius * 0.45, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(en.x, ey);
+        if (en.hurtTimer > 0) ctx.filter = 'brightness(2)';
+        else if (en.slowTimer > 0) ctx.filter = 'hue-rotate(310deg)';
+
+        if (en.type === 'slime') {
+            const squish = Math.sin(en.timer * 0.14) * 2.5;
+            ctx.fillStyle = '#38bdf8';
+            ctx.strokeStyle = '#0369a1';
+            ctx.lineWidth = 2.4;
+            ctx.beginPath();
+            ctx.ellipse(0, -6, en.radius + squish, en.radius - 3 - squish * 0.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.arc(-5, -7, 2.2, 0, Math.PI * 2);
+            ctx.arc(5, -7, 2.2, 0, Math.PI * 2);
+            ctx.fill();
+        } else if (en.type === 'mushroom') {
+            ctx.fillStyle = '#fef3c7';
+            ctx.strokeStyle = '#78350f';
+            ctx.lineWidth = 2.4;
+            ctx.beginPath();
+            ctx.roundRect(-10, -14, 20, 18, 5);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#a855f7';
+            ctx.beginPath();
+            ctx.ellipse(0, -16, 20, 13, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#fef08a';
+            ctx.beginPath();
+            ctx.arc(-8, -20, 3.5, 0, Math.PI * 2);
+            ctx.arc(7, -18, 4, 0, Math.PI * 2);
+            ctx.fill();
+        } else if (en.type === 'beetle') {
+            ctx.fillStyle = '#d97706';
+            ctx.strokeStyle = '#451a03';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.ellipse(0, -8, 20, 14, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.strokeStyle = '#fde047';
+            ctx.lineWidth = 2.8;
+            ctx.beginPath();
+            ctx.moveTo(0, -22); ctx.lineTo(0, -31); ctx.stroke();
+            ctx.strokeRect(-5, -35, 10, 4);
+        } else if (en.isBoss) {
+            // Baron Gearsworth 2.5D Boss
+            ctx.fillStyle = '#64748b';
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.roundRect(-32, -58, 64, 64, 14);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(0, -24, 16, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(-18, -46, 36, 9);
+        }
+        ctx.restore();
+
+        // Enemy Health Bar
+        if (en.hp < en.maxHp || en.isBoss) {
+            const bw = en.isBoss ? 76 : 36;
+            const by = ey - (en.isBoss ? 70 : 32);
+            ctx.fillStyle = 'rgba(0,0,0,0.65)';
+            ctx.fillRect(en.x - bw / 2 - 1, by - 1, bw + 2, 6);
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(en.x - bw / 2, by, bw * Math.max(0, en.hp / en.maxHp), 4);
+        }
+    }
+
+    function drawTomatoProjectile25D(p) {
+        // Ground shadow beneath flying tomato!
+        ctx.fillStyle = 'rgba(0,0,0,0.22)';
+        ctx.beginPath();
+        ctx.ellipse(p.x, p.y + 4, p.radius * 0.85, p.radius * 0.4, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(p.x, p.y - p.z);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = '#ef4444';
+        ctx.strokeStyle = '#7f1d1d';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#22c55e';
+        ctx.beginPath();
+        ctx.arc(0, -p.radius + 2, 3.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function drawPickup25D(pk) {
+        const hover = Math.sin(game.time * 0.12 + pk.x) * 2.5 + pk.z;
+        ctx.fillStyle = 'rgba(0,0,0,0.18)';
+        ctx.beginPath();
+        ctx.ellipse(pk.x, pk.y + 3, 7, 3.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (pk.type === 'gem') {
+            ctx.fillStyle = '#facc15';
+            ctx.strokeStyle = '#854d0e';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(pk.x, pk.y - 12 - hover);
+            ctx.lineTo(pk.x + 7, pk.y - 5 - hover);
+            ctx.lineTo(pk.x, pk.y + 2 - hover);
+            ctx.lineTo(pk.x - 7, pk.y - 5 - hover);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        } else if (pk.type === 'heart') {
+            ctx.fillStyle = '#f43f5e';
+            ctx.strokeStyle = '#881337';
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.arc(pk.x - 3.5, pk.y - 8 - hover, 4, 0, Math.PI * 2);
+            ctx.arc(pk.x + 3.5, pk.y - 8 - hover, 4, 0, Math.PI * 2);
+            ctx.lineTo(pk.x, pk.y + 1 - hover);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
+    }
+
+    function drawPromptPill(x, y, text) {
+        ctx.font = 'bold 12px Fredoka, sans-serif';
+        const w = ctx.measureText(text).width + 14;
+        ctx.fillStyle = '#fffbeb';
+        ctx.strokeStyle = '#78350f';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(x - w / 2, y - 14, w, 21, 10);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#78350f';
+        ctx.textAlign = 'center';
+        ctx.fillText(text, x, y + 1);
+    }
+
+    function drawParticlesAndTexts() {
+        for (const pt of particles) {
+            ctx.globalAlpha = pt.life / pt.maxLife;
+            ctx.fillStyle = pt.color;
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+
+        ctx.textAlign = 'center';
+        for (const ft of floatingTexts) {
+            ctx.globalAlpha = Math.min(1, ft.life / 14);
+            ctx.font = 'bold 15px Fredoka, sans-serif';
+            ctx.strokeStyle = '#291d12';
+            ctx.lineWidth = 3.2;
+            ctx.strokeText(ft.text, ft.x, ft.y);
+            ctx.fillStyle = ft.color;
+            ctx.fillText(ft.text, ft.x, ft.y);
+        }
+        ctx.globalAlpha = 1;
+    }
+
+    function drawMinimap() {
+        const mw = miniCanvas.width;
+        const mh = miniCanvas.height;
+        const sx = mw / WORLD_W;
+        const sy = mh / WORLD_H;
+
+        // Regions on minimap
+        miniCtx.fillStyle = '#65a30d';
+        miniCtx.fillRect(0, 0, mw * 0.45, mh * 0.5); // Village
+        miniCtx.fillStyle = '#22c55e';
+        miniCtx.fillRect(mw * 0.45, 0, mw * 0.55, mh * 0.5); // Meadow
+        miniCtx.fillStyle = '#15803d';
+        miniCtx.fillRect(0, mh * 0.5, mw * 0.48, mh * 0.5); // Whisperwood
+        miniCtx.fillStyle = '#78716c';
+        miniCtx.fillRect(mw * 0.48, mh * 0.5, mw * 0.52, mh * 0.5); // Ruins
+
+        // Water lines
+        miniCtx.fillStyle = '#0ea5e9';
+        for (const ws of waterStreams) {
+            miniCtx.fillRect(ws.x * sx, ws.y * sy, Math.max(2, ws.w * sx), Math.max(2, ws.h * sy));
+        }
+
+        // Unopened Chests (Gold dots)
+        miniCtx.fillStyle = '#fde047';
+        for (const c of chests) {
+            if (!c.opened) miniCtx.fillRect(c.x * sx - 1.5, c.y * sy - 1.5, 3, 3);
+        }
+
+        // Active Enemies (Red dots)
+        miniCtx.fillStyle = '#ef4444';
+        for (const en of enemies) {
+            if (!en.dead) {
+                const sz = en.isBoss ? 5 : 2.5;
+                miniCtx.fillRect(en.x * sx - sz / 2, en.y * sy - sz / 2, sz, sz);
+            }
+        }
+
+        // Pip & Barnaby Marker
+        miniCtx.fillStyle = '#ffffff';
+        miniCtx.beginPath();
+        miniCtx.arc(player.x * sx, player.y * sy, 3.5, 0, Math.PI * 2);
+        miniCtx.fill();
+        miniCtx.strokeStyle = '#ef4444';
+        miniCtx.lineWidth = 1.5;
+        miniCtx.stroke();
+    }
+
+    // --- 13. START & GAME LOOP ---
+    function startGame() {
+        sfx.init();
+        sfx.fanfare();
+        game.started = true;
+        player.x = 560;
+        player.y = 520;
+        cat.x = 520;
+        cat.y = 510;
+        cat.trail = [];
+
+        document.getElementById('titleScreen').classList.add('hidden');
+        document.getElementById('hudOverlay').classList.remove('hidden');
+        updateHUD();
+        updateQuestText();
+        checkRegionBanner();
+    }
+
+    document.getElementById('btnStartGame').addEventListener('click', startGame);
+
+    function loop() {
+        update();
+        draw();
+        requestAnimationFrame(loop);
+    }
+
+    window.onload = function () {
+        resizeCanvas();
+        loop();
+    };
+    </script>
+</body>
+</html>

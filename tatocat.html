@@ -503,6 +503,17 @@
                         <div class="font-display font-bold text-rose-950 mb-1.5">🐱 Barnaby's Heirloom Tomato Hat</div>
                         <div id="optTomatoColor" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
                     </div>
+
+                    <!-- Custom Keybind / Control Configurator -->
+                    <div class="bg-amber-100/75 border-2 border-amber-800/30 rounded-2xl p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-display font-bold text-amber-950">🎮 Controls & Keybinds</span>
+                            <button id="btnResetControls" type="button" class="text-[11px] font-display font-bold bg-white hover:bg-amber-50 px-2.5 py-0.5 rounded-lg border border-amber-800/30 text-amber-900 cursor-pointer">
+                                Reset Defaults
+                            </button>
+                        </div>
+                        <div id="optControlsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs"></div>
+                    </div>
                 </div>
             </div>
 
@@ -730,7 +741,38 @@
         };
     }
 
+    function getDefaultControls() {
+        return {
+            slash: 'Space',
+            tomato: 'KeyX',
+            purr: 'KeyQ',
+            sprout: 'KeyR',
+            interact: 'KeyE',
+            potion: 'KeyH'
+        };
+    }
+
+    const CONTROL_LABELS = [
+        { id: 'slash', label: '🪄 Staff / Cut' },
+        { id: 'tomato', label: '🍅 Tomato Toss' },
+        { id: 'purr', label: '💖 Purr-Bloom' },
+        { id: 'sprout', label: '🌱 Sprout-Burst' },
+        { id: 'interact', label: '💬 Talk / Enter' },
+        { id: 'potion', label: '🍓 Sunberry Juice' }
+    ];
+
+    function formatKeyCode(code) {
+        if (!code) return 'None';
+        if (code === 'Space') return 'Space';
+        if (code.startsWith('Key')) return code.slice(3);
+        if (code.startsWith('Digit')) return code.slice(5);
+        if (code.startsWith('Arrow')) return code.slice(5);
+        return code;
+    }
+
     let heroAppearance = getDefaultAppearance();
+    let customControls = getDefaultControls();
+    let listeningControlId = null;
     let previewFacingDir = 1;
 
     // --- 4. GAME STATE, PARTY & CUTSCENE CONTROLLER ---
@@ -844,16 +886,65 @@
 
     // --- 6. WORLD GEOMETRY: RIVERS, BRIDGES, BUILDINGS, INTERIORS, PUZZLES & CHESTS ---
     const riverSegments = [
+        // River separating Willowbrook (West) from Cloverleaf Meadow (East) - ONLY passable via the North Bridge!
         { x: 1345, y: 0, w: 110, h: 520 },
         { x: 1345, y: 690, w: 110, h: 560 },
+        // Deep gorge river separating Meadow/Orchard from Clockwork Ruins & Port Brioche - ONLY passable via Port Brioche Bridge!
         { x: 2695, y: 0, w: 110, h: 1740 },
         { x: 2695, y: 1910, w: 110, h: 690 },
-        { x: 3820, y: 1250, w: 380, h: 1350 } // Port Brioche Eastern Harbor Sea!
+        // Port Brioche Eastern Harbor Sea
+        { x: 3820, y: 1250, w: 380, h: 1350 }
     ];
 
     const bridges = [
         { x: 1330, y: 520, w: 140, h: 170, dir: 'h' },
         { x: 2680, y: 1740, w: 140, h: 170, dir: 'h' }
+    ];
+
+    // SOLID IMPASSABLE TERRAIN WALLS (Cliffs, Hedges & Ruin Ramparts so gated routes cannot be walked around!)
+    const solidBarriers = [
+        // 1. Mountain/Hedge Ridge dividing Willowbrook (North) from Whisperwood (South), leaving only the center road passable
+        { x: 0, y: 1215, w: 550, h: 75, kind: 'ridge' },
+        { x: 730, y: 1215, w: 670, h: 75, kind: 'ridge' },
+
+        // 2. Fortress & Cliff Wall guarding Clockwork Courtyard (x=1380): completely sealed except the Sun-Stone Gate (y: 1700..1860)!
+        { x: 1380, y: 1250, w: 64, h: 450, kind: 'wall' },
+        { x: 1380, y: 1860, w: 64, h: 740, kind: 'wall' },
+
+        // 3. Northern & Southern Ruin Ramparts framing Clockwork Courtyard (with a clear eastern passage toward the Harbor Bridge!)
+        { x: 1444, y: 1250, w: 1255, h: 64, kind: 'wall' },
+        { x: 1444, y: 2520, w: 1255, h: 80, kind: 'wall' },
+
+        // 4. Orchard-to-Port Brioche Coastal Cliff Ridge (leaves a wide 160px road on the left at x=2805..2965 to reach the Harbor Bridge!)
+        { x: 2965, y: 1215, w: 860, h: 75, kind: 'ridge' }
+    ];
+
+    // Town Plazas, Market Stalls, Street Lanterns, Flowerbeds & Harbor Docks
+    const townPlazas = [
+        { x: 560, y: 530, w: 340, h: 250, color: '#e6d5b8', border: '#c4ab82', name: 'Willowbrook Square' },
+        { x: 3110, y: 1680, w: 420, h: 310, color: '#cbd5e1', border: '#94a3b8', name: 'Brioche Harbor Plaza' }
+    ];
+
+    const townDecor = [
+        // Willowbrook Tea-Village Market Stalls, Lanterns & Flowerbeds
+        { kind: 'stall', x: 530, y: 690, w: 72, h: 44, awning: '#ef4444', label: 'Tea & Tarts' },
+        { kind: 'flowerbed', x: 615, y: 455, w: 95, h: 28 },
+        { kind: 'flowerbed', x: 985, y: 865, w: 110, h: 28 },
+        { kind: 'lantern', x: 585, y: 515 },
+        { kind: 'lantern', x: 740, y: 515 },
+        { kind: 'lantern', x: 925, y: 745 },
+        { kind: 'well', x: 825, y: 655, r: 24 },
+
+        // Port Brioche Coastal Town Stalls, Lanterns, Docks & Flowerbeds
+        { kind: 'stall', x: 3150, y: 1625, w: 78, h: 44, awning: '#2563eb', label: 'Fresh Brioche' },
+        { kind: 'stall', x: 3465, y: 1625, w: 78, h: 44, awning: '#0f766e', label: 'Clockwork Gears' },
+        { kind: 'flowerbed', x: 2965, y: 1630, w: 110, h: 28 },
+        { kind: 'flowerbed', x: 2965, y: 2035, w: 110, h: 28 },
+        { kind: 'lantern', x: 3120, y: 1720 },
+        { kind: 'lantern', x: 3500, y: 1720 },
+        { kind: 'lantern', x: 3120, y: 1965 },
+        { kind: 'lantern', x: 3500, y: 1965 },
+        { kind: 'dock', x: 3730, y: 1790, w: 155, h: 74 }
     ];
 
     // 2.5D Buildings (Willowbrook Warm Cottages + Port Brioche Blue/Slate Townhouses)
@@ -1171,6 +1262,9 @@
         for (let y = 210; y < WORLD_H - 140; y += 170) {
             trees.push({ x: 80, y, kind: 'oak' });
         }
+        // Dense tree line along the Whisperwood ridge so it looks naturally forested
+        for (let x = 140; x < 530; x += 125) trees.push({ x, y: 1210, kind: 'pine' });
+        for (let x = 770; x < 1310; x += 130) trees.push({ x, y: 1210, kind: 'pine' });
 
         // Extra Whisperwood & Orchard trees
         const extraTrees = [
@@ -1402,6 +1496,21 @@
     // --- 10. CONTROLS: KEYBOARD, POINTER & TOUCH JOYSTICK ---
     const keys = {};
     window.addEventListener('keydown', e => {
+        if (listeningControlId) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.code !== 'Escape') {
+                customControls[listeningControlId] = e.code;
+                sfx.fanfare();
+            } else {
+                sfx.blip();
+            }
+            listeningControlId = null;
+            renderCreatorOptions();
+            updateSkillKeyBadges();
+            return;
+        }
+
         if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
 
         const code = e.code;
@@ -1427,29 +1536,29 @@
         }
 
         if (isDialogueOpen()) {
-            if (code === 'Space' || code === 'Enter' || code === 'KeyE') {
+            if (code === 'Space' || code === 'Enter' || code === 'KeyE' || code === customControls.interact || code === customControls.slash) {
                 e.preventDefault();
                 advanceDialogue();
             }
             return;
         }
 
-        if (code === 'Space' || code === 'KeyZ') {
+        if (code === customControls.slash || (customControls.slash === 'Space' && code === 'KeyZ')) {
             e.preventDefault();
             performStaffSlash();
-        } else if (code === 'KeyX' || code === 'KeyC') {
+        } else if (code === customControls.tomato) {
             e.preventDefault();
             performTomatoToss();
-        } else if (code === 'KeyQ') {
+        } else if (code === customControls.purr) {
             e.preventDefault();
             performPurrAura();
-        } else if (code === 'KeyR') {
+        } else if (code === customControls.sprout) {
             e.preventDefault();
             performSproutBurst();
-        } else if (code === 'KeyE') {
+        } else if (code === customControls.interact) {
             e.preventDefault();
             interactWorld();
-        } else if (code === 'KeyH') {
+        } else if (code === customControls.potion) {
             e.preventDefault();
             usePotion();
         } else if (code === 'KeyB') {
@@ -1923,6 +2032,18 @@
         }
 
         if (nx < 85 || nx > WORLD_W - 85 || ny < 85 || ny > WORLD_H - 85) return true;
+
+        // Solid impassable mountain ridges, fortress walls & coastal cliffs
+        for (const bar of solidBarriers) {
+            if (circleRectCollide(nx, ny, radius, bar.x, bar.y, bar.w, bar.h)) return true;
+        }
+
+        // Town stalls & stone wells
+        for (const dec of townDecor) {
+            if (dec.kind === 'stall' && circleRectCollide(nx, ny, radius, dec.x, dec.y, dec.w, dec.h)) return true;
+            if (dec.kind === 'well' && Math.hypot(nx - dec.x, ny - dec.y) < dec.r + radius - 4) return true;
+        }
+
         for (const b of buildings) {
             if (circleRectCollide(nx, ny, radius, b.x + 8, b.y + 38, b.w - 16, b.h - 42)) return true;
         }
@@ -2299,11 +2420,18 @@
 
         drawTerrain();
         drawPathsAndBridges();
+        drawTownPlazasAndDecorFloor();
         drawPuzzleFloorElements();
 
         // Collect all 2.5D entities for Y-sorting depth
         const renderList = [];
 
+        solidBarriers.forEach(bar => renderList.push({ ySort: bar.y + bar.h, draw: () => drawSolidBarrier25D(bar) }));
+        townDecor.forEach(dec => {
+            if (dec.kind === 'stall' || dec.kind === 'lantern' || dec.kind === 'well') {
+                renderList.push({ ySort: dec.y + (dec.h || 8), draw: () => drawTownDecor25D(dec) });
+            }
+        });
         buildings.forEach(b => renderList.push({ ySort: b.y + b.h, draw: () => drawBuilding25D(b) }));
         renderList.push({ ySort: townFountain.y + 18, draw: () => drawFountain25D() });
         trees.forEach(t => renderList.push({ ySort: t.y, draw: () => drawTree25D(t) }));
@@ -2391,18 +2519,24 @@
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
 
-        // Main Road: Willowbrook -> Meadow -> Orchard -> Port Brioche -> Whisperwood
+        // Main Road: Willowbrook -> Meadow -> Orchard -> Harbor Bridge -> Port Brioche -> Whisperwood
         ctx.beginPath();
         ctx.moveTo(640, 480);
         ctx.lineTo(640, 620);
         ctx.lineTo(1380, 605);
         ctx.lineTo(2200, 605);
-        ctx.lineTo(3180, 605);
-        ctx.lineTo(3180, 1830);
+        ctx.lineTo(2885, 605);
+        ctx.lineTo(2885, 1825);
         ctx.lineTo(2740, 1825);
-        ctx.lineTo(1400, 1780);
+        ctx.lineTo(3180, 1830);
+        ctx.stroke();
+
+        // Whisperwood & Clockwork Gate Road
+        ctx.beginPath();
+        ctx.moveTo(640, 620);
         ctx.lineTo(640, 1780);
-        ctx.lineTo(640, 620);
+        ctx.lineTo(1400, 1780);
+        ctx.lineTo(2180, 1780);
         ctx.stroke();
 
         // Cobblestone center speckles
@@ -2423,7 +2557,167 @@
                 ctx.lineTo(px, br.y + br.h);
                 ctx.stroke();
             }
+            // Bridge side railings
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(br.x, br.y - 4, br.w, 8);
+            ctx.fillRect(br.x, br.y + br.h - 4, br.w, 8);
         }
+    }
+
+    function drawTownPlazasAndDecorFloor() {
+        // Cobblestone Town Squares
+        for (const pl of townPlazas) {
+            ctx.save();
+            ctx.fillStyle = pl.color;
+            ctx.strokeStyle = pl.border;
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.roundRect(pl.x, pl.y, pl.w, pl.h, 24);
+            ctx.fill();
+            ctx.stroke();
+
+            // Subtle flagstone grid
+            ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+            ctx.lineWidth = 1.5;
+            for (let gx = pl.x + 36; gx < pl.x + pl.w - 20; gx += 42) {
+                ctx.beginPath();
+                ctx.moveTo(gx, pl.y + 10);
+                ctx.lineTo(gx, pl.y + pl.h - 10);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        // Flowerbeds & Harbor Wooden Pier
+        for (const dec of townDecor) {
+            if (dec.kind === 'flowerbed') {
+                ctx.save();
+                ctx.fillStyle = '#78350f';
+                ctx.beginPath();
+                ctx.roundRect(dec.x, dec.y, dec.w, dec.h, 8);
+                ctx.fill();
+                ctx.fillStyle = '#15803d';
+                ctx.beginPath();
+                ctx.roundRect(dec.x + 4, dec.y + 4, dec.w - 8, dec.h - 8, 5);
+                ctx.fill();
+                const cols = ['#f43f5e', '#facc15', '#38bdf8', '#f472b6'];
+                for (let fx = dec.x + 14; fx < dec.x + dec.w - 10; fx += 18) {
+                    ctx.fillStyle = cols[(fx / 18) % cols.length];
+                    ctx.beginPath();
+                    ctx.arc(fx, dec.y + dec.h / 2, 4.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            } else if (dec.kind === 'dock') {
+                ctx.save();
+                ctx.fillStyle = '#92400e';
+                ctx.strokeStyle = '#451a03';
+                ctx.lineWidth = 3;
+                ctx.fillRect(dec.x, dec.y, dec.w, dec.h);
+                ctx.strokeRect(dec.x, dec.y, dec.w, dec.h);
+                for (let px = dec.x + 18; px < dec.x + dec.w - 10; px += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(px, dec.y);
+                    ctx.lineTo(px, dec.y + dec.h);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+        }
+    }
+
+    function drawSolidBarrier25D(bar) {
+        ctx.save();
+        if (bar.kind === 'wall') {
+            // Ancient Clockwork Stone Fortress Wall
+            ctx.fillStyle = '#475569';
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 3;
+            ctx.fillRect(bar.x, bar.y - 26, bar.w, bar.h + 26);
+            ctx.strokeRect(bar.x, bar.y - 26, bar.w, bar.h + 26);
+
+            // Crenellations & Stone Bricks
+            ctx.fillStyle = '#64748b';
+            ctx.fillRect(bar.x + 4, bar.y - 22, bar.w - 8, 22);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2;
+            for (let by = bar.y + 16; by < bar.y + bar.h - 10; by += 36) {
+                ctx.beginPath();
+                ctx.moveTo(bar.x, by);
+                ctx.lineTo(bar.x + bar.w, by);
+                ctx.stroke();
+            }
+        } else {
+            // Unpassable Earth & Moss Cliff Ridge
+            ctx.fillStyle = '#6b4423';
+            ctx.strokeStyle = '#3a2414';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.roundRect(bar.x, bar.y - 18, bar.w, bar.h + 18, 16);
+            ctx.fill();
+            ctx.stroke();
+
+            // Grassy Cliff Cap
+            ctx.fillStyle = '#4d9e39';
+            ctx.beginPath();
+            ctx.roundRect(bar.x + 4, bar.y - 18, bar.w - 8, bar.h - 4, 14);
+            ctx.fill();
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    function drawTownDecor25D(dec) {
+        ctx.save();
+        if (dec.kind === 'stall') {
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.22)';
+            ctx.beginPath();
+            ctx.ellipse(dec.x + dec.w / 2, dec.y + dec.h + 3, dec.w * 0.52, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Wooden Counter
+            ctx.fillStyle = '#92400e';
+            ctx.strokeStyle = '#451a03';
+            ctx.lineWidth = 2.5;
+            ctx.fillRect(dec.x + 6, dec.y + 14, dec.w - 12, dec.h - 14);
+            ctx.strokeRect(dec.x + 6, dec.y + 14, dec.w - 12, dec.h - 14);
+
+            // Striped Awning Canopy
+            ctx.fillStyle = dec.awning;
+            ctx.beginPath();
+            ctx.roundRect(dec.x, dec.y - 18, dec.w, 24, [8, 8, 2, 2]);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            for (let sx = dec.x + 12; sx < dec.x + dec.w - 10; sx += 24) {
+                ctx.fillRect(sx, dec.y - 16, 10, 20);
+            }
+        } else if (dec.kind === 'lantern') {
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(dec.x - 3, dec.y - 38, 6, 40);
+            ctx.fillStyle = '#fef08a';
+            ctx.strokeStyle = '#b45309';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(dec.x, dec.y - 42, 7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+        } else if (dec.kind === 'well') {
+            ctx.fillStyle = '#94a3b8';
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.ellipse(dec.x, dec.y, dec.r, dec.r * 0.65, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = '#0284c7';
+            ctx.beginPath();
+            ctx.ellipse(dec.x, dec.y - 2, dec.r - 6, (dec.r - 6) * 0.6, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
     }
 
     function drawPuzzleFloorElements() {
@@ -3631,7 +3925,20 @@
         btnHat.disabled = player.gold < hatCost;
         document.getElementById('btnBuyPotion').disabled = player.gold < 15;
 
+        updateSkillKeyBadges();
         renderHudPortrait();
+    }
+
+    function updateSkillKeyBadges() {
+        const setKbd = (btnId, code) => {
+            const kbd = document.querySelector(`#${btnId} kbd`);
+            if (kbd) kbd.textContent = formatKeyCode(code);
+        };
+        setKbd('hudSkillSlash', customControls.slash);
+        setKbd('hudSkillTomato', customControls.tomato);
+        setKbd('hudSkillPurr', customControls.purr);
+        setKbd('hudSkillStarter', customControls.sprout);
+        setKbd('hudSkillTalk', customControls.interact);
     }
 
     function triggerRegionBanner(name) {
@@ -3670,6 +3977,7 @@
             timestamp: Date.now(),
             regionName: reg.name,
             appearance: { ...heroAppearance },
+            controls: { ...customControls },
             player: {
                 x: Math.round(player.x),
                 y: Math.round(player.y),
@@ -3724,6 +4032,7 @@
     function applySavePayload(slotIdx, data) {
         game.activeSlot = slotIdx;
         heroAppearance = { ...getDefaultAppearance(), ...(data.appearance || {}) };
+        customControls = { ...getDefaultControls(), ...(data.controls || {}) };
 
         const p = data.player || {};
         player.x = p.x ?? 640;
@@ -3935,6 +4244,7 @@
     function openCharacterCreator(targetSlot = 0) {
         sfx.blip();
         heroAppearance = getDefaultAppearance();
+        listeningControlId = null;
         document.getElementById('inputHeroName').value = heroAppearance.name;
         document.getElementById('selectCreatorSlot').value = String(targetSlot);
         renderCreatorOptions();
@@ -4027,6 +4337,25 @@
             btn.onclick = () => { heroAppearance.tomatoColor = tm.id; sfx.blip(); renderCreatorOptions(); };
             tomBox.appendChild(btn);
         });
+
+        // Custom Controls / Keybind Rebinding Grid
+        const ctrlBox = document.getElementById('optControlsGrid');
+        if (ctrlBox) {
+            ctrlBox.innerHTML = '';
+            CONTROL_LABELS.forEach(item => {
+                const isListening = listeningControlId === item.id;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `px-2.5 py-1.5 rounded-xl border-2 flex items-center justify-between gap-1 font-display font-bold text-xs cursor-pointer transition ${isListening ? 'bg-rose-600 text-white border-rose-950 animate-pulse' : 'bg-white text-amber-950 border-amber-800/30 hover:bg-amber-50'}`;
+                btn.innerHTML = `<span class="truncate">${item.label}</span><kbd class="px-1.5 py-0.5 rounded bg-amber-100 border border-amber-400 text-[10px] text-amber-950">${isListening ? 'Press key...' : formatKeyCode(customControls[item.id])}</kbd>`;
+                btn.onclick = () => {
+                    listeningControlId = isListening ? null : item.id;
+                    sfx.blip();
+                    renderCreatorOptions();
+                };
+                ctrlBox.appendChild(btn);
+            });
+        }
     }
 
     function drawCreatorPreviewStage() {
@@ -4187,7 +4516,14 @@
         previewFacingDir = (previewFacingDir % 4) + 1;
         sfx.blip();
     });
+    document.getElementById('btnResetControls').addEventListener('click', () => {
+        customControls = getDefaultControls();
+        listeningControlId = null;
+        sfx.blip();
+        renderCreatorOptions();
+    });
     document.getElementById('btnConfirmCreate').addEventListener('click', () => {
+        listeningControlId = null;
         const slot = parseInt(document.getElementById('selectCreatorSlot').value, 10) || 0;
         startFreshNewGame(slot);
     });
